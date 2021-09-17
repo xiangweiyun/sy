@@ -1,4 +1,4 @@
-package com.xwy;
+package com.sy;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
