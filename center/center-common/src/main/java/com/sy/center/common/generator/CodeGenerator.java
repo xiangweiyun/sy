@@ -33,10 +33,9 @@ public class CodeGenerator {
 	/**
 	 * Project package
 	 */
-	private static String rootDir;
+	private static String bootDir;
 	private static String pojoAndVoDir;
 	private static String serviceDir;
-	private static String packageDir;
 	private static String classPackageName;
 
 	/**
@@ -102,10 +101,9 @@ public class CodeGenerator {
 			password = properties.getProperty("generator.jdbc.password").trim();
 			driverClass = properties.getProperty("generator.jdbc.driverClass").trim();
 
-			rootDir = properties.getProperty("rootDir").trim();
+			bootDir = properties.getProperty("bootDir").trim();
 			pojoAndVoDir = properties.getProperty("pojoAndVoDir").trim();
 			serviceDir = properties.getProperty("serviceDir").trim();
-			packageDir = properties.getProperty("packageDir").trim();
 
 			classPackageName = properties.getProperty("classPackageName").trim();
 			packageMapper = properties.getProperty("packageMapper").trim();
@@ -120,10 +118,10 @@ public class CodeGenerator {
 	}
 
 	public static void main(String[] args) {
-		rootDir = rootDir.replaceAll("\\.", "/");
+		bootDir = bootDir.replaceAll("\\.", "/");
 		pojoAndVoDir = pojoAndVoDir.replaceAll("\\.", "/");
 		serviceDir = serviceDir.replaceAll("\\.", "/");
-		packageDir = packageDir.replaceAll("\\.", "/");
+		String packageDir = classPackageName.replaceAll("\\.", "/");
 
 		// 代码生成器
 		AutoGenerator mpg = new AutoGenerator();
@@ -133,7 +131,7 @@ public class CodeGenerator {
 		// 是否打开输出目录
 		gc.setOpen(false);
 		// 输出文件目录
-		gc.setOutputDir(rootDir + "/src/main/java");
+		gc.setOutputDir(bootDir + "/src/main/java");
 		// 是否覆盖已有文件
 		gc.setFileOverride(true);
 		// 实体属性 Swagger2 注解
@@ -162,6 +160,8 @@ public class CodeGenerator {
 		// 包配置
 		PackageConfig pc = new PackageConfig();
 		pc.setParent(classPackageName.trim());
+		// 模块名
+		// pc.setModuleName("model名");
 		pc.setMapper(packageMapper.trim());
 		pc.setEntity(pojoPackageName.trim());
 		pc.setService(servicePackageName.trim());
@@ -187,7 +187,7 @@ public class CodeGenerator {
 			@Override
 			public String outputFile(TableInfo tableInfo) {
 				// 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-				return rootDir + "src/main/resources/" + packageDir + "mapper/"
+				return bootDir + "src/main/resources/" + packageDir + "mapper/"
 						+ tableInfo.getEntityName() + "Mapper"
 						+ StringPool.DOT_XML;
 			}
@@ -236,7 +236,7 @@ public class CodeGenerator {
 		strategy.setTablePrefix(pc.getModuleName() + "_");
 		mpg.setStrategy(strategy);
 		mpg.setTemplateEngine(new FreemarkerTemplateEngine());
-		mpg.execute();
+//		mpg.execute();
 
 	}
 

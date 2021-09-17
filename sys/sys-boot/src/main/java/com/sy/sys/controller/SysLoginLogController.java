@@ -86,4 +86,5 @@ public class SysLoginLogController {
 		sysLoginLogService.saveLoginLog(request, logonId, operType, resultType, msg);
 		return DataformResult.success();
 	}
+
 }
