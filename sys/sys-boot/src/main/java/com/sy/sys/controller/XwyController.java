@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class XwyController {
 	private final Logger logger = LoggerFactory.getLogger(XwyController.class);
 
-	@DubboReference
+	@DubboReference(version = "${dubbo.service.version}")
 	private XwyService xwyService;
 
 	@GetMapping("/getName")
