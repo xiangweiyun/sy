@@ -34,6 +34,7 @@
         <mybatis-plus.version>3.1.0</mybatis-plus.version>
         <mybatis-plus-generator.version>3.1.0</mybatis-plus-generator.version>
         <freemarker.version>2.3.30</freemarker.version>
+        <ojdbc6.version>11.2.0.3</ojdbc6.version>
         <druid.version>1.0.29</druid.version>
         <!-- swagger版本号 -->
         <swagger.version>1.5.20</swagger.version>
@@ -114,6 +115,12 @@
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
                 <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc6</artifactId>
+                <version>${ojdbc6.version}</version>
+                <scope>runtime</scope>
             </dependency>
             <!-- alibaba druid数据源主版本管理 -->
             <dependency>
