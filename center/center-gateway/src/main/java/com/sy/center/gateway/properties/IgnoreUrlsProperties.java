@@ -23,7 +23,7 @@ public class IgnoreUrlsProperties {
 	private List<String> httpUrls = new ArrayList<>();
 
 	public List<String> getHttpUrls() {
-		return httpUrls;
+		return  httpUrls;
 	}
 
 	public void setHttpUrls(List<String> httpUrls) {
