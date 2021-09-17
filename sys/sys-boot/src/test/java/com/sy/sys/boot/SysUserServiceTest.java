@@ -1,11 +1,6 @@
 package com.sy.sys.boot;
 
-import com.sy.sys.service.SysUserService;
-import com.sy.sys.entity.SysUser;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,6 +18,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RefreshScope
 @RunWith(SpringRunner.class)
 public class SysUserServiceTest {
+	/*
 	@Autowired
 	private SysUserService sysUserService;
 
@@ -42,4 +38,5 @@ public class SysUserServiceTest {
 
 		System.out.println(name);
 	}
+	*/
 }
