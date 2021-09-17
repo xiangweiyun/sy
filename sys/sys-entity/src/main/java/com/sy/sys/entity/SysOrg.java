@@ -9,8 +9,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
-import javax.persistence.Column;
-
 /**
  * <p>
  * 系统机构表
@@ -50,7 +48,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 上级机构
      */
-    @Column(name = "PARENT_ID")
     @ApiModelProperty(value = "上级机构")
     @TableField("PARENT_ID")
     private Long parentId;
@@ -58,7 +55,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 机构编码
      */
-    @Column(name = "CODE")
     @ApiModelProperty(value = "机构编码")
     @TableField("CODE")
     private String code;
@@ -66,7 +62,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 机构名称
      */
-    @Column(name = "NAME")
     @ApiModelProperty(value = "机构名称")
     @TableField("NAME")
     private String name;
@@ -74,7 +69,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 机构级别
      */
-    @Column(name = "LEVEL_CODE")
     @ApiModelProperty(value = "机构级别")
     @TableField("LEVEL_CODE")
     private Long levelCode;
@@ -82,7 +76,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 经度
      */
-    @Column(name = "LONGITUDE")
     @ApiModelProperty(value = "经度")
     @TableField("LONGITUDE")
     private Double longitude;
@@ -90,7 +83,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 纬度
      */
-    @Column(name = "LATITUDE")
     @ApiModelProperty(value = "纬度")
     @TableField("LATITUDE")
     private Double latitude;
@@ -98,7 +90,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 联系电话
      */
-    @Column(name = "PHONE")
     @ApiModelProperty(value = "联系电话")
     @TableField("PHONE")
     private String phone;
@@ -106,7 +97,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 机构简介
      */
-    @Column(name = "ORG_PROFILE")
     @ApiModelProperty(value = "机构简介")
     @TableField("ORG_PROFILE")
     private String orgProfile;
@@ -114,7 +104,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 机构图片
      */
-    @Column(name = "PICTURE")
     @ApiModelProperty(value = "机构图片")
     @TableField("PICTURE")
     private String picture;
@@ -122,7 +111,6 @@ public class SysOrg extends BaseEntity {
     /**
      * 机构类型
      */
-    @Column(name = "ORG_TYPE")
     @ApiModelProperty(value = "机构类型")
     @TableField("ORG_TYPE")
     private String orgType;

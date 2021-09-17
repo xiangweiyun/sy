@@ -8,13 +8,10 @@ package ${package.Entity};
         </#if>
     </#if>
 </#list>
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import com.sy.center.common.base.BaseEntity;
 <#if dateFlag>
 import java.time.LocalDateTime;
 </#if>
-import javax.persistence.Column;
 <#if swagger2>
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -70,7 +67,6 @@ public class ${entity} extends BaseEntity {
     /**
      * ${field.comment}
      */
-    @Column(name = "${field.name?upper_case}")
     <#if swagger2>
     @ApiModelProperty(value = "${field.comment}")
     </#if>
