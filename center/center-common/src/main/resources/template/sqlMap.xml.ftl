@@ -6,7 +6,7 @@
     <!-- BaseResultMap和表字段一致，不允许改动 -->
     <resultMap id="BaseResultMap" type="${package.Entity}.${entity}">
     <#list table.fields as field>
-        <result column="${field.name?upper_case}" jdbcType="${field.type}" property="${field.propertyName}" />
+        <result column="${field.name?upper_case}" property="${field.propertyName}" />
     </#list>
     </resultMap>
 
