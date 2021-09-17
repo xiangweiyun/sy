@@ -1,7 +1,7 @@
 package com.sy.sys.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.sy.ecis.service.SysLoginLogService;
+import com.sy.sys.service.SysLoginLogService;
 import com.sy.sys.mapper.SysLoginLogMapper;
 import com.sy.center.common.utils.BlankUtils;
 import com.sy.center.common.utils.BrowserUtils;

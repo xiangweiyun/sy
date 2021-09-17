@@ -10,7 +10,7 @@ import com.sy.center.common.utils.PasswordHash;
 import com.sy.center.common.utils.SecurityUtils;
 import com.sy.center.common.utils.StringUtils;
 import com.sy.sys.entity.SysUser;
-import com.sy.ecis.service.SysUserService;
+import com.sy.sys.service.SysUserService;
 import com.sy.sys.mapper.SysUserMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

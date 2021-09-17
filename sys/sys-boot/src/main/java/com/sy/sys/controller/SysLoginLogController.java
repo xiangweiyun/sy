@@ -2,7 +2,7 @@ package com.sy.sys.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.sy.ecis.service.SysLoginLogService;
+import com.sy.sys.service.SysLoginLogService;
 import com.sy.sys.entity.SysLoginLog;
 import com.sy.center.framework.utils.DataformResult;
 import io.swagger.annotations.Api;

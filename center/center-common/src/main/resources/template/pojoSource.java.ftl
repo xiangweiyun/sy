@@ -8,7 +8,7 @@ package ${package.Entity};
         </#if>
     </#if>
 </#list>
-import com.xwy.common.base.BaseEntity;
+import com.sy.center.common.base.BaseEntity;
 <#if dateFlag>
 import java.time.LocalDateTime;
 </#if>

@@ -1,6 +1,6 @@
 package com.sy.sys.service.impl;
 
-import com.sy.ecis.service.XwyService;
+import com.sy.sys.service.XwyService;
 import org.apache.dubbo.config.annotation.DubboService;
 
 /**

@@ -35,8 +35,9 @@ public class CodeGenerator {
 	 */
 	private static String rootDir;
 	private static String pojoAndVoDir;
+	private static String serviceDir;
+	private static String packageDir;
 	private static String classPackageName;
-	private static String pojoClassPackageName;
 
 	/**
 	 * 包配置
@@ -100,10 +101,13 @@ public class CodeGenerator {
 			username = properties.getProperty("generator.jdbc.username").trim();
 			password = properties.getProperty("generator.jdbc.password").trim();
 			driverClass = properties.getProperty("generator.jdbc.driverClass").trim();
+
 			rootDir = properties.getProperty("rootDir").trim();
 			pojoAndVoDir = properties.getProperty("pojoAndVoDir").trim();
+			serviceDir = properties.getProperty("serviceDir").trim();
+			packageDir = properties.getProperty("packageDir").trim();
+
 			classPackageName = properties.getProperty("classPackageName").trim();
-			pojoClassPackageName = properties.getProperty("pojoClassPackageName").trim();
 			packageMapper = properties.getProperty("packageMapper").trim();
 			pojoPackageName = properties.getProperty("pojoPackageName").trim();
 			voPackageName = properties.getProperty("voPackageName").trim();
@@ -116,8 +120,11 @@ public class CodeGenerator {
 	}
 
 	public static void main(String[] args) {
-		String bootDir = rootDir.replaceAll("\\.", "/");
-		String entityDir = pojoAndVoDir.replaceAll("\\.", "/");
+		rootDir = rootDir.replaceAll("\\.", "/");
+		pojoAndVoDir = pojoAndVoDir.replaceAll("\\.", "/");
+		serviceDir = serviceDir.replaceAll("\\.", "/");
+		packageDir = packageDir.replaceAll("\\.", "/");
+
 		// 代码生成器
 		AutoGenerator mpg = new AutoGenerator();
 		// 全局配置
@@ -126,7 +133,7 @@ public class CodeGenerator {
 		// 是否打开输出目录
 		gc.setOpen(false);
 		// 输出文件目录
-		gc.setOutputDir(bootDir + "/src/main/java");
+		gc.setOutputDir(rootDir + "/src/main/java");
 		// 是否覆盖已有文件
 		gc.setFileOverride(true);
 		// 实体属性 Swagger2 注解
@@ -172,18 +179,35 @@ public class CodeGenerator {
 
 		// 如果模板引擎是 freemarker
 		String templatePath = "template/sqlMap.xml.ftl";
-		// 如果模板引擎是 velocity
-		// String templatePath = "/templates/dao.xml.vm";
+
 		// 自定义输出配置
 		List<FileOutConfig> focList = new ArrayList<>();
-
 		// 自定义配置会被优先输出
 		focList.add(new FileOutConfig(templatePath) {
 			@Override
 			public String outputFile(TableInfo tableInfo) {
 				// 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-				return bootDir + "/src/main/resources/mapper/" + tableInfo.getEntityName() + "Mapper"
+				return rootDir + "src/main/resources/" + packageDir + "mapper/"
+						+ tableInfo.getEntityName() + "Mapper"
 						+ StringPool.DOT_XML;
+			}
+		});
+		templatePath = "template/pojoSource.java.ftl";
+		focList.add(new FileOutConfig(templatePath) {
+			@Override
+			public String outputFile(TableInfo tableInfo) {
+				// 自定义输出文件名
+				return pojoAndVoDir + "src/main/java/" + packageDir + "entity/"
+						+ tableInfo.getEntityName() + StringPool.DOT_JAVA;
+			}
+		});
+		templatePath = "/templates/service.java.ftl";
+		focList.add(new FileOutConfig(templatePath) {
+			@Override
+			public String outputFile(TableInfo tableInfo) {
+				// 自定义输出文件名
+				return serviceDir + "src/main/java/" + packageDir + "service/"
+						+ tableInfo.getEntityName() + "Service" + StringPool.DOT_JAVA;
 			}
 		});
 		cfg.setFileOutConfigList(focList);
@@ -192,7 +216,8 @@ public class CodeGenerator {
 		// 配置模板
 		TemplateConfig templateConfig = new TemplateConfig();
 		templateConfig.setController("template/controller.java");
-		templateConfig.setEntity("template/pojoSource.java");
+		templateConfig.setService(null);
+		templateConfig.setEntity(null);
 		templateConfig.setXml(null);
 		mpg.setTemplate(templateConfig);
 

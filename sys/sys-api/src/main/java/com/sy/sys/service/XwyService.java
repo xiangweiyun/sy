@@ -1,4 +1,4 @@
-package com.sy.ecis.service;
+package com.sy.sys.service;
 
 /**
  * @author xiangwy

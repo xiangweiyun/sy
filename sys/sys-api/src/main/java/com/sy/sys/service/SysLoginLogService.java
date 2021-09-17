@@ -1,4 +1,4 @@
-package com.sy.ecis.service;
+package com.sy.sys.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sy.sys.entity.SysLoginLog;

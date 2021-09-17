@@ -1,6 +1,6 @@
 package com.sy.sys.controller;
 
-import com.sy.ecis.service.SysUserService;
+import com.sy.sys.service.SysUserService;
 import com.sy.center.common.log.annotation.Log;
 import com.sy.center.common.log.enums.BusinessType;
 import com.sy.center.common.utils.BlankUtils;

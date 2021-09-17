@@ -1,6 +1,6 @@
 package com.sy.sys.controller;
 
-import com.sy.ecis.service.XwyService;
+import com.sy.sys.service.XwyService;
 import io.swagger.annotations.Api;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.slf4j.Logger;

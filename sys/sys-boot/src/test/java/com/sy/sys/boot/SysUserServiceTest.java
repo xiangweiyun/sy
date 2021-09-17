@@ -1,6 +1,6 @@
 package com.sy.sys.boot;
 
-import com.sy.ecis.service.SysUserService;
+import com.sy.sys.service.SysUserService;
 import com.sy.sys.entity.SysUser;
 import org.junit.Test;
 import org.junit.runner.RunWith;

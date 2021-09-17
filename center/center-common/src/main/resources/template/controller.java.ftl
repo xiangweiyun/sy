@@ -17,7 +17,7 @@ import org.springframework.stereotype.Controller;
 import ${superControllerClassPackage};
 </#if>
 
-import com.xwy.common.utils.DataformResult;
+import com.sy.center.framework.utils.DataformResult;
 import ${package.Entity}.${entity};
 import ${package.Service}.${table.serviceName};
 import io.swagger.annotations.Api;
@@ -30,8 +30,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @author ${author}
  * @date: ${date}
- * @Copyright: Copyright (c) 2020
- * @Company: Xwy科技股份有限公司
+ * @Copyright: Copyright (c) 2021
+ * @Company:
  * @Version: V1.0
  */
 <#if restControllerStyle>
