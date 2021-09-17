@@ -1,5 +1,6 @@
 package com.sy.center.common.generator;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.exceptions.MybatisPlusException;
 import com.baomidou.mybatisplus.core.toolkit.StringPool;
 import com.baomidou.mybatisplus.generator.AutoGenerator;
@@ -93,7 +94,7 @@ public class CodeGenerator {
 	 */
 	static {
 		Properties properties = new Properties();
-		InputStream i = CodeGenerator.class.getResourceAsStream("/generatorConfig.properties");
+		InputStream i = CodeGenerator.class.getResourceAsStream("/sysOracle.properties");
 		try {
 			properties.load(i);
 			url = properties.getProperty("generator.jdbc.url").trim();
@@ -149,12 +150,12 @@ public class CodeGenerator {
 
 		// 数据源配置
 		DataSourceConfig dsc = new DataSourceConfig();
+		dsc.setDbType(DbType.ORACLE);
+		dsc.setDriverName(driverClass.trim());
 		dsc.setUrl(url.trim());
 		// dsc.setSchemaName("public");
 		dsc.setUsername(username.trim());
 		dsc.setPassword(password.trim());
-		dsc.setDriverName(driverClass.trim());
-
 		mpg.setDataSource(dsc);
 
 		// 包配置
@@ -187,7 +188,7 @@ public class CodeGenerator {
 			@Override
 			public String outputFile(TableInfo tableInfo) {
 				// 自定义输出文件名 ， 如果你 Entity 设置了前后缀、此处注意 xml 的名称会跟着发生变化！！
-				return bootDir + "src/main/resources/" + packageDir + "mapper/"
+				return bootDir + "src/main/resources/" + packageDir + "/mapper/"
 						+ tableInfo.getEntityName() + "Mapper"
 						+ StringPool.DOT_XML;
 			}
@@ -197,7 +198,7 @@ public class CodeGenerator {
 			@Override
 			public String outputFile(TableInfo tableInfo) {
 				// 自定义输出文件名
-				return pojoAndVoDir + "src/main/java/" + packageDir + "entity/"
+				return pojoAndVoDir + "src/main/java/" + packageDir + "/entity/"
 						+ tableInfo.getEntityName() + StringPool.DOT_JAVA;
 			}
 		});
@@ -206,7 +207,7 @@ public class CodeGenerator {
 			@Override
 			public String outputFile(TableInfo tableInfo) {
 				// 自定义输出文件名
-				return serviceDir + "src/main/java/" + packageDir + "service/"
+				return serviceDir + "src/main/java/" + packageDir + "/service/"
 						+ tableInfo.getEntityName() + "Service" + StringPool.DOT_JAVA;
 			}
 		});
@@ -236,7 +237,7 @@ public class CodeGenerator {
 		strategy.setTablePrefix(pc.getModuleName() + "_");
 		mpg.setStrategy(strategy);
 		mpg.setTemplateEngine(new FreemarkerTemplateEngine());
-//		mpg.execute();
+		mpg.execute();
 
 	}
 
