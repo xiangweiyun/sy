@@ -1,8 +1,8 @@
 {
-  "name": "vue-admin-design",
+  "name": "sys-web",
   "version": "2.0.0",
   "description": "基于vue + elementUI的管理系统模板",
-  "author": "baimingxuan <354372738@qq.com>",
+  "author": "xwy",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -11,7 +11,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "axios": "^0.20.0",
+    "axios": "^0.21.2",
     "core-js": "^3.6.5",
     "echarts": "^4.7.0",
     "element-ui": "^2.13.0",
@@ -35,7 +35,7 @@
     "vuedraggable": "^2.23.2",
     "vuex": "^3.5.1",
     "wangeditor": "^3.1.1",
-    "xlsx": "^0.16.1"
+    "xlsx": "^0.17.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.0",

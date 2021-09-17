@@ -58,7 +58,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-io.version>2.5</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
-        <guava.version>28.0-jre</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <common-pool.version>2.6.2</common-pool.version>
         <javax.servlet.version>3.1.0</javax.servlet.version>
     </properties>
