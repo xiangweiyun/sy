@@ -127,5 +127,9 @@
 			<artifactId>center-swagger</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.oracle</groupId>
+			<artifactId>ojdbc6</artifactId>
+		</dependency>
 	</dependencies>
 </project>

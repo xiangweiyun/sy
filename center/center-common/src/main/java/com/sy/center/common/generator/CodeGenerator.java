@@ -94,7 +94,7 @@ public class CodeGenerator {
 	 */
 	static {
 		Properties properties = new Properties();
-		InputStream i = CodeGenerator.class.getResourceAsStream("/generatorConfig.properties");
+		InputStream i = CodeGenerator.class.getResourceAsStream("/sysOracle.properties");
 		try {
 			properties.load(i);
 			url = properties.getProperty("generator.jdbc.url").trim();
