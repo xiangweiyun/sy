@@ -2,12 +2,14 @@ package ${package.Entity};
 
 <#assign dateFlag = false />
 <#list table.fields as field>
-    <#if "createBy" != field.propertyName && "createDate" != field.propertyName && "updateBy" != field.propertyName && "updateDate" != field.propertyName && "remarks" != field.propertyName && "delFlag" != field.propertyName>
+    <#if "createdBy" != field.propertyName && "createdDate" != field.propertyName && "lastModifiedBy" != field.propertyName && "lastModifiedDate" != field.propertyName>
         <#if field.propertyType == "LocalDateTime">
             <#assign dateFlag = true />
         </#if>
     </#if>
 </#list>
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.sy.center.common.base.BaseEntity;
 <#if dateFlag>
 import java.time.LocalDateTime;
@@ -51,7 +53,7 @@ public class ${entity} extends BaseEntity {
     private static final long serialVersionUID = 1L;
     <#if entityColumnConstant>
     <#list table.fields as field>
-    <#if "id" != field.propertyName && "createBy" != field.propertyName && "createDate" != field.propertyName && "updateBy" != field.propertyName && "updateDate" != field.propertyName && "remarks" != field.propertyName && "delFlag" != field.propertyName>
+    <#if "id" != field.propertyName && "createdBy" != field.propertyName && "createdDate" != field.propertyName && "lastModifiedBy" != field.propertyName && "lastModifiedDate" != field.propertyName>
     /** ${field.comment}. */
     public static final String ${field.name?upper_case} = "${field.propertyName}";
     </#if>
@@ -59,7 +61,7 @@ public class ${entity} extends BaseEntity {
 	</#if>
 <#-- ----------  BEGIN 字段循环遍历  ---------->
 <#list table.fields as field>
-	<#if "id" != field.propertyName && "createBy" != field.propertyName && "createDate" != field.propertyName && "updateBy" != field.propertyName && "updateDate" != field.propertyName && "remarks" != field.propertyName && "delFlag" != field.propertyName>
+	<#if "id" != field.propertyName && "createdBy" != field.propertyName && "createdDate" != field.propertyName && "lastModifiedBy" != field.propertyName && "lastModifiedDate" != field.propertyName>
     <#if field.keyFlag>
         <#assign keyPropertyName="${field.propertyName}"/>
     </#if>
