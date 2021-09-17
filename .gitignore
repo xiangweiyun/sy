@@ -5,7 +5,7 @@ target
 .classpath
 .project
 .gitignore
-.iml
+*.iml
 
 # Log file
 *.log
