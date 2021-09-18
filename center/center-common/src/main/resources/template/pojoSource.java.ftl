@@ -8,6 +8,8 @@ package ${package.Entity};
         </#if>
     </#if>
 </#list>
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.sy.center.common.base.BaseEntity;
 <#if dateFlag>
 import java.time.LocalDateTime;
@@ -23,7 +25,6 @@ import lombok.Setter;
 <#if superEntityClass??>
 import lombok.experimental.Accessors;
 </#if>
-import lombok.experimental.Accessors;
 </#if>
 
 /**
