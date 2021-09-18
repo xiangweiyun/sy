@@ -16,5 +16,5 @@
         ${alias}${field.name?upper_case},
 	</#list>
         ${table.fieldNames}
-    </sql>	
+    </sql>
 </mapper>

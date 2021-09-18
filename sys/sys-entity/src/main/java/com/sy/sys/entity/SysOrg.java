@@ -5,9 +5,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.sy.center.common.base.BaseEntity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.experimental.Accessors;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * <p>
@@ -17,9 +16,8 @@ import lombok.experimental.Accessors;
  * @author zxwen
  * @since 2021-09-17
  */
-@Data
-@EqualsAndHashCode(callSuper = false)
-@Accessors(chain = true)
+@Getter
+@Setter
 @TableName("SYS_ORG")
 @ApiModel(value="SysOrg对象", description="系统机构表")
 public class SysOrg extends BaseEntity {

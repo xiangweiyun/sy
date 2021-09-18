@@ -31,15 +31,15 @@ public class BaseEntity implements Serializable {
 	@TableField(exist = false)
 	private static final long serialVersionUID = 1L;
 	/** 主键ID. */
-	public static final String ID = "id";
+	public static final String ID = "ID";
 	/** 创建人. */
-	public static final String CREATED_BY = "createdBy";
+	public static final String CREATED_BY = "CREATED_BY";
 	/** 创建时间. */
-	public static final String CREATED_DATE = "createdDate";
+	public static final String CREATED_DATE = "CREATED_DATE";
 	/** 更新时间. */
-	public static final String LAST_MODIFIED_DATE = "lastModifiedDate";
+	public static final String LAST_MODIFIED_DATE = "LAST_MODIFIED_DATE";
 	/** 更新人. */
-	public static final String LAST_MODIFIED_BY = "lastModifiedBy";
+	public static final String LAST_MODIFIED_BY = "LAST_MODIFIED_BY";
 
 	@Id
 	@ApiModelProperty(value = "主键")

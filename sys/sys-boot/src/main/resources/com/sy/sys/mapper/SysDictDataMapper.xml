@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysDictDataMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysDictData">
+        <result column="DICT_CODE" property="dictCode" />
+        <result column="DICT_SORT" property="dictSort" />
+        <result column="DICT_LABEL" property="dictLabel" />
+        <result column="DICT_VALUE" property="dictValue" />
+        <result column="DICT_TYPE" property="dictType" />
+        <result column="CSS_CLASS" property="cssClass" />
+        <result column="LIST_CLASS" property="listClass" />
+        <result column="IS_DEFAULT" property="isDefault" />
+        <result column="REMARK" property="remark" />
+        <result column="STATUS" property="status" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+        <result column="ID" property="id" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        DICT_CODE, DICT_SORT, DICT_LABEL, DICT_VALUE, DICT_TYPE, CSS_CLASS, LIST_CLASS, IS_DEFAULT, REMARK, STATUS, CREATED_DATE, LAST_MODIFIED_DATE, CREATED_BY, LAST_MODIFIED_BY, ID
+    </sql>
+</mapper>

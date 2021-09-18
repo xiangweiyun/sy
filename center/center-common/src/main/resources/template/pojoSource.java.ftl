@@ -8,6 +8,8 @@ package ${package.Entity};
         </#if>
     </#if>
 </#list>
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.sy.center.common.base.BaseEntity;
 <#if dateFlag>
 import java.time.LocalDateTime;
@@ -23,7 +25,6 @@ import lombok.Setter;
 <#if superEntityClass??>
 import lombok.experimental.Accessors;
 </#if>
-import lombok.experimental.Accessors;
 </#if>
 
 /**
@@ -52,8 +53,8 @@ public class ${entity} extends BaseEntity {
     <#if entityColumnConstant>
     <#list table.fields as field>
     <#if "id" != field.propertyName && "createdBy" != field.propertyName && "createdDate" != field.propertyName && "lastModifiedBy" != field.propertyName && "lastModifiedDate" != field.propertyName>
-    /** ${field.comment}. */
-    public static final String ${field.name?upper_case} = "${field.propertyName}";
+    <#if field.comment!?length gt 0>/** ${field.comment}. */</#if>
+    public static final String ${field.name?upper_case} = "${field.name}";
     </#if>
     </#list>
 	</#if>
