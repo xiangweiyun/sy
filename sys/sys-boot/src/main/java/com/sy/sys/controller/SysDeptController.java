@@ -31,7 +31,7 @@ public class SysDeptController {
 	@Autowired
     private SysDeptService sysDeptService;
     
-    @ApiOperation(value = "系统部门-新增", notes = "系统部门-新增")
+    @ApiOperation(value = "系统部门-保存", notes = "系统部门-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysDept sysDept) {
         if (null == sysDept.getId()) {

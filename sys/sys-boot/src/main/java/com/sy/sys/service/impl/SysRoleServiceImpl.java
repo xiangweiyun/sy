@@ -27,23 +27,26 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
     @Override
     public IPage<SysRole> pageSysRole(Page page, Long orgId, String name, String code) {
         Page<SysRole> pageParam = page;
-        QueryWrapper<SysRole> wrapper = Wrappers.query();
-        if (null != orgId) {
-            wrapper.eq(SysRole.ORG_ID, orgId);
-        }
-        if (StringUtils.isNotBlank(name)) {
-            wrapper.like(SysRole.NAME, name);
-        }
-        if (StringUtils.isNotBlank(code)) {
-            wrapper.like(SysRole.CODE, code);
-        }
-        wrapper.orderByDesc(SysRole.ROLE_SORT);
+        QueryWrapper<SysRole> wrapper = queryWrapper(orgId, name, code);
         IPage<SysRole> pageResult = super.page(pageParam, wrapper);
         return pageResult;
     }
 
     @Override
     public List<SysRole> listSysRole(Long orgId, String name, String code) {
+        QueryWrapper<SysRole> wrapper = queryWrapper(orgId, name, code);
+        return super.list(wrapper);
+    }
+
+    /**
+     * 查询条件封装
+     *
+     * @param orgId 机构ID
+     * @param name  角色名称
+     * @param code  角色编码
+     * @return
+     */
+    public QueryWrapper<SysRole> queryWrapper(Long orgId, String name, String code) {
         QueryWrapper<SysRole> wrapper = Wrappers.query();
         if (null != orgId) {
             wrapper.eq(SysRole.ORG_ID, orgId);
@@ -55,6 +58,6 @@ public class SysRoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impl
             wrapper.like(SysRole.CODE, code);
         }
         wrapper.orderByDesc(SysRole.ROLE_SORT);
-        return super.list(wrapper);
+        return wrapper;
     }
 }

@@ -34,7 +34,7 @@ public class SysDictDataController {
     @Autowired
     private SysDictDataService sysDictDataService;
 
-    @ApiOperation(value = "字典数据-新增", notes = "字典数据-新增")
+    @ApiOperation(value = "字典数据-保存", notes = "字典数据-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysDictData sysDictData) {
         if (null == sysDictData.getId()) {

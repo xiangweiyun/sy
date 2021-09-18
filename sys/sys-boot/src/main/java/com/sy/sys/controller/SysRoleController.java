@@ -34,7 +34,7 @@ public class SysRoleController {
     @Autowired
     private SysRoleService sysRoleService;
 
-    @ApiOperation(value = "系统角色表-新增", notes = "系统角色表-新增")
+    @ApiOperation(value = "系统角色表-保存", notes = "系统角色表-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysRole sysRole) {
         if (null == sysRole.getId()) {

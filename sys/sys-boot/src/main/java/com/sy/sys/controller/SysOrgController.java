@@ -31,7 +31,7 @@ public class SysOrgController {
 	@Autowired
     private SysOrgService sysOrgService;
     
-    @ApiOperation(value = "系统机构表-新增", notes = "系统机构表-新增")
+    @ApiOperation(value = "系统机构表-保存", notes = "系统机构表-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysOrg sysOrg) {
         if (null == sysOrg.getId()) {
