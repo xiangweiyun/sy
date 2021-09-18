@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author ${author}
  * @date: ${date}
  * @Copyright: Copyright (c) 2021
- * @Company:
+ * @Company: 云南升玥信息技术有限公司
  * @Version: V1.0
  */
 <#if restControllerStyle>

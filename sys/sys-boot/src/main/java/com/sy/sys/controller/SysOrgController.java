@@ -1,26 +1,18 @@
 package com.sy.sys.controller;
 
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysOrg;
 import com.sy.sys.service.SysOrgService;
 import com.sy.sys.vo.SysOrgVo;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
  /**
  * 系统机构表控制器.
@@ -28,7 +20,7 @@ import io.swagger.annotations.ApiOperation;
  * @author zxwen
  * @date: 2021-09-17
  * @Copyright: Copyright (c) 2021
- * @Company:
+ * @Company: 云南升玥信息技术有限公司
  * @Version: V1.0
  */
 @RestController
