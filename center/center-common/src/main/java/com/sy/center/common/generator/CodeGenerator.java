@@ -128,7 +128,7 @@ public class CodeGenerator {
 		AutoGenerator mpg = new AutoGenerator();
 		// 全局配置
 		GlobalConfig gc = new GlobalConfig();
-		gc.setAuthor("zxwen");
+		gc.setAuthor("xiangwy");
 		// 是否打开输出目录
 		gc.setOpen(false);
 		// 输出文件目录
