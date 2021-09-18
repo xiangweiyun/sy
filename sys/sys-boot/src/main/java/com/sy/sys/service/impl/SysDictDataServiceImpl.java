@@ -29,6 +29,7 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
         if (StringUtils.isNotBlank(status)) {
             wrapper.eq(SysDictData.STATUS, status);
         }
+        wrapper.orderByAsc(SysDictData.DICT_SORT);
         return super.list(wrapper);
     }
 }

@@ -16,7 +16,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  */
 @EnableFeignClients
 @EnableDiscoveryClient
-@SpringBootApplication(scanBasePackages = { "com.sy" })
+@SpringBootApplication
 public class SysApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SysApplication.class, args);

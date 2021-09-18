@@ -1,13 +1,6 @@
 package com.sy.sys.service.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.stereotype.Service;
-
-import com.alibaba.spring.util.BeanUtils;
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -15,8 +8,13 @@ import com.sy.sys.entity.SysOrg;
 import com.sy.sys.mapper.SysOrgMapper;
 import com.sy.sys.service.SysOrgService;
 import com.sy.sys.vo.SysOrgVo;
+import org.springframework.stereotype.Service;
 
-import cn.hutool.core.bean.BeanUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * <p>
