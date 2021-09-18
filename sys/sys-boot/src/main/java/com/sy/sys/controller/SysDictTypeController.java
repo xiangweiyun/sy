@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
  * @author xiangwy
  * @date: 2021-09-18
  * @Copyright: Copyright (c) 2021
- * @Company:
+ * @Company: 云南升玥信息技术有限公司
  * @Version: V1.0
  */
 @RestController
@@ -34,7 +34,7 @@ public class SysDictTypeController {
     @Autowired
     private SysDictTypeService sysDictTypeService;
 
-    @ApiOperation(value = "字典类型-新增", notes = "字典类型-新增")
+    @ApiOperation(value = "字典类型-保存", notes = "字典类型-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysDictType sysDictType) {
         if (null == sysDictType.getId()) {

@@ -11,12 +11,12 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
  * @author xiangwy
  * @date: 2020-11-30 15:41:43
  * @Copyright: Copyright (c) 2020
- * @Company: Xwy科技股份有限公司
+ * @Company: 云南升玥信息技术有限公司
  * @Version: V1.0
  */
 @EnableFeignClients
 @EnableDiscoveryClient
-@SpringBootApplication(scanBasePackages = { "com.sy" })
+@SpringBootApplication
 public class SysApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(SysApplication.class, args);

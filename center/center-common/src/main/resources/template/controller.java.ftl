@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
  * @author ${author}
  * @date: ${date}
  * @Copyright: Copyright (c) 2021
- * @Company:
+ * @Company: 云南升玥信息技术有限公司
  * @Version: V1.0
  */
 <#if restControllerStyle>
@@ -53,7 +53,7 @@ public class ${table.controllerName} {
 	@Autowired
     private ${table.serviceName} ${table.entityPath}Service;
     
-    @ApiOperation(value = "${table.comment}-新增", notes = "${table.comment}-新增")
+    @ApiOperation(value = "${table.comment}-保存", notes = "${table.comment}-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody ${entity} ${table.entityPath}) {
         if (null == ${table.entityPath}.getId()) {

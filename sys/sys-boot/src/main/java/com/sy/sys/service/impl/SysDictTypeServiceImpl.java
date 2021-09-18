@@ -32,6 +32,7 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
         if (StringUtils.isNotBlank(dictType)){
             wrapper.like(SysDictType.DICT_TYPE, dictType);
         }
+        wrapper.orderByDesc(SysDictType.CREATED_DATE);
         IPage<SysDictType> pageResult = super.page(pageParam, wrapper);
         return pageResult;
     }
