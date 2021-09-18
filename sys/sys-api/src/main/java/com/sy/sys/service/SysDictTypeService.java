@@ -10,7 +10,7 @@ import com.sy.sys.entity.SysDictType;
  * 字典类型 服务类
  * </p>
  *
- * @author zxwen
+ * @author xiangwy
  * @since 2021-09-18
  */
 public interface SysDictTypeService extends IService<SysDictType> {

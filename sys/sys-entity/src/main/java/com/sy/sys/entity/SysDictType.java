@@ -13,7 +13,7 @@ import lombok.Setter;
  * 字典类型
  * </p>
  *
- * @author zxwen
+ * @author xiangwy
  * @since 2021-09-18
  */
 @Getter

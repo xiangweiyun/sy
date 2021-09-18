@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
  * 字典类型 服务实现类
  * </p>
  *
- * @author zxwen
+ * @author xiangwy
  * @since 2021-09-18
  */
 @Service
