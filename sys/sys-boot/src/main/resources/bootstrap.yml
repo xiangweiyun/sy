@@ -1,6 +1,6 @@
 server:
   #服务端口
-  port: 9020
+  port: 7777
 spring:
   application:
     #服务名称
@@ -15,7 +15,7 @@ spring:
     nacos:
       discovery:
         #允许nacos发现服务的nacos服务器地址
-        server-addr: 127.0.0.1:8848
+        server-addr: 192.168.3.89:8848
         #注册命名空间
         namespace: d41aed27-2d4f-4948-b864-b492484d6be7
       config:
