@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysDistrictMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysDistrict">
+        <result column="ID" property="id" />
+        <result column="DISTRICT_CODE" property="districtCode" />
+        <result column="DISTRICT_NAME" property="districtName" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, DISTRICT_CODE, DISTRICT_NAME, PARENT_ID, CREATED_DATE, LAST_MODIFIED_DATE, CREATED_BY, LAST_MODIFIED_BY
+    </sql>
+    
+    <select id="listMain" resultType="com.sy.sys.vo.SysDistrictVo">
+		SELECT ID, DISTRICT_CODE, DISTRICT_NAME, (CASE WHEN EXISTS((SELECT 1 FROM SYS_DISTRICT t WHERE t.PARENT_ID = SYS_DISTRICT.ID)) THEN 1 ELSE 0 END) has_children
+		FROM SYS_DISTRICT
+		WHERE PARENT_ID IS NULL
+		ORDER BY DISTRICT_CODE
+    </select>
+    
+    <select id="listChildren" resultType="com.sy.sys.vo.SysDistrictVo">
+    	SELECT ID, DISTRICT_CODE, DISTRICT_NAME, (CASE WHEN EXISTS((SELECT 1 FROM SYS_DISTRICT t WHERE t.PARENT_ID = SYS_DISTRICT.ID)) THEN 1 ELSE 0 END) has_children
+		FROM SYS_DISTRICT
+		WHERE PARENT_ID = #{id}
+		ORDER BY DISTRICT_CODE
+    </select>
+</mapper>

@@ -64,7 +64,7 @@ public class SysOrgController {
         return DataformResult.success(sysOrg);
     }
     
-    @ApiOperation(value = "系统机构表-根据机构ID", notes = "系统机构表-根据机构ID")
+    @ApiOperation(value = "系统机构表-树型结构", notes = "系统机构表-传值orgId 会获取本机构及下属机构数据 ，不传值获取所有机构")
     @GetMapping("/getTreeData")
     public DataformResult<List<SysOrgVo>> getTreeData(Long orgId) {
         return DataformResult.success(sysOrgService.getTreeData(orgId));
