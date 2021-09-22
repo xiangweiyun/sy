@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysUserMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysUser">
+        <result column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="USERNAME" property="username" />
+        <result column="PASSWORD" property="password" />
+        <result column="NO_NUM" property="noNum" />
+        <result column="JOB_TITLE_CODE" property="jobTitleCode" />
+        <result column="IDCARD" property="idcard" />
+        <result column="GENDER_CODE" property="genderCode" />
+        <result column="NATION_CODE" property="nationCode" />
+        <result column="GOOD_AT_FIELD" property="goodAtField" />
+        <result column="PERSONAL_PROFILE" property="personalProfile" />
+        <result column="AVATAR" property="avatar" />
+        <result column="OFFICE_PHONE" property="officePhone" />
+        <result column="IS_ENABLED" property="isEnabled" />
+        <result column="ENABLE_DATE" property="enableDate" />
+        <result column="DISABLED_DATE" property="disabledDate" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+        <result column="ORG_ID" property="orgId" />
+        <result column="DEPT_ID" property="deptId" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, NAME, USERNAME, PASSWORD, NO_NUM, JOB_TITLE_CODE, IDCARD, GENDER_CODE, NATION_CODE, GOOD_AT_FIELD, PERSONAL_PROFILE, AVATAR, OFFICE_PHONE, IS_ENABLED, ENABLE_DATE, DISABLED_DATE, IS_DELETED, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_ID, DEPT_ID
+    </sql>
+</mapper>

@@ -1,0 +1,107 @@
+package com.sy.sys.controller;
+
+
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.sy.center.common.utils.MD5Util;
+import com.sy.center.common.utils.PasswordHash;
+import com.sy.center.framework.utils.DataformResult;
+import com.sy.sys.entity.SysMenu;
+import com.sy.sys.entity.SysUser;
+import com.sy.sys.service.SysUserService;
+
+import cn.hutool.core.bean.BeanUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+ /**
+ * 用户表控制器.
+ * 
+ * @author zxwen
+ * @date: 2021-09-22
+ * @Copyright: Copyright (c) 2021
+ * @Company: 云南升玥信息技术有限公司
+ * @Version: V1.0
+ */
+@RestController
+@RequestMapping("/sysUser")
+@Api(tags = "用户表")
+public class SysUserController {
+	private final Logger logger = LoggerFactory.getLogger(SysUserController.class);
+	@Autowired
+    private SysUserService sysUserService;
+    
+    @ApiOperation(value = "用户表-保存", notes = "用户表-保存")
+    @PostMapping("/save")
+    public DataformResult<String> save(@RequestBody SysUser sysUser) {
+        if (null == sysUser.getId()) {
+        	if(sysUser.getPassword()==null || sysUser.getPassword().isEmpty()) {
+        		return DataformResult.failure("初始密码不能为空");
+        	}
+        	sysUser.setPassword(MD5Util.encrypt(sysUser.getPassword()));
+            sysUserService.save(sysUser);
+        } else {
+        	sysUser.setPassword(null);
+            sysUserService.updateById(sysUser);
+        }
+        return DataformResult.success();
+    }
+
+    @ApiOperation(value = "用户表-删除", notes = "用户表-刪除")
+    @PostMapping("/remove/{id}")
+    public DataformResult<String> removeById(@PathVariable("id") Long id) {
+        sysUserService.removeById(id);
+        return DataformResult.success();
+    }
+
+    @ApiOperation(value = "用户表-根据ID获取", notes = "用户表-根据ID获取")
+    @GetMapping("/{id}")
+    public DataformResult<SysUser> getById(@PathVariable("id") Long id) {
+        SysUser sysUser = sysUserService.getById(id);
+        return DataformResult.success(sysUser);
+    }
+    
+    @ApiOperation(value = "用户表-系统登陆", notes = "用户表-系统登陆")
+    @GetMapping("/login")
+    public DataformResult<SysUser> getById(String userName, String passWord) {
+    	if(userName==null || userName.isEmpty() || passWord==null || passWord.isEmpty()) {
+    		return DataformResult.failure("用户名或密码不允许为空");
+    	}
+    	QueryWrapper<SysUser> queryWrapper = Wrappers.query();
+    	Map<String, Object> map = new HashMap<String, Object>();
+		map.put("USERNAME", userName);
+		queryWrapper.allEq(map);
+		SysUser sysUser = sysUserService.getOne(queryWrapper);
+    	
+		if(sysUser==null) {
+			return DataformResult.failure("该用户在系统中不存在");
+		}
+		
+		String md5Str = MD5Util.encrypt(passWord);
+		System.out.println("MD5-->"+md5Str);
+		if(md5Str.equals(sysUser.getPassword())) {
+			SysUser sysUserInfo = new SysUser();
+			sysUserInfo.setId(sysUser.getId());
+			sysUserInfo.setName(sysUser.getName());
+			sysUserInfo.setUsername(sysUser.getUsername());
+			return DataformResult.success(sysUserInfo);
+		}else {
+			return DataformResult.failure("输入的密码不正确");
+		}
+    }
+}

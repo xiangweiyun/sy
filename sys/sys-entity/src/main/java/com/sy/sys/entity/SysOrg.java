@@ -42,6 +42,8 @@ public class SysOrg extends BaseEntity {
     public static final String PICTURE = "picture";
     /** 机构类型. */
     public static final String ORG_TYPE = "orgType";
+    /** 机构地址. */
+    public static final String ORG_ADDRESS = "orgAddress";
 
     /**
      * 上级机构
@@ -112,4 +114,11 @@ public class SysOrg extends BaseEntity {
     @ApiModelProperty(value = "机构类型")
     @TableField("ORG_TYPE")
     private String orgType;
+    
+    /**
+     * 机构类型
+     */
+    @ApiModelProperty(value = "机构类型")
+    @TableField("org_address")
+    private String orgAddress;
 }

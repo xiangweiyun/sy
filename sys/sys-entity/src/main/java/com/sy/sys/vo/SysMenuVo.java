@@ -2,32 +2,36 @@ package com.sy.sys.vo;
 
 import java.util.List;
 
-import com.sy.sys.entity.SysOrg;
+import com.sy.sys.entity.SysMenu;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * SysOrg 机构树
+ * 菜单树结构
  * @author zxwen
  * @date 2021年9月18日
  *  
  */
-@ApiModel(value="SysOrgVo对象", description="机构树结构VO")
-public class SysOrgVo extends SysOrg{
+
+@ApiModel(value="sysMenuVo对象", description="菜单树结构VO")
+public class SysMenuVo extends SysMenu{
 	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "机构子记录")
-	private List<SysOrgVo> children;
+	private List<SysMenuVo> children;
 	
 	@ApiModelProperty(value = "是否存在子记录")
 	private boolean hasChildren;
+	
+	@ApiModelProperty(value = "是否选中")
+	private boolean checked;
 
-	public List<SysOrgVo> getChildren() {
+	public List<SysMenuVo> getChildren() {
 		return children;
 	}
 
-	public void setChildren(List<SysOrgVo> children) {
+	public void setChildren(List<SysMenuVo> children) {
 		this.children = children;
 	}
 
@@ -37,5 +41,13 @@ public class SysOrgVo extends SysOrg{
 
 	public void setHasChildren(boolean hasChildren) {
 		this.hasChildren = hasChildren;
+	}
+
+	public boolean isChecked() {
+		return checked;
+	}
+
+	public void setChecked(boolean checked) {
+		this.checked = checked;
 	}
 }

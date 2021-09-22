@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysRoleMenuMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysRoleMenu">
+        <result column="ID" property="id" />
+        <result column="ROLE_ID" property="roleId" />
+        <result column="MENU_ID" property="menuId" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, ROLE_ID, MENU_ID
+    </sql>
+</mapper>
