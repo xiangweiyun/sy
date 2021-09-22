@@ -27,7 +27,7 @@ public class AuthRequestVo {
 	 * 密码
 	 */
 	@ApiModelProperty("密码")
-	private String password;
+	private String passWord;
 
 	/**
 	 * 验证码

@@ -23,10 +23,10 @@ public class SysUserServiceFallbackImpl implements SysUserService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
-	public DataformResult<Map<String, Object>> getByLoginInfo(@RequestParam(value = "username") String username,
-			@RequestParam(value = "password") String password) {
-		logger.error("系统用户jwt登录调用{}异常:{}", "getByLoginInfo", username);
-		return DataformResult.failure("系统用户jwt登录调用getByLoginInfo异常-" + username);
+	public DataformResult<Map<String, Object>> getByLoginInfo(@RequestParam(value = "userName") String userName,
+			@RequestParam(value = "passWord") String passWord) {
+		logger.error("系统用户jwt登录调用{}异常:{}", "getByLoginInfo", userName);
+		return DataformResult.failure("系统用户jwt登录调用getByLoginInfo异常-" + userName);
 	}
 
 }

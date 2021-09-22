@@ -41,7 +41,7 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
 	 * 认证的头部
 	 */
 	private static final String AUTHORIZE_TOKEN = "Authorization";
-	private static final String BEARER = "Bearer";
+	private static final String BEARER = "Bearer ";
 	/**
 	 * UTF-8 字符集
 	 */

@@ -34,13 +34,13 @@ const user = {
       const username = userInfo.username.trim()
       const password = userInfo.password
       const data = {
-        username: username,
-        password: password
+        userName: username,
+        passWord: password
       }
       return new Promise((resolve, reject) => {
         login(data).then(res => {
-          setToken(res.token)
-          commit('SET_TOKEN', res.token)
+          setToken(res.authData.token)
+          commit('SET_TOKEN', res.authData.token)
           resolve()
         }).catch(error => {
           reject(error)

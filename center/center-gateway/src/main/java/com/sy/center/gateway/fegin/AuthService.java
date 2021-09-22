@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @Company: XWY有限公司
  * @Version: V1.0
  */
-@FeignClient(name = "xwy-jwt-auth", fallback = AuthServiceFallbackImpl.class)
+@FeignClient(name = "${sy.appliation.name.jwt:jwt-auth}", fallback = AuthServiceFallbackImpl.class)
 public interface AuthService {
 	/**
 	 * token 校验
@@ -26,6 +26,6 @@ public interface AuthService {
 	 * @return
 	 */
 	@PostMapping(value = "/auth/checkToken")
-	public DataformResult<String> checkToken(@RequestParam(value = "authToken") String authToken);
+	DataformResult<String> checkToken(@RequestParam(value = "authToken") String authToken);
 
 }

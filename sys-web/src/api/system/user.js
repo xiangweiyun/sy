@@ -1,5 +1,4 @@
-import request from '@/utils/request'
-import { praseStrEmpty } from "@/utils/xwy";
+import request from '@/request'
 
 // 查询用户列表
 export function listUser(query) {
@@ -33,7 +32,7 @@ export function delUser(userId) {
   return request({
     url: '/tob/user/delUser',
     method: 'get',
-    params: {id:userId}
+    params: { id: userId }
   })
 }
 
@@ -118,8 +117,6 @@ export function importTemplate() {
     method: 'get'
   })
 }
-
-
 
 export function getUserInfo() {
   return request({

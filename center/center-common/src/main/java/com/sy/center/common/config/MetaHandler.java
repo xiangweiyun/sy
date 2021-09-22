@@ -21,16 +21,16 @@ public class MetaHandler implements MetaObjectHandler {
 
 	@Override
 	public void insertFill(MetaObject metaObject) {
-		this.setFieldValByName("createDate", LocalDateTime.now(), metaObject);
-		this.setFieldValByName("createBy", Long.parseLong(TokenUtil.getUserId()), metaObject);
-		this.setFieldValByName("updateDate", LocalDateTime.now(), metaObject);
-		this.setFieldValByName("updateBy", Long.parseLong(TokenUtil.getUserId()), metaObject);
+		this.setFieldValByName("createdDate", LocalDateTime.now(), metaObject);
+		this.setFieldValByName("createdBy", Long.parseLong(TokenUtil.getUserId()), metaObject);
+		this.setFieldValByName("lastModifiedDate", LocalDateTime.now(), metaObject);
+		this.setFieldValByName("lastModifiedBy", Long.parseLong(TokenUtil.getUserId()), metaObject);
 	}
 
 	@Override
 	public void updateFill(MetaObject metaObject) {
-		this.setFieldValByName("updateDate", LocalDateTime.now(), metaObject);
-		this.setFieldValByName("updateBy", Long.parseLong(TokenUtil.getUserId()), metaObject);
+		this.setFieldValByName("lastModifiedDate", LocalDateTime.now(), metaObject);
+		this.setFieldValByName("lastModifiedBy", Long.parseLong(TokenUtil.getUserId()), metaObject);
 	}
 
 }

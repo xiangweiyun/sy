@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * @Company: XWY有限公司
  * @Version: V1.0
  */
-@FeignClient(name = "sys-boot", fallback = SysLoginLogServiceFallbackImpl.class)
+@FeignClient(name = "${sy.appliation.name.sys:sys}", fallback = SysLoginLogServiceFallbackImpl.class)
 public interface SysLoginLogService {
 
 	/**
@@ -22,13 +22,13 @@ public interface SysLoginLogService {
 	 * 
 	 * @author: xiangwy
 	 * @date: 2020-12-03 10:38:35
-	 * @param logonId
+	 * @param loginAccount
 	 * @param operType
 	 * @param resultType
 	 * @param msg
 	 */
 	@PostMapping(value = "/sysLoginLog/saveLoginLog")
-	void saveLoginLog(@RequestParam(value = "logonId") String logonId,
+	void saveLoginLog(@RequestParam(value = "loginAccount") String loginAccount,
 			@RequestParam(value = "operType") String operType, @RequestParam(value = "resultType") String resultType,
 			@RequestParam(value = "msg") String msg);
 

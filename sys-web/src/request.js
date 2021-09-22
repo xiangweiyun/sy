@@ -4,7 +4,7 @@ import { getToken } from './utils/cookie'
 
 // 创建axios实例
 const service = axois.create({
-  baseURL: process.env.VUE_APP_BASE_API, // api 的 base_url
+  baseURL: window.CONFIG.BASE_URL, // config.js 的 base_url
   timeout: 120000 // 请求超时时间
 })
 
@@ -27,9 +27,9 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   response => {
     const data = response.data
-    const code = data.code
-    const message = data.msg
-    if (code === 0) {
+    const success = data.success
+    const message = data.message
+    if (success) {
       return data.data
     } else {
       Message({

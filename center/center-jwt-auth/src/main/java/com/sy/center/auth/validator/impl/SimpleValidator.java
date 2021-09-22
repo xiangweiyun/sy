@@ -27,7 +27,7 @@ public class SimpleValidator implements IReqValidator {
 	@Override
 	public DataformResult<Map<String, Object>> validate(AuthRequestVo authRequestVo) {
 		String userName = authRequestVo.getUserName();
-		String password = authRequestVo.getPassword();
+		String password = authRequestVo.getPassWord();
 		if (USER_NAME.equals(userName) && PASSWORD.equals(password)) {
 			return DataformResult.success();
 		} else {

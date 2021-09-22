@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Layout from '../layout'
-import { asyncRoutes } from './routes'
 
 Vue.use(Router)
 

@@ -20,8 +20,8 @@ public class SysLoginLogServiceFallbackImpl implements SysLoginLogService {
 	private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	@Override
-	public void saveLoginLog(String logonId, String operType, String resultType, String msg) {
-		logger.error("用户登录日志保存{}异常，参数:logonId:{},operType:{},resultType:{},msg:{}", "saveLoginLog", logonId, operType,
+	public void saveLoginLog(String loginAccount, String operType, String resultType, String msg) {
+		logger.error("用户登录日志保存{}异常，参数:loginAccount:{},operType:{},resultType:{},msg:{}", "saveLoginLog", loginAccount, operType,
 				resultType, msg);
 	}
 

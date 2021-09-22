@@ -3,7 +3,7 @@ import request from '../request'
 // 登录
 export function login(data) {
   return request({
-    url: '/user/login',
+    url: `${window.CONFIG.LOGIN_URL}/auth/auth`,
     method: 'post',
     data
   })
@@ -34,10 +34,3 @@ export function logout() {
   })
 }
 
-// 获取验证码
-export function getCodeImg() {
-  return request({
-    url: '/captchaImage',
-    method: 'get'
-  })
-}

@@ -76,16 +76,11 @@ public class AuthController {
 			final String randomKey = jwtTokenUtil.getRandomKey();
 			// 验证成功
 			if (CustomRspCon.SUCCESS.getCode() == auth.getCode()) {
-				String loginType = authRequestVo.getLogintype();
 				String userName = authRequestVo.getUserName();
-				Map<String, Object> datas = (Map<String, Object>) auth.getObject();
-				Map<String, Object> userInfo = (Map<String, Object>) datas.get("userInfo");
-				String id = "";
+				Map<String, Object> userInfo = auth.getData();
 				// 系统用户登录
-				if ("1".equals(loginType)) {
-					id = String.valueOf(userInfo.get("id"));
-				}
-				String userInfoStr = id + ";;" + userName + ";;" + loginType;
+				String id = String.valueOf(userInfo.get("id"));
+				String userInfoStr = id + ";;" + userName;
 				final String token = jwtTokenUtil.generateToken(userInfoStr, randomKey);
 				// 存储到redis或者db中
 				tokenManager.createRelationship(authRequestVo.getUserName(), token);
@@ -95,7 +90,8 @@ public class AuthController {
 				authData.put("expiration", jwtProperties.getExpiration());
 				authData.put("token", token);
 				authData.put("randomKey", randomKey);
-				datas.put("authData", authData);
+				userInfo.put("authData", authData);
+				auth.setData(userInfo);
 			}
 			return auth;
 		} catch (Exception e) {
@@ -150,7 +146,6 @@ public class AuthController {
 	 * @param authToken
 	 * @return
 	 */
-	@ResponseBody
 	@PostMapping(value = "/checkToken")
 	@ApiOperation(value = "token 校验", notes = "token 校验")
 	public DataformResult<String> checkToken(String authToken) {
