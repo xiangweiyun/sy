@@ -41,7 +41,7 @@ public class DataformResult<T> implements Serializable {
 	 */
 	private boolean success;
 
-	private T object;
+	private T data;
 
 	public static <T> DataformResult<T> success() {
 		DataformResult<T> result = new DataformResult<>();
@@ -54,7 +54,7 @@ public class DataformResult<T> implements Serializable {
 		DataformResult<T> result = new DataformResult<>();
 		result.setSuccess(true);
 		result.setCode(200);
-		result.setObject(data);
+		result.setData(data);
 		return result;
 	}
 
@@ -91,7 +91,7 @@ public class DataformResult<T> implements Serializable {
 		DataformResult<T> result = new DataformResult<>();
 		result.setSuccess(false);
 		result.setMessage(message);
-		result.setObject(data);
+		result.setData(data);
 		return result;
 	}
 }
