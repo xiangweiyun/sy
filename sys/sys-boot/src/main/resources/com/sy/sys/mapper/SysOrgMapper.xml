@@ -26,4 +26,9 @@
     <sql id="base_column">
         ID, PARENT_ID, CODE, NAME, LEVEL_CODE, LONGITUDE, LATITUDE, PHONE, ORG_PROFILE, PICTURE, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_TYPE
     </sql>	
+    
+    <select id="listChildById" resultType="com.sy.sys.vo.SysOrgVo">
+    	SELECT ID, CODE, NAME FROM SYS_ORG START WITH ID = #{orgId}
+		CONNECT BY PRIOR ID = PARENT_ID;
+    </select>
 </mapper>

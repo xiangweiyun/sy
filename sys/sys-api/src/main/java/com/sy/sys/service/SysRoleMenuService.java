@@ -1,7 +1,9 @@
 package com.sy.sys.service;
 
-import com.sy.sys.entity.SysRoleMenu;
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sy.sys.entity.SysRoleMenu;
 
 /**
  * <p>
@@ -12,5 +14,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2021-09-22
  */
 public interface SysRoleMenuService extends IService<SysRoleMenu> {
-
+	boolean saveBatch(List<SysRoleMenu> listSysRoleMenu);
 }

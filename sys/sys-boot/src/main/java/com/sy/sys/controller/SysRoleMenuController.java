@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.sy.center.common.utils.JSON;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysMenu;
 import com.sy.sys.entity.SysRoleMenu;
@@ -73,10 +74,6 @@ public class SysRoleMenuController {
     	if(listSysRoleMenu==null || listSysRoleMenu.size() == 0) {
     		return DataformResult.failure("没有可以操作的内容");
     	}
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("role_id", listSysRoleMenu.get(0).getRoleId());
-		sysRoleMenuService.removeByMap(map);
-		
     	sysRoleMenuService.saveBatch(listSysRoleMenu);
         return DataformResult.success();
     }

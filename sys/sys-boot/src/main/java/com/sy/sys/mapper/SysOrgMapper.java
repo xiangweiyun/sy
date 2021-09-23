@@ -1,7 +1,12 @@
 package com.sy.sys.mapper;
 
-import com.sy.sys.entity.SysOrg;
+import java.util.List;
+
+import org.springframework.data.repository.query.Param;
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.sy.sys.entity.SysOrg;
+import com.sy.sys.vo.SysOrgVo;
 
 /**
  * <p>
@@ -12,5 +17,5 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2021-09-17
  */
 public interface SysOrgMapper extends BaseMapper<SysOrg> {
-
+	List<SysOrgVo> listChildById(@Param("orgId") Long orgId);
 }

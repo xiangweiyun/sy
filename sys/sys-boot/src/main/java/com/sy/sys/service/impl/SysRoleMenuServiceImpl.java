@@ -1,10 +1,16 @@
 package com.sy.sys.service.impl;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sy.sys.entity.SysRoleMenu;
 import com.sy.sys.mapper.SysRoleMenuMapper;
 import com.sy.sys.service.SysRoleMenuService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import org.springframework.stereotype.Service;
 
 /**
  * <p>
@@ -17,4 +23,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements SysRoleMenuService {
 
+	/**
+	 * 方法重写，新增数据前先删除角色的菜单数据
+	 * 增回回滚事务
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public boolean saveBatch(List<SysRoleMenu> listSysRoleMenu) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("role_id", listSysRoleMenu.get(0).getRoleId());
+		super.removeByMap(map);
+		
+		return super.saveBatch(listSysRoleMenu);
+	}
 }

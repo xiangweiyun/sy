@@ -2,6 +2,8 @@ package com.sy.sys.service;
 
 import java.util.List;
 
+import org.springframework.data.repository.query.Param;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sy.sys.entity.SysOrg;
 import com.sy.sys.vo.SysOrgVo;
@@ -15,5 +17,6 @@ import com.sy.sys.vo.SysOrgVo;
  * @since 2021-09-17
  */
 public interface SysOrgService extends IService<SysOrg> {
-	public List<SysOrgVo> getTreeData(Long orgId);
+	List<SysOrgVo> getTreeData(Long orgId);
+	List<SysOrgVo> listChildById(Long orgId);
 }

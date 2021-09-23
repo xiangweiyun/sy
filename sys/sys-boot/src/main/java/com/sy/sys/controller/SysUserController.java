@@ -1,33 +1,28 @@
 package com.sy.sys.controller;
 
 
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-
-import org.springframework.web.bind.annotation.RestController;
-
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.sy.center.common.utils.MD5Util;
-import com.sy.center.common.utils.PasswordHash;
-import com.sy.center.framework.utils.DataformResult;
-import com.sy.sys.entity.SysMenu;
-import com.sy.sys.entity.SysUser;
-import com.sy.sys.service.SysUserService;
-
-import cn.hutool.core.bean.BeanUtil;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-
 import java.util.HashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.sy.center.common.utils.MD5Util;
+import com.sy.center.framework.utils.DataformResult;
+import com.sy.sys.entity.SysUser;
+import com.sy.sys.service.SysUserService;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
  /**
  * 用户表控制器.
@@ -54,14 +49,13 @@ public class SysUserController {
         		return DataformResult.failure("初始密码不能为空");
         	}
         	sysUser.setPassword(MD5Util.encrypt(sysUser.getPassword()));
-            sysUserService.save(sysUser);
         } else {
         	sysUser.setPassword(null);
-            sysUserService.updateById(sysUser);
         }
+        sysUserService.saveUser(sysUser);
         return DataformResult.success();
     }
-
+    
     @ApiOperation(value = "用户表-删除", notes = "用户表-刪除")
     @PostMapping("/remove/{id}")
     public DataformResult<String> removeById(@PathVariable("id") Long id) {
@@ -93,7 +87,6 @@ public class SysUserController {
 		}
 		
 		String md5Str = MD5Util.encrypt(passWord);
-		System.out.println("MD5-->"+md5Str);
 		if(md5Str.equals(sysUser.getPassword())) {
 			SysUser sysUserInfo = new SysUser();
 			sysUserInfo.setId(sysUser.getId());

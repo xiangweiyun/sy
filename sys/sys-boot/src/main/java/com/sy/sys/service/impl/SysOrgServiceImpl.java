@@ -8,6 +8,8 @@ import com.sy.sys.entity.SysOrg;
 import com.sy.sys.mapper.SysOrgMapper;
 import com.sy.sys.service.SysOrgService;
 import com.sy.sys.vo.SysOrgVo;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,7 +28,10 @@ import java.util.Map;
  */
 @Service
 public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> implements SysOrgService {
-
+	
+	@Autowired
+	private SysOrgMapper sysOrgMapper;
+	
 	@Override
 	public List<SysOrgVo> getTreeData(Long orgId) {
 		// TODO Auto-generated method stub		
@@ -92,5 +97,15 @@ public class SysOrgServiceImpl extends ServiceImpl<SysOrgMapper, SysOrg> impleme
 			data.add(sysOrgVo);
 		}
 		return data;
+	}
+
+	/* 
+	 * 根据机构ID,查询机构子记录，包含机构本身
+	 * @param orgId 机构ID
+	 */
+	@Override
+	public List<SysOrgVo> listChildById(Long orgId) {
+		// TODO Auto-generated method stub
+		return sysOrgMapper.listChildById(orgId);
 	}
 }

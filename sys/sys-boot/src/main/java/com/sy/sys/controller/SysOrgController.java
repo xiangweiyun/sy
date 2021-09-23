@@ -61,4 +61,10 @@ public class SysOrgController {
     public DataformResult<List<SysOrgVo>> getTreeData(Long orgId) {
         return DataformResult.success(sysOrgService.getTreeData(orgId));
     }
+    
+    @ApiOperation(value = "系统机构表-LIST结构", notes = "系统机构表-传值orgId 根据机构ID,查询机构子记录，包含机构本身")
+    @GetMapping("/listChildById")
+    public DataformResult<List<SysOrgVo>> listChildById(Long orgId) {
+        return DataformResult.success(sysOrgService.listChildById(orgId));
+    }
 }

@@ -34,8 +34,14 @@
     	SELECT ID, NAME, (CASE WHEN EXISTS(SELECT 1 FROM SYS_ROLE_MENU WHERE ROLE_ID = #{roleId} AND MENU_ID = SYS_MENU.ID) THEN 1 ELSE 0 END) CHECKED
 		FROM SYS_MENU
 		<where>
-			<if test="parentId = null"> and PARENT_ID IS NULL</if>
-			<if test="parentId != null"> and PARENT_ID = #{parentId}</if>
+			<choose>
+				<when test="parentId != null">
+					and PARENT_ID = #{parentId}
+				</when>
+				<otherwise>
+					and PARENT_ID IS NULL
+				</otherwise>
+			</choose>
 		</where>
     </select>
 </mapper>

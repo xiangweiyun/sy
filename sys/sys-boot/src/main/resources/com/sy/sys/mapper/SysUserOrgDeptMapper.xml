@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysUserOrgDeptMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysUserOrgDept">
+        <result column="ID" property="id" />
+        <result column="USER_ID" property="userId" />
+        <result column="ORG_ID" property="orgId" />
+        <result column="DEPT_ID" property="deptId" />
+        <result column="HAS_MAIN" property="hasMain" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, USER_ID, ORG_ID, DEPT_ID, HAS_MAIN, CREATED_DATE, LAST_MODIFIED_DATE, CREATED_BY, LAST_MODIFIED_BY
+    </sql>
+    
+    <select id="listByUserId" resultType="com.sy.sys.vo.SysUserOrgDeptVo">
+    	SELECT (SELECT DEPT_NAME FROM SYS_DEPT WHERE id = SYS_USER_ORG_DEPT.DEPT_ID) DEPT_NAME,
+    			(SELECT NAME FROM SYS_ORG WHERE id = SYS_USER_ORG_DEPT.ORG_ID) ORG_NAME, 
+				HAS_MAIN, DEPT_ID, ORG_ID, ID, USER_ID
+		FROM SYS_USER_ORG_DEPT 
+		WHERE USER_ID = #{userId}
+    </select>
+    
+</mapper>
