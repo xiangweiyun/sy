@@ -65,6 +65,7 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
                 if (sysDept.getParentId().equals(parentDept.getId())) {
                     SysDeptVo sysDeptVo = new SysDeptVo();
                     BeanUtil.copyProperties(sysDept, sysDeptVo);
+                    sysDeptVo.setParentName(parentDept.getDeptName());
                     resultList.add(sysDeptVo);
                 }
             }

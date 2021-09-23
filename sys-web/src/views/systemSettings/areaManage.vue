@@ -3,7 +3,6 @@
     <el-form
       :inline="true"
       size="mini"
-      :style="{ margin: '0px 0px 5px 0px' }"
       class="area-form"
     >
       <el-button
@@ -18,54 +17,49 @@
         icon="el-icon-check"
         @click="handleAdd"
       >新 增</el-button>
-      <el-button
-        type="primary"
-        size="mini"
-        icon="el-icon-check"
-        @click="handleEdit"
-      >编 辑</el-button>
-      <el-button
-        type="primary"
-        size="mini"
-        icon="el-icon-check"
-        @click="handleRemove"
-      >删 除</el-button>
     </el-form>
     <el-table
       ref="areaTable"
       :data="tableData"
       row-key="id"
       border
-      highlight-current-row
       lazy
       :load="load"
-      height="400px"
-      :tree-props="{ hasChildren: 'hasChildren' }"
+      :height="tableHeight"
+      :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       size="mini"
-      @current-change="handleSelectionChange"
     >
       <el-table-column prop="districtName" label="行政区划名称" />
       <el-table-column prop="districtCode" label="行政区划代码" />
-      <el-table-column prop="parentDistrictName" label="上级行政区划" />
+      <el-table-column prop="parentName" label="上级行政区划" />
+      <el-table-column
+        label="操作"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <el-button type="text" size="mini" @click="handleAdd(scope.row)">新增子记录</el-button>
+          <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
+        </template>
+      </el-table-column>
     </el-table>
 
     <el-dialog :visible.sync="areaStatus" :title="areaTitle" width="30%">
       <el-form
-        ref="areaAddForm"
-        :model="areaAddForm"
+        ref="areaForm"
+        :model="areaForm"
         :rules="rules"
-        class="dialog-form"
-        label-width="80px"
+        label-width="110px"
       >
-        <el-form-item label="区域代码" prop="districtCode">
-          <el-input v-model="areaAddForm.districtCode" placeholder="请输入" />
+        <el-form-item label="行政区划名称" prop="districtName">
+          <el-input v-model="areaForm.districtName" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="区域名称" prop="districtName">
-          <el-input v-model="areaAddForm.districtName" placeholder="请输入" />
+        <el-form-item label="行政区划编码" prop="districtCode">
+          <el-input v-model="areaForm.districtCode" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="上级区域">
+        <el-form-item label="上级行政区划">
           <el-input
-            v-model="areaAddForm.parentDistrictName"
+            v-model="areaForm.parentName"
             placeholder="请选择"
             :readonly="true"
           ><el-button
@@ -108,14 +102,30 @@
 </template>
 
 <script>
+import {
+  listArea,
+  listChildrenArea,
+  saveArea,
+  delArea
+} from '@/api/system/area'
 export default {
-  name: 'Dashboard',
   data() {
     return {
+      tableHeight: '200px',
       areaTitle: '新增行政区划',
       tableData: [],
       areaStatus: false,
-      areaAddForm: {},
+      areaForm: {
+        // 主键
+        id: '',
+        // 行政区划名称
+        districtName: '',
+        // 行政区划编码
+        districtCode: '',
+        // 上级行政区划
+        parentId: '',
+        parentName: ''
+      },
       rules: {
         districtCode: [
           { required: true, message: '请输入行政区划代码', trigger: 'blur' }
@@ -128,7 +138,6 @@ export default {
       selectParentRow: {},
       parentStatus: false,
       defaultProps: {
-        children: 'leaf',
         isLeaf: 'leaf',
         label: 'districtName'
       }
@@ -137,106 +146,73 @@ export default {
   created: function() {
     this.init()
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.tableHeight = window.innerHeight - this.$refs['areaTable'].$el.offsetTop - 180
+    })
+  },
   methods: {
     init() {
       this.tableData = []
-      this.$get(this.config.baseUrl + 'bsfDistrict/getByParentId/0', {}).then(
-        (res) => {
-          if (res.success) {
-            this.tableData = res.data
-          }
-        }
-      )
+      listArea().then(res => {
+        this.tableData = res
+      })
     },
     handleRefresh() {
       this.init()
     },
-    handleAdd() {
+    handleAdd(row) {
       this.areaTitle = '新增行政区划'
-      this.areaAddForm = { parentId: 0 }
+      Object.keys(this.areaForm).map(key => {
+        this.areaForm[key] = ''
+      })
+      if (row) {
+        this.areaForm.parentId = row.id
+        this.areaForm.parentName = row.districtName
+      }
+      this.areaStatus = true
+    },
+    handleEdit(row) {
+      this.areaTitle = '编辑行政区划'
+      Object.keys(this.areaForm).map(key => {
+        this.areaForm[key] = row[key]
+      })
       this.areaStatus = true
     },
     submitClick() {
-      this.$refs['areaAddForm'].validate((valid) => {
+      this.$refs['areaForm'].validate((valid) => {
         if (valid) {
-          this.$formDataPost(
-            this.config.baseUrl + 'bsfDistrict/save',
-            this.areaAddForm,
-            false
-          ).then((res) => {
-            if (res.success) {
-              this.$message({
-                type: 'success',
-                message: '操作成功'
-              })
-              this.areaStatus = false
-              this.areaAddForm = {}
-              this.init()
-            } else {
-              this.$message({
-                type: 'warning',
-                message: '操作失败'
-              })
-              return false
-            }
+          saveArea(this.areaForm).then((res) => {
+            this.$message({
+              type: 'success',
+              message: '操作成功'
+            })
+            this.areaStatus = false
+            this.init()
           })
-        } else {
-          console.log('error submit!!')
-          return false
         }
       })
     },
-    handleEdit() {
-      const selectData = this.selectRow
-      if (JSON.stringify(selectData) === '{}') {
+    handleRemove(row) {
+      const children = row.hasChildren
+      if (children) {
         this.$message({
           type: 'warning',
-          message: '请选择一条数据进行操作'
+          message: '该行政区划存在子记录不能删除'
         })
         return false
       }
-      this.areaTitle = '编辑行政区划'
-      delete selectData.createTime
-      delete selectData.updateTime
-      const addForm = {}
-      Object.keys(selectData).map((key) => {
-        addForm[key] = selectData[key]
-      })
-      this.areaAddForm = addForm
-      this.areaStatus = true
-    },
-    handleRemove() {
-      const selectData = this.selectRow
-      if (JSON.stringify(selectData) === '{}') {
-        this.$message({
-          type: 'warning',
-          message: '请选择一条数据进行操作'
-        })
-        return false
-      }
-      this.$confirm('此操作将删除选中记录以及子记录, 是否继续?', '提示', {
+      this.$confirm('此操作将删除选中记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$formDataPost(
-          this.config.baseUrl + 'bsfDistrict/remove/' + selectData.id,
-          {},
-          false
-        ).then((res) => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.init()
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '操作失败'
-            })
-            return false
-          }
+        delArea(row.id).then((res) => {
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.init()
         })
       })
     },
@@ -264,9 +240,39 @@ export default {
         })
         return false
       }
-      this.areaAddForm.parentDistrictName = this.selectParentRow.districtName
-      this.areaAddForm.parentId = this.selectParentRow.id
+      this.areaForm.parentName = this.selectParentRow.districtName
+      this.areaForm.parentId = this.selectParentRow.id
       this.parentStatus = false
+    },
+    load(row, treeNode, resolve) {
+      listChildrenArea(row.id).then((res) => {
+        res.forEach(item => {
+          item.parentName = row.districtName
+        })
+        console.log(res)
+        resolve(res)
+      })
+    },
+    loadNode(row, resolve) {
+      if (row.data === undefined) {
+        const mainArea = []
+        this.tableData.forEach(item => {
+          const data = item
+          data.leaf = !item.hasChildren
+          mainArea.push(data)
+        })
+        return resolve(mainArea)
+      }
+      listChildrenArea(row.data.id).then((res) => {
+        const childrenArea = []
+        res.forEach(item => {
+          const data = item
+          data.leaf = !item.hasChildren
+          data.parentName = row.data.districtName
+          childrenArea.push(data)
+        })
+        resolve(childrenArea)
+      })
     },
     nodeClick(row) {
       this.selectParentRow = {
@@ -274,36 +280,6 @@ export default {
         districtCode: row.districtCode,
         districtName: row.districtName
       }
-    },
-    load(row, treeNode, resolve) {
-      this.$get(
-        this.config.baseUrl + 'bsfDistrict/getByParentId/' + row.id,
-        {}
-      ).then((res) => {
-        if (res.success) {
-          resolve(res.data)
-        }
-      })
-    },
-    loadNode(row, resolve) {
-      if (row.data === undefined) {
-        this.$get(this.config.baseUrl + 'bsfDistrict/getByParentId/0', {}).then(
-          (res) => {
-            if (res.success) {
-              return resolve(res.data)
-            }
-          }
-        )
-        return
-      }
-      this.$get(
-        this.config.baseUrl + 'bsfDistrict/getByParentId/' + row.data.id,
-        {}
-      ).then((res) => {
-        if (res.success) {
-          resolve(res.data)
-        }
-      })
     }
   }
 }
@@ -312,7 +288,7 @@ export default {
 .area {
   &-form {
     .el-form-item {
-      margin-bottom: 0px;
+      margin: 0px 0px 5px 0px
     }
   }
 }

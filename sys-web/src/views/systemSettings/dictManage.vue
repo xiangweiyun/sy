@@ -21,7 +21,7 @@
         v-loading="listLoading"
         border
         :data="tableData"
-        height="390px"
+        :height="tableHeight"
         size="mini"
         highlight-current-row
       >
@@ -77,9 +77,15 @@
         v-loading="listItemLoading"
         border
         :data="itemTableData"
-        height="390px"
+        :height="tableHeight"
         size="mini"
       >
+        <el-table-column
+          prop="dictName"
+          label="字典名称"
+          align="center"
+          width="120"
+        />
         <el-table-column
           prop="dictType"
           label="字典类型"
@@ -133,14 +139,20 @@
     <!-- 新增、编辑字典项 -->
     <el-dialog :visible.sync="dictItemStatus" :close-on-click-modal="false" :title="dictItemTitle" width="30%">
       <el-form ref="dictItemForm" :model="dictItemForm" :rules="dictItemRules" label-width="100px">
-        <el-form-item label="字典项编码" prop="itemCode">
-          <el-input v-model="dictItemForm.itemCode" placeholder="请输入" />
+        <el-form-item label="字典名称">
+          <el-input v-model="selectDistType.dictName" placeholder="请输入" disabled />
         </el-form-item>
-        <el-form-item label="字典项名称" prop="itemName">
-          <el-input v-model="dictItemForm.itemName" placeholder="请输入" />
+        <el-form-item label="字典项名称" prop="dictLabel">
+          <el-input v-model="dictItemForm.dictLabel" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="排序号" prop="sortNo">
-          <el-input v-model="dictItemForm.sortNo" placeholder="请输入" type="number" />
+        <el-form-item label="字典项编码" prop="dictValue">
+          <el-input v-model="dictItemForm.dictValue" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="dictItemForm.remark" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="排序号">
+          <el-input v-model="dictItemForm.dictSort" placeholder="请输入" type="number" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -156,9 +168,9 @@ import {
   pageDistType,
   saveDistType,
   delDistType,
-  listDistItem
-  // saveDistItem,
-  // delDistItem
+  listDistItem,
+  saveDistItem,
+  delDistItem
 } from '@/api/system/dist'
 import Pagination from '../../components/Pagination'
 export default {
@@ -178,8 +190,9 @@ export default {
       total: 0,
       // 字典类型表格数据
       tableData: [],
+      tableHeight: '200px',
       // 选中字典类型
-      selectDistType: '',
+      selectDistType: {},
       dictTypeTitle: '新增字典分类',
       // 字典类型新增、编辑对象
       dictTypeForm: {
@@ -200,19 +213,30 @@ export default {
       dictItemTitle: '新增字典项',
       dictItemStatus: false,
       dictItemTableData: [],
-      dictItemForm: {},
+      dictItemForm: {
+        id: '',
+        dictLabel: '',
+        dictValue: '',
+        remark: '',
+        dictSort: ''
+      },
       dictItemRules: {
-        itemCode: [
-          { required: true, message: '请输入字典项编码', trigger: 'blur' }
-        ],
-        itemName: [
+        dictLabel: [
           { required: true, message: '请输入字典项名称', trigger: 'blur' }
+        ],
+        dictValue: [
+          { required: true, message: '请输入字典项编码', trigger: 'blur' }
         ]
       }
     }
   },
   created: function() {
     this.init()
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.tableHeight = window.innerHeight - this.$refs['dictTypeTable'].$el.offsetTop - 180
+    })
   },
   methods: {
     init() {
@@ -225,20 +249,14 @@ export default {
       pageDistType(paramData).then(res => {
         this.total = parseInt(res.total)
         this.tableData = res.records
-        this.selectDistType = this.tableData[0].dictType
+        this.selectDistType = this.tableData[0]
         this.$refs.dictTypeTable.setCurrentRow(this.tableData[0])
         this.listLoading = false
         this.dictItemInit()
       })
     },
     handleSearch() {
-      this.currentPage = 1
-      this.init()
-    },
-    handleRefresh() {
-      this.dictTypeForm.dictType = ''
-      this.selectCategoryCode = ''
-      this.currentPage = 1
+      this.searchForm.current = 1
       this.init()
     },
     // 新增字典分类
@@ -251,7 +269,7 @@ export default {
     },
     // 查看字典项
     dictItemClick(row) {
-      this.selectDistType = row.dictType
+      this.selectDistType = row
       this.dictItemInit()
     },
     // 编辑字典分类
@@ -288,7 +306,6 @@ export default {
                 message: '操作成功'
               })
               this.dictTypeStatus = false
-              this.dictTypeForm = {}
               this.init()
             })
           }
@@ -296,29 +313,14 @@ export default {
       } else {
         this.$refs['dictItemForm'].validate((valid) => {
           if (valid) {
-            var sendData = {
-              id: this.dictItemForm.id,
-              categoryCode: this.dictItemForm.categoryCode,
-              itemCode: this.dictItemForm.itemCode,
-              itemName: this.dictItemForm.itemName,
-              sortNo: this.dictItemForm.sortNo
-            }
-            this.$formDataPost(this.config.baseUrl + 'bsfDictItem/save', sendData, false).then(res1 => {
-              if (res1.success) {
-                this.$message({
-                  type: 'success',
-                  message: '操作成功'
-                })
-                this.dictItemStatus = false
-                this.dictItemForm = {}
-                this.dictItemInit(this.selectCategoryCode)
-              } else {
-                this.$message({
-                  type: 'warning',
-                  message: '操作失败'
-                })
-                return false
-              }
+            this.dictItemForm.dictType = this.selectDistType.dictType
+            saveDistItem(this.dictItemForm).then(res => {
+              this.$message({
+                type: 'success',
+                message: '操作成功'
+              })
+              this.dictItemStatus = false
+              this.dictItemInit()
             })
           }
         })
@@ -331,36 +333,32 @@ export default {
     dictItemInit() {
       this.listItemLoading = true
       var paramData = {
-        dictType: this.selectDistType,
-        itemName: this.dictItemForm.itemName
+        dictType: this.selectDistType.dictType
       }
       listDistItem(paramData).then(res => {
         this.itemTableData = res
+        this.itemTableData.forEach(element => {
+          element.dictName = this.selectDistType.dictName
+        })
         this.listItemLoading = false
       })
     },
     handleDictItemSearch() {
-      this.dictItemInit(this.selectCategoryCode)
-    },
-    handleDictItemRefresh() {
-      this.dictItemForm.itemName = ''
-      this.dictItemInit(this.selectCategoryCode)
+      this.dictItemInit()
     },
     handleDictItemAdd() {
       this.dictItemTitle = '新增字典项'
-      this.dictItemForm = {}
-      this.dictItemForm.categoryCode = this.selectCategoryCode
+      Object.keys(this.dictItemForm).map(key => {
+        this.dictItemForm[key] = ''
+      })
       this.dictItemStatus = true
     },
     editItemClick(row) {
       this.dictItemTitle = '编辑字典项'
-      delete row.createTime
-      delete row.updateTime
-      const addForm = {}
-      Object.keys(row).map(key => {
-        addForm[key] = row[key]
+      Object.keys(this.dictItemForm).map(key => {
+        this.dictItemForm[key] = row[key]
       })
-      this.dictItemForm = addForm
+      console.log(this.dictItemForm)
       this.dictItemStatus = true
     },
     removeItemClick(row) {
@@ -369,21 +367,13 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$formDataPost(this.config.baseUrl + 'bsfDictItem/remove/' + row.id, {}, false).then(res => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.dictItemStatus = false
-            this.dictItemInit(this.selectCategoryCode)
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '操作失败'
-            })
-            return false
-          }
+        delDistItem(row.id).then(res => {
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.dictItemStatus = false
+          this.dictItemInit()
         })
       })
     }
@@ -396,6 +386,17 @@ export default {
         .el-form-item{
             margin: 0px 0px 5px 0px
         }
+    }
+    .el-dialog .el-form {
+      .el-date-editor.el-input, .el-date-editor.el-input__inner {
+        width: 200px;
+      }
+      input {
+        width: 200px;
+      }
+      .el-form-item {
+        margin-bottom: 10px;
+      }
     }
 }
 </style>

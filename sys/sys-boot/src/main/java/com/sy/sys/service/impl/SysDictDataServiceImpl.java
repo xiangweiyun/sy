@@ -32,4 +32,11 @@ public class SysDictDataServiceImpl extends ServiceImpl<SysDictDataMapper, SysDi
         wrapper.orderByAsc(SysDictData.DICT_SORT);
         return super.list(wrapper);
     }
+
+    @Override
+    public void removeByDictType(String dictType) {
+        QueryWrapper<SysDictData> wrapper = Wrappers.query();
+        wrapper.eq(SysDictData.DICT_TYPE, dictType);
+        super.remove(wrapper);
+    }
 }

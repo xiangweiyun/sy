@@ -1,13 +1,12 @@
 package com.sy.sys.vo;
 
-import java.util.List;
-
 import com.sy.sys.entity.SysDept;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 /**
  * <p>

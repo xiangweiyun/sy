@@ -10,6 +10,9 @@ import com.sy.sys.mapper.SysDictTypeMapper;
 import com.sy.sys.service.SysDictTypeService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,14 +29,25 @@ public class SysDictTypeServiceImpl extends ServiceImpl<SysDictTypeMapper, SysDi
     public IPage<SysDictType> pageSysDictType(Page page, String dictName, String dictType) {
         Page<SysDictType> pageParam = page;
         QueryWrapper<SysDictType> wrapper = Wrappers.query();
-        if (StringUtils.isNotBlank(dictName)){
+        if (StringUtils.isNotBlank(dictName)) {
             wrapper.like(SysDictType.DICT_NAME, dictName);
         }
-        if (StringUtils.isNotBlank(dictType)){
+        if (StringUtils.isNotBlank(dictType)) {
             wrapper.like(SysDictType.DICT_TYPE, dictType);
         }
         wrapper.orderByDesc(SysDictType.CREATED_DATE);
         IPage<SysDictType> pageResult = super.page(pageParam, wrapper);
         return pageResult;
+    }
+
+    @Override
+    public SysDictType getByDictType(String dictType) {
+        QueryWrapper<SysDictType> wrapper = Wrappers.query();
+        wrapper.like(SysDictType.DICT_TYPE, dictType);
+        List<SysDictType> list = super.list(wrapper);
+        if (ObjectUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.get(0);
     }
 }

@@ -33,13 +33,16 @@
       <el-table-column prop="code" label="机构编码" align="center" />
       <el-table-column prop="name" label="机构名称" align="center" />
       <el-table-column prop="levelCode" label="机构级别" align="center" />
-      <el-table-column prop="orgType" label="机构类型" align="center" />
+      <el-table-column prop="orgType" label="机构类型" align="center">
+        <template slot-scope="scope">
+          <span>{{ formatterOrgType(scope.row.orgType) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="phone" label="联系电话" align="center" />
-      <el-table-column prop="orgDesc" label="地址" align="center" />
+      <el-table-column prop="orgAddress" label="地址" align="center" />
       <el-table-column prop="orgProfile" label="机构简介" align="center" />
-      <el-table-column prop="sortNo" label="排序号" align="center" />
       <el-table-column prop="picture" label="机构图片" align="center" />
-      <el-table-column label="操作" align="center" width="150">
+      <el-table-column label="操作" align="center" width="110">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -56,155 +59,110 @@
     </el-table>
     <el-dialog
       :visible.sync="orgStatus"
+      :close-on-click-modal="false"
       :title="orgTitle"
-      width="80%"
-      top="10px"
+      width="800px"
+      top="50px"
     >
       <el-form
-        ref="orgAddForm"
-        :model="orgAddForm"
+        ref="orgForm"
+        :model="orgForm"
         :rules="rules"
-        class="dialog-form"
         label-width="80px"
       >
-        <el-col :span="8">
-          <el-form-item label="机构编码" prop="orgCode">
-            <el-input v-model="orgAddForm.orgCode" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="机构等次">
-            <el-select
-              v-model="orgAddForm.orgOrder"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in orgOrderSelect"
-                :key="item.itemCode"
-                :label="item.itemName"
-                :value="item.itemCode"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="是否禁用">
-            <el-select
-              v-model="orgAddForm.deleteFlag"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option label="否" value="0" />
-              <el-option label="是" value="1" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="经度">
-            <el-input
-              v-model="orgAddForm.longitude"
-              placeholder="请输入"
-              type="number"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="机构名称" prop="orgName">
-            <el-input v-model="orgAddForm.orgName" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="管理类型">
-            <el-select
-              v-model="orgAddForm.manageType"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in manageTypeSelect"
-                :key="item.itemCode"
-                :label="item.itemName"
-                :value="item.itemCode"
-              />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="联系人">
-            <el-input v-model="orgAddForm.contact" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="纬度">
-            <el-input
-              v-model="orgAddForm.latitude"
-              placeholder="请输入"
-              type="number"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="8">
-          <el-form-item label="机构级别">
-            <el-select
-              v-model="orgAddForm.orgLevel"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in orgLevelSelect"
-                :key="item.itemCode"
-                :label="item.itemName"
-                :value="item.itemCode"
-              />
-            </el-select>
+        <el-col :span="12">
+          <el-form-item label="机构名称" prop="name">
+            <el-input v-model="orgForm.name" placeholder="请输入" />
           </el-form-item>
           <el-form-item label="上级机构">
-            <el-input
-              v-model="orgAddForm.parentName"
+            <el-select
+              v-model="orgForm.orgLevel"
               placeholder="请选择"
-              :readonly="true"
-            ><el-button
-              slot="append"
-              icon="el-icon-s-operation"
-              @click="parentStatus = true"
-            /></el-input>
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in parentOrgList"
+                :key="item.itemCode"
+                :label="item.itemName"
+                :value="item.itemCode"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="机构级别">
+            <el-select
+              v-model="orgForm.levelCode"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in levelCodeList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="机构编码" prop="code">
+            <el-input v-model="orgForm.code" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="机构类型">
+            <el-select
+              v-model="orgForm.orgType"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in orgTypeList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="联系电话">
-            <el-input v-model="orgAddForm.contactPhone" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="排序号">
-            <el-input
-              v-model="orgAddForm.sortNo"
-              placeholder="请输入"
-              type="number"
-            />
+            <el-input v-model="orgForm.phone" placeholder="请输入" />
           </el-form-item>
         </el-col>
-        <el-col :span="16">
+        <el-col :span="24">
           <el-form-item label="地址">
-            <el-cascader
-              v-model="orgAddForm.addrProvinceName"
-              :options="clearableOptions"
-              :props="clearableProps"
-              style="width: 100%"
-            />
-          </el-form-item>
-          <el-form-item label="详细地址">
             <el-input
-              v-model="orgAddForm.addrDetail"
+              v-model="orgForm.orgAddress"
               placeholder="请输入"
               type="textarea"
             />
           </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="经度">
+            <el-input v-model="orgForm.longitude" placeholder="请输入" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="纬度">
+            <el-input v-model="orgForm.latitude" placeholder="请输入" />
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
           <el-form-item label="简介">
             <el-input
-              v-model="orgAddForm.summary"
+              v-model="orgForm.orgProfile"
               placeholder="请输入"
               type="textarea"
             />
           </el-form-item>
-        </el-col>
-        <el-col :span="8">
           <el-form-item label="图片">
             <el-upload
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="#"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
             >
               <img
-                v-if="orgAddForm.imageUrl"
-                :src="orgAddForm.imageUrl"
+                v-if="orgForm.picture"
+                :src="orgForm.picture"
                 class="avatar"
               >
               <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -222,10 +180,13 @@
 
 <script>
 import {
-  listOrg
-  // saveOrg,
-  // delOrg
+  listOrg,
+  saveOrg,
+  delOrg
 } from '@/api/system/org'
+import {
+  listDistItem
+} from '@/api/system/dist'
 export default {
   data() {
     return {
@@ -237,40 +198,47 @@ export default {
       tableData: [],
       tableHeight: '200px',
       orgStatus: false,
-      orgAddForm: {},
+      // 新增、编辑对象
+      orgForm: {
+        // 主键
+        id: '',
+        // 机构编码
+        code: '',
+        // 机构名称
+        name: '',
+        // 机构级别
+        levelCode: 0,
+        // 纬度
+        latitude: 0,
+        // 经度
+        longitude: 0,
+        // 机构地址
+        orgAddress: '',
+        // 机构简介
+        orgProfile: '',
+        // 机构类型
+        orgType: '',
+        // 上级机构
+        parentId: '',
+        // 联系电话
+        phone: '',
+        // 机构图片
+        picture: ''
+      },
       rules: {
-        orgCode: [
-          { required: true, message: '请输入机构编码', trigger: 'blur' }
-        ],
-        orgName: [
+        name: [
           { required: true, message: '请输入机构名称', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入机构编码', trigger: 'blur' }
         ]
       },
       selectRow: {},
-      menuStatus: false,
-      filterText: '',
-      defaultProps: {
-        children: 'children',
-        label: 'menuName'
-      },
-      relationUserStatus: false,
-      relationUserTableData: [],
-      clearableOptions: [],
-      clearableProps: {
-        lazy: true,
-        lazyLoad(node, resolve) {
-          /* this.$get(this.config.baseUrl+'bsfDistrict/getByParentId/'+node.data.id, {}).then(res => {
-                    if (res.success) {
-                        resolve(res.data);
-                    }
-                }); */
-        },
-        value: 'id',
-        label: 'districtName'
-      },
-      manageTypeSelect: [],
-      orgLevelSelect: [],
-      orgOrderSelect: []
+      // 机构类型选项
+      orgTypeList: [],
+      // 机构级别选项
+      levelCodeList: [],
+      parentOrgList: []
     }
   },
   computed: {
@@ -278,20 +246,15 @@ export default {
       return this.selectRow.deleteFlag === 1
     }
   },
-  watch: {
-    filterText(val) {
-      this.$refs.tree.filter(val)
-    }
-  },
   mounted() {
     this.$nextTick(() => {
-      this.tableHeight = window.innerHeight - this.$refs['orgTable'].$el.offsetTop - 100
+      this.tableHeight = window.innerHeight - this.$refs['orgTable'].$el.offsetTop - 180
     })
   },
   created: function() {
     this.init()
-    this.clearableOptionsInit()
-    this.dictCategoryInit()
+    // this.clearableOptionsInit()
+    this.dictInit()
   },
   methods: {
     init() {
@@ -307,137 +270,89 @@ export default {
         }
       )
     },
-    dictCategoryInit() {
-      this.$get(
-        this.config.baseUrl + 'bsfDictItem/list/categoryCode/000008',
-        {}
-      ).then((res) => {
-        if (res.success) {
-          this.manageTypeSelect = res.data
-        }
+    dictInit() {
+      // 机构类型选项
+      listDistItem({ dictType: 'orgType' }).then((res) => {
+        this.orgTypeList = res
       })
-      this.$get(
-        this.config.baseUrl + 'bsfDictItem/list/categoryCode/000005',
-        {}
-      ).then((res) => {
-        if (res.success) {
-          this.orgLevelSelect = res.data
-        }
+      // 机构级别选项
+      listDistItem({ dictType: 'orgLevel' }).then((res) => {
+        this.levelCodeList = res
       })
-      this.$get(
-        this.config.baseUrl + 'bsfDictItem/list/categoryCode/000006',
-        {}
-      ).then((res) => {
-        if (res.success) {
-          this.orgOrderSelect = res.data
-        }
-      })
+    },
+    formatterOrgType(val) {
+      let value = ''
+      if (val) {
+        this.orgTypeList.forEach(item => {
+          if (item.dictValue === val) {
+            value = item.dictLabel
+          }
+        })
+      }
+      return value
     },
     clearableOptionsInit() {
       this.$get(this.config.baseUrl + 'bsfDistrict/getByParentId/0', {}).then(
         (res) => {
           if (res.success) {
-            this.clearableOptions = res.data
+            this.parentOrgList = res.data
           }
         }
       )
     },
-    handleCurrentChange(currentPage) {
-      this.currentPage = currentPage
-      this.init()
-    },
-    handleSearch() {
-      this.init()
-    },
     handleRefresh() {
-      this.currentPage = 1
-      this.searchForm = {}
       this.init()
     },
     handleAdd() {
       this.orgTitle = '新增机构'
-      this.orgAddForm = { deleteFlag: '0' }
-      this.orgStatus = true
-    },
-    submitClick() {
-      this.$refs['orgAddForm'].validate((valid) => {
-        if (valid) {
-          this.$formDataPost(
-            this.config.baseUrl + 'bsfOrganization/save',
-            this.orgAddForm,
-            false
-          ).then((res) => {
-            if (res.success) {
-              this.$message({
-                type: 'success',
-                message: '操作成功'
-              })
-              this.orgStatus = false
-              this.orgAddForm = {}
-              this.init()
-            } else {
-              this.$message({
-                type: 'warning',
-                message: '操作失败'
-              })
-              return false
-            }
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
+      Object.keys(this.orgForm).map(key => {
+        this.orgForm[key] = ''
       })
-    },
-    handleRelationUser(row) {
-      this.relationUserStatus = true
-    },
-    handleMenuRelation(row) {
-      this.menuStatus = true
+      this.orgStatus = true
     },
     handleEdit(row) {
       this.orgTitle = '编辑机构'
-      delete row.createTime
-      delete row.updateTime
-      const addForm = {}
-      Object.keys(row).map((key) => {
-        addForm[key] = row[key]
+      Object.keys(this.orgForm).map((key) => {
+        this.orgForm[key] = row[key]
       })
-      this.orgAddForm = addForm
       this.orgStatus = true
     },
+    submitClick() {
+      this.$refs['orgForm'].validate((valid) => {
+        if (valid) {
+          saveOrg(this.orgForm).then((res) => {
+            this.$message({
+              type: 'success',
+              message: '操作成功'
+            })
+            this.orgStatus = false
+            this.init()
+          })
+        }
+      })
+    },
     handleRemove(row) {
+      const children = row.children
+      if (children) {
+        this.$message({
+          type: 'warning',
+          message: '该机构存在子记录不能删除'
+        })
+        return false
+      }
       this.$confirm('此操作将删除选中记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$formDataPost(
-          this.config.baseUrl + 'bsfOrganization/remove/' + row.id,
-          {},
-          false
-        ).then((res) => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.init()
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '操作失败'
-            })
-            return false
-          }
+        delOrg(row.id).then((res) => {
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.init()
         })
       })
-    },
-    filterNode(value, data) {
-      if (!value) {
-        return true
-      }
-      return data.menuName.indexOf(value) !== -1
     },
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw)
@@ -445,7 +360,6 @@ export default {
     beforeAvatarUpload(file) {
       const isJPG = file.type === 'image/jpeg'
       const isLt2M = file.size / 1024 / 1024 < 2
-
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 格式!')
       }

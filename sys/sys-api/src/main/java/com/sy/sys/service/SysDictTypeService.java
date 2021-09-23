@@ -24,4 +24,12 @@ public interface SysDictTypeService extends IService<SysDictType> {
      * @return
      */
     IPage<SysDictType> pageSysDictType(Page page, String dictName, String dictType);
+
+    /**
+     * 根据字典类型查询字典
+     *
+     * @param dictType 字典类型
+     * @return
+     */
+    SysDictType getByDictType(String dictType);
 }

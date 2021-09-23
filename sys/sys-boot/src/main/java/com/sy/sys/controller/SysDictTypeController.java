@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sy.center.common.enums.YesNoEnum;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysDictType;
+import com.sy.sys.service.SysDictDataService;
 import com.sy.sys.service.SysDictTypeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -34,15 +35,27 @@ public class SysDictTypeController {
     @Autowired
     private SysDictTypeService sysDictTypeService;
 
+    @Autowired
+    private SysDictDataService sysDictDataService;
+
     @ApiOperation(value = "字典类型-保存", notes = "字典类型-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysDictType sysDictType) {
+        SysDictType result = sysDictTypeService.getByDictType(sysDictType.getDictType());
         if (null == sysDictType.getId()) {
+            if (result != null) {
+                return DataformResult.failure("新增失败,字典类型已存在");
+            }
             if (StringUtils.isBlank(sysDictType.getStatus())){
                 sysDictType.setStatus(YesNoEnum.NO.getCode());
             }
             sysDictTypeService.save(sysDictType);
         } else {
+            if (result != null) {
+                if (!result.getId().equals(sysDictType.getId())) {
+                    return DataformResult.failure("修改失败,字典类型已存在");
+                }
+            }
             sysDictTypeService.updateById(sysDictType);
         }
         return DataformResult.success();
@@ -51,6 +64,9 @@ public class SysDictTypeController {
     @ApiOperation(value = "字典类型-删除", notes = "字典类型-刪除")
     @PostMapping("/remove/{id}")
     public DataformResult<String> removeById(@PathVariable("id") Long id) {
+        SysDictType sysDictType = sysDictTypeService.getById(id);
+        // 删除字典项
+        sysDictDataService.removeByDictType(sysDictType.getDictType());
         sysDictTypeService.removeById(id);
         return DataformResult.success();
     }
@@ -71,4 +87,5 @@ public class SysDictTypeController {
         IPage<SysDictType> pageData = sysDictTypeService.pageSysDictType(page, dictName, dictType);
         return DataformResult.success(pageData);
     }
+
 }

@@ -23,4 +23,10 @@ public interface SysDictDataService extends IService<SysDictData> {
      * @return
      */
     List<SysDictData> listByDictType(String dictType, String status);
+
+    /**
+     * 根据字典类型查询字典项
+     * @param dictType
+     */
+    void removeByDictType(String dictType);
 }

@@ -22,7 +22,7 @@ export function saveDistType(data) {
 export function delDistType(distTypeId) {
   return request({
     url: '/sysDictType/remove/' + distTypeId,
-    method: 'get'
+    method: 'post'
   })
 }
 
@@ -37,16 +37,16 @@ export function listDistItem(query) {
 // 保存字典项
 export function saveDistItem(data) {
   return request({
-    url: '/sysDictType/save',
+    url: '/sysDictData/save',
     method: 'post',
     data: data
   })
 }
 
 // 删除字典项
-export function delDistItem(distTypeId) {
+export function delDistItem(distItemId) {
   return request({
-    url: '/sysDictType/remove/' + distTypeId,
-    method: 'get'
+    url: '/sysDictData/remove/' + distItemId,
+    method: 'post'
   })
 }
