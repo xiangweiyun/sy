@@ -1,7 +1,7 @@
 import router from './index'
 import { getToken } from '../utils/cookie'
 import store from '@/store'
-import { Message } from 'element-ui'
+// import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 
 // 白名单列表

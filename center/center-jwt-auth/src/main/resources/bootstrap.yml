@@ -4,7 +4,7 @@ server:
 spring:
   application:
     #服务名称
-    name: center-jwt-auth
+    name: jwt
   profiles:
     #指定开发环境
     active: dev
@@ -33,22 +33,4 @@ spring:
         shared-configs[0]:
           data-id: application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
           group: DEFAULT_GROUP
-          refresh: true
-
-dubbo:
-  service:
-    version: 2.0.0
-  # Dubbo 服务注册中心配置
-  registry:
-    # 其中子属性 address 的值 "spring-cloud://localhost"，说明挂载到 Spring Cloud 注册中心
-    # 使用nacos://localhost:8848表示挂载到nacos注册中心，这种会在nacos上展示服务名称：providers:暴露接口包名:版本:组名
-    address: nacos://${spring.cloud.nacos.discovery.server-addr}
-    # 配置namespace命名空间
-    parameters[namespace]: d41aed27-2d4f-4948-b864-b492484d6be7
-  application:
-    # qos=Quality of Service 是Dubbo的在线运维命令，可以对服务进行动态的配置、控制(上下线)及查询，具体参考：https://blog.csdn.net/u012988901/article/details/84503672
-    qos:
-      enable: false
-  cloud:
-    # 要订阅服务的服务名：及服务提供方的 spring.application.name的值，也就是服务提供方的应用名。
-    subscribed-services: sys-boot
+          refresh: false

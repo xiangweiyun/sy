@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysLoginLogMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysLoginLog">
+        <result column="ID" property="id" />
+        <result column="OPER_TYPE" property="operType" />
+        <result column="RESULT_TYPE" property="resultType" />
+        <result column="REMOTE_ADDR" property="remoteAddr" />
+        <result column="USER_AGENT" property="userAgent" />
+        <result column="OPER_TIME" property="operTime" />
+        <result column="ADDRESS" property="address" />
+        <result column="BROWSER_TYPE" property="browserType" />
+        <result column="LOGIN_TYPE" property="loginType" />
+        <result column="EQUIPMENT" property="equipment" />
+        <result column="LOGIN_ACCOUNT" property="loginAccount" />
+        <result column="REMARKS" property="remarks" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, OPER_TYPE, RESULT_TYPE, REMOTE_ADDR, USER_AGENT, OPER_TIME, ADDRESS, BROWSER_TYPE, LOGIN_TYPE, EQUIPMENT, LOGIN_ACCOUNT, REMARKS
+    </sql>
+</mapper>

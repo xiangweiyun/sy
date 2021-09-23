@@ -4,7 +4,11 @@ server:
 spring:
   application:
     #服务名称
+<<<<<<< HEAD
     name: sys-boot2
+=======
+    name: sys
+>>>>>>> 98aef4caffa9b170cf498ff0d91e2b2f57c73121
   profiles:
     #指定开发环境
     active: dev
@@ -70,6 +74,7 @@ mybatis-plus:
       # 逻辑删除全局值（1表示已删除，这也是Mybatis Plus的默认配置）
       logic-delete-value: 1
       # 逻辑未删除全局值（0表示未删除，这也是Mybatis Plus的默认配置）
+<<<<<<< HEAD
       logic-not-delete-value: 0
       
 
@@ -96,3 +101,6 @@ mybatis-plus:
   # 指定 Dubbo 服务实现类的扫描基准包
 #  scan:
 #    base-packages: com.sy.*
+=======
+      logic-not-delete-value: 0
+>>>>>>> 98aef4caffa9b170cf498ff0d91e2b2f57c73121

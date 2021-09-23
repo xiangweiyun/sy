@@ -1,12 +1,11 @@
 package com.sy.center.gateway.fegin.fallback;
 
-import com.sy.center.gateway.util.DataformResult;
+import com.sy.center.framework.utils.DataformResult;
+import com.sy.center.gateway.fegin.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.sy.center.gateway.fegin.AuthService;
 
 /**
  * jwt 认证服务的fallback

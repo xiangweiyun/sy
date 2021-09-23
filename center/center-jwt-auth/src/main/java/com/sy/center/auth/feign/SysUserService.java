@@ -17,17 +17,17 @@ import java.util.Map;
  * @Company: XWY有限公司
  * @Version: V1.0
  */
-@FeignClient(name = "sys-boot", fallback = SysUserServiceFallbackImpl.class)
+@FeignClient(name = "${sy.appliation.name.sys:sys}", fallback = SysUserServiceFallbackImpl.class)
 public interface SysUserService {
 	/**
 	 * 系统用户登录
 	 * 
-	 * @param username 登录账号或者手机号或者邮箱
-	 * @param password 登录密码
+	 * @param userName 登录账号或者手机号或者邮箱
+	 * @param passWord 登录密码
 	 * @return 系统用户信息
 	 */
-	@GetMapping(value = "/sysUser/getByLoginInfo")
-	DataformResult<Map<String, Object>> getByLoginInfo(@RequestParam(value = "username") String username,
-			@RequestParam(value = "password") String password);
+	@GetMapping(value = "/sysUser/login")
+	DataformResult<Map<String, Object>> getByLoginInfo(@RequestParam(value = "userName") String userName,
+			@RequestParam(value = "passWord") String passWord);
 
 }
