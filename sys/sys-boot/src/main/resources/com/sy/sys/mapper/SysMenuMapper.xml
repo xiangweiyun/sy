@@ -44,4 +44,21 @@
 			</choose>
 		</where>
     </select>
+    
+    <select id="listSysMenuByAppIdAndUserId" resultType="com.sy.sys.vo.SysMenuVo" parameterType="hashMap">
+    	SELECT DISTINCT *
+		FROM SYS_MENU
+		START WITH ID IN(SELECT D.ID
+				FROM (SELECT ID
+					FROM SYS_MENU T
+					START WITH T.ID = #{appId}
+					CONNECT BY PRIOR ID = PARENT_ID) D 
+				WHERE D.ID IN(
+					SELECT SYS_ROLE_MENU.MENU_ID
+					FROM SYS_USER_ROLE INNER JOIN SYS_ROLE_MENU 
+						ON SYS_USER_ROLE.ROLE_ID = SYS_ROLE_MENU.ROLE_ID
+					WHERE SYS_USER_ROLE.USER_ID = #{userId}))
+		CONNECT BY PRIOR PARENT_ID = ID
+		ORDER BY ORDER_NUM, ID
+    </select>
 </mapper>

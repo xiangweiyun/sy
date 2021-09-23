@@ -17,4 +17,5 @@ import com.sy.sys.vo.SysMenuVo;
  */
 public interface SysMenuMapper extends BaseMapper<SysMenu> {
 	List<SysMenuVo> listSysMenuByRoleId(Map<String, Object> map);
+	List<SysMenuVo> listSysMenuByAppIdAndUserId(Map<String, Object> map);
 }

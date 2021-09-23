@@ -8,6 +8,8 @@ import com.sy.sys.entity.SysDept;
 import com.sy.sys.mapper.SysDeptMapper;
 import com.sy.sys.service.SysDeptService;
 import com.sy.sys.vo.SysDeptVo;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,7 +25,10 @@ import java.util.List;
  */
 @Service
 public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> implements SysDeptService {
-
+	
+	@Autowired
+	private SysDeptMapper sysDeptMapper;
+	
     @Override
     public List<SysDept> listByOrgId(Long orgId) {
         QueryWrapper<SysDept> wrapper = Wrappers.query();
@@ -72,5 +77,14 @@ public class SysDeptServiceImpl extends ServiceImpl<SysDeptMapper, SysDept> impl
             loadChildNode(list, sysDeptVo);
         }
     }
+
+	/**
+	 * 根据ID查询部门信息
+	 */
+	@Override
+	public SysDeptVo getVoById(Long id) {
+		// TODO Auto-generated method stub
+		return sysDeptMapper.getVoById(id);
+	}
 
 }

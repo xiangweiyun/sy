@@ -1,10 +1,10 @@
 package com.sy.sys.service;
 
+import java.util.List;
+
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sy.sys.entity.SysDept;
 import com.sy.sys.vo.SysDeptVo;
-
-import java.util.List;
 
 /**
  * <p>
@@ -31,4 +31,11 @@ public interface SysDeptService extends IService<SysDept> {
      * @return
      */
     List<SysDeptVo> listTreeByOrgId(Long orgId);
+    
+    /**
+     * 根据ID查询部门信息
+     * @param id
+     * @return
+     */
+    SysDeptVo getVoById(Long id);
 }

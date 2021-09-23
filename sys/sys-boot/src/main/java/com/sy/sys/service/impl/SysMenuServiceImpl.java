@@ -102,21 +102,33 @@ public class SysMenuServiceImpl extends ServiceImpl<SysMenuMapper, SysMenu> impl
 	@Override
 	public List<SysMenuVo> listTreeDataByAppIdAndUserId(Long appId, Long userId) {
 		// TODO Auto-generated method stub
-		List<SysMenuVo> treeData = new ArrayList<SysMenuVo>();
-		QueryWrapper<SysMenu> queryWrapper = Wrappers.query();
-		
 		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("PARENT_ID", appId);
-		queryWrapper.allEq(map);
-		treeData =  toVo(this.list(queryWrapper));
+		map.put("appId", appId);
+		map.put("userId", userId);
 		
+		List<SysMenuVo> treeData = sysMenuMapper.listSysMenuByAppIdAndUserId(map);
+		
+		List<SysMenuVo> treeMenu = new ArrayList<SysMenuVo>();
 		if(treeData != null && treeData.size() > 0) {
 			for(SysMenuVo sysMenuVo : treeData) {
-				sysMenuVo.setChildren(setMenuChildren(sysMenuVo));
+				if(sysMenuVo.getParentId() == null){
+					List<SysMenuVo> b = setLoadMenuChild(treeData, sysMenuVo.getId());
+					treeMenu.addAll(b);
+				}
 			}
 		}
-		
-		return treeData;
+		return treeMenu;
+	}
+	
+	private List<SysMenuVo> setLoadMenuChild(List<SysMenuVo> treeData, Long parentId){
+		List<SysMenuVo> chlidNodeVo = new ArrayList<SysMenuVo>();
+		for(SysMenuVo sysMenuVo : treeData) {
+			if(sysMenuVo.getParentId() != null && sysMenuVo.getParentId().equals(parentId)){
+				sysMenuVo.setChildren(setLoadMenuChild(treeData, sysMenuVo.getId()));
+				chlidNodeVo.add(sysMenuVo);
+			}
+		}
+		return chlidNodeVo;
 	}
 
 	/**

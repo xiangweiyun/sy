@@ -3,12 +3,7 @@ server:
   port: 7777
 spring:
   application:
-    #服务名称
-<<<<<<< HEAD
     name: sys-boot2
-=======
-    name: sys
->>>>>>> 98aef4caffa9b170cf498ff0d91e2b2f57c73121
   profiles:
     #指定开发环境
     active: dev
@@ -74,33 +69,4 @@ mybatis-plus:
       # 逻辑删除全局值（1表示已删除，这也是Mybatis Plus的默认配置）
       logic-delete-value: 1
       # 逻辑未删除全局值（0表示未删除，这也是Mybatis Plus的默认配置）
-<<<<<<< HEAD
       logic-not-delete-value: 0
-      
-
-#dubbo:
-#  service:
-#    version: 2.0.0
-  # Dubbo 服务注册中心配置
-#  registry:
-    # 其中子属性 address 的值 "spring-cloud://localhost"，说明挂载到 Spring Cloud 注册中心
-    # 使用nacos://localhost:8848表示挂载到nacos注册中心，这种会在nacos上展示服务名称：consumers:暴露接口包名:版本:组名
-#    address: nacos://${spring.cloud.nacos.discovery.server-addr}
-    # 配置namespace命名空间
-#    parameters[namespace]: d41aed27-2d4f-4948-b864-b492484d6be7
-#  application:
-    # qos=Quality of Service 是Dubbo的在线运维命令，可以对服务进行动态的配置、控制(上下线)及查询，具体参考：https://blog.csdn.net/u012988901/article/details/84503672
-#    qos:
-#      enable: false
-  # Dubbo 服务暴露的协议配置
-#  protocol:
-    # 协议名称
-#    name: dubbo
-    # 协议端口（ -1 表示自增端口，从 20880 开始）
-#    port: -1
-  # 指定 Dubbo 服务实现类的扫描基准包
-#  scan:
-#    base-packages: com.sy.*
-=======
-      logic-not-delete-value: 0
->>>>>>> 98aef4caffa9b170cf498ff0d91e2b2f57c73121

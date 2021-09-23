@@ -15,7 +15,7 @@ import com.sy.sys.vo.SysMenuVo;
  * @since 2021-09-18
  */
 public interface SysMenuService extends IService<SysMenu> {
-	public List<SysMenuVo> listTreeData();
-	public List<SysMenuVo> listTreeDataByAppIdAndUserId(Long appId, Long userId);
-	public List<SysMenuVo> listTreeDataByRoleId(Long roleId);
+	List<SysMenuVo> listTreeData();
+	List<SysMenuVo> listTreeDataByAppIdAndUserId(Long appId, Long userId);
+	List<SysMenuVo> listTreeDataByRoleId(Long roleId);
 }

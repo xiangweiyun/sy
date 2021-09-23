@@ -52,7 +52,7 @@ public class SysDeptController {
     @ApiOperation(value = "系统部门-根据ID获取", notes = "系统部门-根据ID获取")
     @GetMapping("/{id}")
     public DataformResult<SysDept> getById(@PathVariable("id") Long id) {
-        SysDept sysDept = sysDeptService.getById(id);
+        SysDept sysDept = sysDeptService.getVoById(id);
         return DataformResult.success(sysDept);
     }
 
@@ -61,5 +61,12 @@ public class SysDeptController {
      public DataformResult<List<SysDeptVo>> listTreeByOrgId(@PathVariable("orgId") Long orgId) {
          List<SysDeptVo> voList = sysDeptService.listTreeByOrgId(orgId);
          return DataformResult.success(voList);
+     }
+     
+     @ApiOperation(value = "系统部门-部门列表", notes = "用于部门新增及修改时  新增时 deptId不传值")
+     @GetMapping("/{id}")
+     public DataformResult<SysDept> listSelectById(Long orgId, Long deptId) {
+         
+         return DataformResult.success();
      }
 }
