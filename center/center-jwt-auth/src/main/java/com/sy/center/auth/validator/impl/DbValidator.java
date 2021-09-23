@@ -10,7 +10,6 @@ import com.sy.center.framework.utils.DataformResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -38,7 +37,6 @@ public class DbValidator implements IReqValidator {
     /**
      * 系统用户登录日志接口
      */
-    @Qualifier("sysLoginLogServiceFallbackImpl")
     @Autowired
     private SysLoginLogService sysLoginLogService;
 

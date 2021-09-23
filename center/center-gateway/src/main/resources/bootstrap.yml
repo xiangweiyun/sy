@@ -4,7 +4,7 @@ server:
 spring:
   application:
     #服务名称
-    name: center-gateway
+    name: gateway
   profiles:
     #指定开发环境
     active: dev
@@ -33,4 +33,4 @@ spring:
         shared-configs[0]:
           data-id: application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
           group: DEFAULT_GROUP
-          refresh: true
+          refresh: false

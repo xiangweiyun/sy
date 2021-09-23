@@ -18,7 +18,6 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -59,15 +58,10 @@ public class AuthController {
 	/**
 	 * 系统用户登录日志接口
 	 */
-	@Qualifier("sysLoginLogServiceFallbackImpl")
 	@Autowired
 	private SysLoginLogService sysLoginLogService;
 
 	@PostMapping(value = "auth")
-	@ApiOperation(value = "登录验证", notes = "登录验证  <br>" + " 1，登录参数 <br>"
-			+ " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logintype 登录类型: 1 为后台系统用户认证登录 ；username：用户名；password：密码；capture：验证码；captchaId：验证码ID）<br>"
-			+ " 2，fans后台系统用户认证 返回值描述如下：<br>"
-			+ " &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{\"code\":返回状态码,\"msg\":返回消息,\"datas(返回数据)\":{\"menuData(菜单数据)\":[],\"userData(用户数据)\":{},\"permsData(按钮权限数据)\":[],\"authData(认证信息，token以及过期时间等数据)\":{}}}<br>", response = String.class)
 	@ApiImplicitParams({
 			@ApiImplicitParam(name = "authRequestVo", dataType = "authRequestVo", value = "authRequestVo实体的json类型( fans后台系统用户认证方式)<br>{\"userName\":\"admin\",\"password\":\"123456\",\"logintype\":\"1\",\"captcha\":\"9aqd\",\"captchaId\":\"4a9cd3a2-ab45-46c6-9870-b91659c88fd51579329664992\"}") })
 	public DataformResult<Map<String, Object>> auth(@RequestBody AuthRequestVo authRequestVo) {
@@ -105,8 +99,7 @@ public class AuthController {
 	 *
 	 * @return
 	 */
-	@PostMapping(value = "/logout")
-	@ResponseBody
+	@PostMapping(value = "logout")
 	@ApiOperation(value = "用户注销", notes = "用户注销")
 	public DataformResult<String> logout() {
 		// TODO 操蛋的JWT不能从服务端destroy token， logout目前只能在客户端的cookie 或
@@ -146,11 +139,10 @@ public class AuthController {
 	 * @param authToken
 	 * @return
 	 */
-	@PostMapping(value = "/checkToken")
+	@PostMapping(value = "checkToken")
 	@ApiOperation(value = "token 校验", notes = "token 校验")
 	public DataformResult<String> checkToken(String authToken) {
-		int code = 701;
-		String msg = "token未进行认证！";
+		CustomRspCon result = CustomRspCon.TOKEN_ERROR;
 		if (BlankUtils.isNotBlank(authToken)) {
 			try {
 				String key = tokenManager.getKey(authToken);
@@ -160,8 +152,7 @@ public class AuthController {
 					boolean flag = jwtTokenUtil.isTokenExpired(authToken);
 					// 过期则返回为true
 					if (flag) {
-						code = 700;
-						msg = "token已过期！";
+						result = CustomRspCon.TOKEN_EXPIRED;
 						// 未过期则返回为false(认证通过)
 					} else {
 						String userInfoStrFromToken = jwtTokenUtil.getUserInfoStrFromToken(authToken);
@@ -172,7 +163,7 @@ public class AuthController {
 				logger.error("token失败认证！", e);
 			}
 		}
-		return DataformResult.failure(code, msg);
+		return DataformResult.failure(result.getCode(), result.getMsg());
 
 	}
 
@@ -184,8 +175,7 @@ public class AuthController {
 	 * @param request
 	 * @return
 	 */
-	@ResponseBody
-	@PostMapping(value = "/isLogined")
+	@PostMapping(value = "isLogined")
 	@ApiOperation(value = "是否登录", notes = "是否登录")
 	public DataformResult<String> isLogined(HttpServletRequest request) {
 		int code = 705;

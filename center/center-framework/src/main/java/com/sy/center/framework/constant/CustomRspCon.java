@@ -98,7 +98,7 @@ public enum CustomRspCon {
 	/**
 	 * token验证失败
 	 */
-	TOKEN_ERROR(700, "token验证失败"),
+	TOKEN_ERROR(701, "token验证失败"),
 	/**
 	 * 签名验证失败
 	 */

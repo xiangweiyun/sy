@@ -1,13 +1,13 @@
 package com.sy.center.gateway.filter;
 
 import com.alibaba.fastjson.JSON;
+import com.sy.center.framework.constant.CustomRspCon;
+import com.sy.center.framework.utils.DataformResult;
 import com.sy.center.gateway.fegin.AuthService;
 import com.sy.center.gateway.properties.IgnoreUrlsProperties;
-import com.sy.center.gateway.util.DataformResult;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -47,7 +47,6 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
 	 */
 	private static final String UTF8 = "UTF-8";
 
-	@Qualifier("authServiceFallbackImpl")
 	@Autowired
 	private AuthService authService;
 
@@ -68,25 +67,22 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
 			if (authorization != null && authorization.startsWith(BEARER)) {
 				String authToken = authorization.substring(7);
 				DataformResult<String> checkToken = authService.checkToken(authToken);
-				int code = checkToken.getStatusCode();
+				int code = checkToken.getCode();
 				// 认证（校验）成功的
-				if (code == 200) {
+				if (code == CustomRspCon.SUCCESS.getCode()) {
 					ServerHttpRequest.Builder builder = request.mutate();
 					// 转发的请求都加上服务间认证token
 					builder.header(AUTHORIZE_TOKEN, authorization);
 					// 将jwt token中的用户信息传给服务
-					builder.header("userInfoStr", checkToken.getObject());
+					builder.header("userInfoStr", checkToken.getData());
 					ServerWebExchange mutableExchange = exchange.mutate().request(builder.build()).build();
 					return chain.filter(mutableExchange);
-				} else if (code == 700) {
+				} else if (code == CustomRspCon.TOKEN_EXPIRED.getCode()) {
 					logger.info("token已过期！");
 					return unauthorizedResponse(exchange, DataformResult.failure(code, "token已过期！"));
-				} else if (code == 701) {
-					logger.info("该token未进行认证！");
-					return unauthorizedResponse(exchange, DataformResult.failure(code, "该token未进行认证！"));
-				} else if (code == 1) {
-					logger.info("认证接口调用异常！");
-					return unauthorizedResponse(exchange, DataformResult.failure(code, "认证接口调用异常！"));
+				} else if (code == CustomRspCon.TOKEN_ERROR.getCode()) {
+					logger.info("token验证失败！");
+					return unauthorizedResponse(exchange, DataformResult.failure(code, "token验证失败！"));
 				}
 			} else {
 				logger.info("认证信息不为空！");
