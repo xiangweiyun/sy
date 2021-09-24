@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysUserOrgDept;
 import com.sy.sys.service.SysUserOrgDeptService;
-import com.sy.sys.vo.SysUserRoleVo;
+import com.sy.sys.vo.SysUserOrgDeptVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -88,7 +88,7 @@ public class SysUserOrgDeptController {
     
     @ApiOperation(value = "用户部门关联表-根据用户ID获取", notes = "根据用户ID获取要关联的部门信息")
     @GetMapping("/listByUserId")
-    public DataformResult<List<SysUserRoleVo>> listByUserId(Long userId) {
+    public DataformResult<List<SysUserOrgDeptVo>> listByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return DataformResult.success(sysUserOrgDeptService.listByUserId(userId));
 	}

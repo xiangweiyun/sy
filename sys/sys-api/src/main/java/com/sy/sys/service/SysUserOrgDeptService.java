@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.sy.sys.entity.SysUserOrgDept;
-import com.sy.sys.vo.SysUserRoleVo;
+import com.sy.sys.vo.SysUserOrgDeptVo;
 
 /**
  * <p>
@@ -16,5 +16,5 @@ import com.sy.sys.vo.SysUserRoleVo;
  */
 public interface SysUserOrgDeptService extends IService<SysUserOrgDept> {
 	boolean saveBatch(List<SysUserOrgDept> listSysUserOrgDept);
-	List<SysUserRoleVo> listByUserId(Long userId);
+	List<SysUserOrgDeptVo> listByUserId(Long userId);
 }

@@ -14,7 +14,7 @@ import com.sy.sys.entity.SysUserOrgDept;
 import com.sy.sys.mapper.SysUserOrgDeptMapper;
 import com.sy.sys.service.SysUserOrgDeptService;
 import com.sy.sys.service.SysUserService;
-import com.sy.sys.vo.SysUserRoleVo;
+import com.sy.sys.vo.SysUserOrgDeptVo;
 
 /**
  * <p>
@@ -72,7 +72,7 @@ public class SysUserOrgDeptServiceImpl extends ServiceImpl<SysUserOrgDeptMapper,
 	 * 用户部门信息列表
 	 */
 	@Override
-	public List<SysUserRoleVo> listByUserId(Long userId) {
+	public List<SysUserOrgDeptVo> listByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return  sysUserOrgDeptMapper.listByUserId(userId);
 	}
