@@ -3,6 +3,7 @@ package com.sy.sys.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysRoleMenu;
 
 /**
@@ -15,4 +16,5 @@ import com.sy.sys.entity.SysRoleMenu;
  */
 public interface SysRoleMenuService extends IService<SysRoleMenu> {
 	boolean saveBatch(List<SysRoleMenu> listSysRoleMenu);
+	List<SysRoleMenu> listByRoleId(Long roleId);
 }

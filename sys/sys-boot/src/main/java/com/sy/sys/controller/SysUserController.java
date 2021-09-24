@@ -25,6 +25,8 @@ import com.sy.sys.service.SysUserService;
 import com.sy.sys.vo.SysUserVo;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
  /**
@@ -102,6 +104,13 @@ public class SysUserController {
     }
     
     @ApiOperation(value = "用户表-分页查询", notes = "用户表-分页查询")
+    @ApiImplicitParams({
+        @ApiImplicitParam(required = false, name = "page", value = "分页配置", dataType = "Page"),
+        @ApiImplicitParam(required = false, name = "orgId", value = "机构ID", dataType = "Long"),
+        @ApiImplicitParam(required = false, name = "deptId", value = "部门ID", dataType = "Long"),
+        @ApiImplicitParam(required = false, name = "name", value = "姓名", dataType = "String"),
+        @ApiImplicitParam(required = false, name = "userName", value = "帐号", dataType = "String"),
+        @ApiImplicitParam(required = false, name = "noNum", value = "工号", dataType = "String")})
     @GetMapping("/pageListVo")
     public DataformResult<IPage<SysUserVo>> pageListVo(Page page, Long orgId, Long deptId, String name, String userName, String noNum) {
     	if(orgId==null) {

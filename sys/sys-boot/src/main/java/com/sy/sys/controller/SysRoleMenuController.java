@@ -68,6 +68,12 @@ public class SysRoleMenuController {
         return DataformResult.success(sysRoleMenu);
     }
     
+    @ApiOperation(value = "角色和菜单关联表-根据角色ID获取菜单", notes = "角色和菜单关联表-根据角色ID获取菜单")
+    @GetMapping("/listByRoleId")
+    public DataformResult<List<SysRoleMenu>> listByRoleId(Long roleId) {
+        return DataformResult.success(sysRoleMenuService.listByRoleId(roleId));
+    }
+    
     @ApiOperation(value = "角色和菜单关联表-批量保存", notes = "角色和菜单关联表-批量保存")
     @PostMapping("/saveBatch")
     public DataformResult<String> saveBatch(@RequestBody List<SysRoleMenu> listSysRoleMenu) {

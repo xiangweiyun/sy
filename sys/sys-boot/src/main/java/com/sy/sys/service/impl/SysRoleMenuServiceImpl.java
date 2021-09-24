@@ -7,6 +7,8 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sy.sys.entity.SysRoleMenu;
 import com.sy.sys.mapper.SysRoleMenuMapper;
@@ -36,5 +38,16 @@ public class SysRoleMenuServiceImpl extends ServiceImpl<SysRoleMenuMapper, SysRo
 		super.removeByMap(map);
 		
 		return super.saveBatch(listSysRoleMenu);
+	}
+
+	/* 
+	 * 根据角色ID获取菜单
+	 */
+	@Override
+	public List<SysRoleMenu> listByRoleId(Long roleId) {
+		// TODO Auto-generated method stub
+		QueryWrapper<SysRoleMenu> wrapper = Wrappers.query();
+		wrapper.eq(SysRoleMenu.ROLE_ID, roleId);
+		return super.list(wrapper);
 	}
 }
