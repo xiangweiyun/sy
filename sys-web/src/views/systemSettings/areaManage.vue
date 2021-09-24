@@ -14,7 +14,7 @@
       <el-button
         type="primary"
         size="mini"
-        icon="el-icon-check"
+        icon="el-icon-edit"
         @click="handleAdd"
       >新 增</el-button>
     </el-form>
@@ -173,6 +173,7 @@ export default {
       this.areaStatus = true
     },
     handleEdit(row) {
+      this.selectRow = row
       this.areaTitle = '编辑行政区划'
       Object.keys(this.areaForm).map(key => {
         this.areaForm[key] = row[key]
@@ -216,15 +217,6 @@ export default {
         })
       })
     },
-    handleSelectionChange(row) {
-      this.selectRow = {
-        id: row.id,
-        parentId: row.parentId,
-        parentDistrictName: row.parentDistrictName,
-        districtCode: row.districtCode,
-        districtName: row.districtName
-      }
-    },
     submitParentareaClick() {
       if (JSON.stringify(this.selectParentRow) === '{}') {
         this.$message({
@@ -236,7 +228,7 @@ export default {
       if (this.selectParentRow.id === this.selectRow.id) {
         this.$message({
           type: 'warning',
-          message: '请重新选择，不能以自己作为上级菜单'
+          message: '请重新选择，不能以自己作为上级行政区划'
         })
         return false
       }

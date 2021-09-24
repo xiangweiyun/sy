@@ -9,11 +9,11 @@
         class="dict-category-form"
       >
         <el-form-item label="字典类型名称:">
-          <el-input v-model="searchForm.dictName" placeholder="请输入" size="mini" />
+          <el-input v-model="searchForm.dictName" clearable placeholder="请输入" size="mini" />
         </el-form-item>
         <el-form-item>
           <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleAdd">新 增</el-button>
+          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleAdd()">新 增</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -382,22 +382,11 @@ export default {
 </script>
 <style lang="less">
 .dict-category{
-    &-form{
-        .el-form-item{
-            margin: 0px 0px 5px 0px
-        }
+  &-form{
+    .el-form-item{
+      margin: 0px 0px 5px 0px
     }
-    .el-dialog .el-form {
-      .el-date-editor.el-input, .el-date-editor.el-input__inner {
-        width: 200px;
-      }
-      input {
-        width: 200px;
-      }
-      .el-form-item {
-        margin-bottom: 10px;
-      }
-    }
+  }
 }
 </style>
 <style scoped>

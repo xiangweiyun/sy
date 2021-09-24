@@ -1,38 +1,37 @@
-import request from '@/utils/request'
+import request from '@/request'
 
-// 查询角色列表
-export function listRole(query) {
+// 分页查询角色列表
+export function pageRole(query) {
   return request({
-    url: '/tob/role/getRoleList',
+    url: '/sysRole/pageSysRole',
     method: 'get',
     params: query
   })
 }
 
-// 新增角色
-export function addRole(data) {
+// 查询角色列表
+export function listRole(query) {
   return request({
-    url: '/tob/role/addRole',
-    method: 'post',
-    data: data
+    url: '/sysRole/listSysRole',
+    method: 'get',
+    params: query
   })
 }
 
-// 修改角色
-export function updateRole(data) {
+// 保存角色
+export function saveRole(data) {
   return request({
-    url: '/tob/role/updateRole',
+    url: '/sysRole/save',
     method: 'post',
     data: data
   })
 }
 
 // 删除角色
-export function delRole(userId) {
+export function delRole(roleId) {
   return request({
-    url: '/tob/role/delRole',
-    method: 'get',
-    params: {id:userId}
+    url: '/sysRole/remove/' + roleId,
+    method: 'post'
   })
 }
 

@@ -32,7 +32,11 @@
     >
       <el-table-column prop="code" label="机构编码" align="center" />
       <el-table-column prop="name" label="机构名称" align="center" />
-      <el-table-column prop="levelCode" label="机构级别" align="center" />
+      <el-table-column prop="levelCode" label="机构级别" align="center">
+        <template slot-scope="scope">
+          <span>{{ formatterOrgLevel(scope.row.levelCode) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="orgType" label="机构类型" align="center">
         <template slot-scope="scope">
           <span>{{ formatterOrgType(scope.row.orgType) }}</span>
@@ -82,9 +86,10 @@
             >
               <el-option
                 v-for="item in parentOrgList"
-                :key="item.itemCode"
-                :label="item.itemName"
-                :value="item.itemCode"
+                v-show="item.id != orgForm.id"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -246,15 +251,14 @@ export default {
       return this.selectRow.deleteFlag === 1
     }
   },
+  created: function() {
+    this.dictInit()
+    this.init()
+  },
   mounted() {
     this.$nextTick(() => {
       this.tableHeight = window.innerHeight - this.$refs['orgTable'].$el.offsetTop - 180
     })
-  },
-  created: function() {
-    this.init()
-    // this.clearableOptionsInit()
-    this.dictInit()
   },
   methods: {
     init() {
@@ -269,14 +273,15 @@ export default {
           that.listLoading = false
         }
       )
+      this.parentOrgListInit()
     },
     dictInit() {
       // 机构类型选项
-      listDistItem({ dictType: 'orgType' }).then((res) => {
+      listDistItem({ dictType: 'ORG_TYPE' }).then((res) => {
         this.orgTypeList = res
       })
       // 机构级别选项
-      listDistItem({ dictType: 'orgLevel' }).then((res) => {
+      listDistItem({ dictType: 'ORG_LEVEL' }).then((res) => {
         this.levelCodeList = res
       })
     },
@@ -291,14 +296,21 @@ export default {
       }
       return value
     },
-    clearableOptionsInit() {
-      this.$get(this.config.baseUrl + 'bsfDistrict/getByParentId/0', {}).then(
-        (res) => {
-          if (res.success) {
-            this.parentOrgList = res.data
+    formatterOrgLevel(val) {
+      let value = ''
+      if (val) {
+        this.levelCodeList.forEach(item => {
+          if (item.dictValue === val) {
+            value = item.dictLabel
           }
-        }
-      )
+        })
+      }
+      return value
+    },
+    parentOrgListInit() {
+      listOrg().then(res => {
+        this.parentOrgList = res
+      })
     },
     handleRefresh() {
       this.init()
@@ -318,6 +330,15 @@ export default {
       this.orgStatus = true
     },
     submitClick() {
+      if (this.orgForm.id) {
+        if (this.orgForm.id === this.orgForm.parentId) {
+          this.$message({
+            type: 'warning',
+            message: '请重新选择，不能以自己作为上级机构'
+          })
+          return false
+        }
+      }
       this.$refs['orgForm'].validate((valid) => {
         if (valid) {
           saveOrg(this.orgForm).then((res) => {

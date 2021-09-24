@@ -3,7 +3,7 @@ server:
   port: 7777
 spring:
   application:
-    name: sys-boot2
+    name: sys
   profiles:
     #指定开发环境
     active: dev

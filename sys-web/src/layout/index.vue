@@ -4,6 +4,7 @@
       <div class="logo">
         <a href="/">
           <img :src="imgSrc" alt="logo">
+          <span v-if="!collapsed">{{ logoTitle }}</span>
         </a>
       </div>
       <SideMenu />
@@ -28,21 +29,26 @@ import HeaderBar from './components/HeaderBar/index'
 import SideMenu from './components/SideMenu/index'
 import TagsNav from './components/TagsView/index'
 import MainView from './components/MainView/index'
-import Logo from '../assets/img/logo.png'
+// import Logo from '../assets/img/logo.png'
 import LogoIcon from '../assets/img/logo-icon.png'
 
-const RESIZE_WIDTH = 1440
+const RESIZE_WIDTH = 1300
 
 export default {
   name: 'Layout',
   components: { HeaderBar, SideMenu, TagsNav, MainView },
+  data() {
+    return {
+      logoTitle: window.CONFIG.SYSTEM_TITLE
+    }
+  },
   computed: {
     ...mapGetters('app', ['collapsed']),
     imgSrc() {
       if (this.collapsed) {
         return LogoIcon
       }
-      return Logo
+      return LogoIcon
     }
   },
   created() {
@@ -80,10 +86,26 @@ export default {
     transition: width 0.5s;
     background-color: #263238;
     &.unfolded {
-      width: 260px;
+      width: 200px;
       .logo {
-        width: 260px;
-        height: 84px;
+        width: 200px;
+        height: 64px;
+        line-height: 64px;
+        text-align: center;
+        color: #fff;
+        a {
+          display: flex;
+          align-items: center;
+          padding: 0 14px;
+        }
+        img {
+          width: 44px;
+          height: auto;
+        }
+        span{
+          font-size: 18px;
+          margin-left: 10px;
+        }
       }
     }
     &.folded {
@@ -91,14 +113,10 @@ export default {
       .logo {
         width: 64px;
         height: 64px;
+        line-height: 64px;
         padding: 10px;
         box-sizing: border-box;
       }
-    }
-    img {
-      display: block;
-      width: 100%;
-      height: 100%;
     }
   }
   .main-container{
@@ -106,7 +124,7 @@ export default {
     height: 100vh;
     transition: width 0.5s;
     &.normal {
-      width: calc(100% - 260px);
+      width: calc(100% - 200px);
     }
     &.wider {
       width: calc(100% - 64px);

@@ -1,27 +1,18 @@
 import request from '@/request'
 
-// 查询用户列表
-export function listUser(query) {
+// 分页查询用户列表
+export function pageUser(query) {
   return request({
-    url: '/tob/user/getUserList',
+    url: '/sysUser/getUserList',
     method: 'get',
     params: query
   })
 }
 
-// 新增用户
-export function addUser(data) {
+// 保存用户
+export function saveUser(data) {
   return request({
-    url: '/tob/user/addUser',
-    method: 'post',
-    data: data
-  })
-}
-
-// 修改用户
-export function updateUser(data) {
-  return request({
-    url: '/tob/user/updateUser',
+    url: '/sysUser/save',
     method: 'post',
     data: data
   })
@@ -30,9 +21,8 @@ export function updateUser(data) {
 // 删除用户
 export function delUser(userId) {
   return request({
-    url: '/tob/user/delUser',
-    method: 'get',
-    params: { id: userId }
+    url: '/sysUser/delUser/' + userId,
+    method: 'post'
   })
 }
 

@@ -3,22 +3,22 @@
     <el-form
       :inline="true"
       size="mini"
-      :style="{margin:'0px 0px 5px 0px'}"
       class="user-form"
+      :model="searchForm"
     >
       <el-form-item label="账号:">
-        <el-input v-model="nameLike" placeholder="请输入" size="mini" />
+        <el-input v-model="searchForm.name" placeholder="请输入" size="mini" />
       </el-form-item>
       <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-search" @click="handleRefresh">刷 新</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-check" @click="handleAdd">新 增</el-button>
+      <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleAdd">新 增</el-button>
     </el-form>
     <el-table
+      ref="userTable"
+      v-loading="listLoading"
       border
       :data="tableData"
-      height="390px"
+      :height="tableHeight"
       size="mini"
-      highlight-current-row
     >
       <el-table-column
         type="index"
@@ -59,14 +59,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <p />
-    <el-pagination
-      :current-page="currentPage"
-      :page-size="pagesize"
-      layout="total, prev, pager, next"
-      :total="total"
-      @current-change="handleCurrentChange"
-    />
+    <!-- 分页栏 -->
+    <Pagination :total="total" :page.sync="searchForm.current" :limit.sync="searchForm.size" @pagination="init" />
 
     <el-dialog :visible.sync="userStatus" :title="userTitle" width="30%">
       <el-form ref="userAddForm" :model="userAddForm" :rules="rules" class="dialog-form" label-width="80px">
@@ -243,10 +237,27 @@
 </template>
 
 <script>
+import {
+  pageUser,
+  saveUser,
+  delUser
+} from '@/api/system/user'
+import Pagination from '../../components/Pagination'
 export default {
-  name: 'Dashboard',
+  components: { Pagination },
   data() {
     return {
+      // 数据列表加载动画
+      listLoading: true,
+      // 搜索对象
+      searchForm: {
+        current: 1,
+        size: 10,
+        orgId: '',
+        orgName: '',
+        name: '',
+        code: ''
+      },
       nameLike: '',
       userTitle: '新增用户',
       tableData: [],
@@ -287,12 +298,7 @@ export default {
   },
   methods: {
     init() {
-      var paramData = {
-        loginAccount: this.nameLike,
-        pageNum: this.currentPage,
-        pageSize: this.pagesize
-      }
-      this.$get(this.config.baseUrl + 'bsfUser/getPage', paramData).then(res => {
+      pageUser(this.searchForm).then(res => {
         if (res.success) {
           this.total = parseInt(res.data.total)
           this.tableData = res.data.rows
@@ -331,7 +337,7 @@ export default {
     submitClick() {
       this.$refs['userAddForm'].validate((valid) => {
         if (valid) {
-          this.$formDataPost(this.config.baseUrl + 'bsfUser/save', this.userAddForm, false).then(res => {
+          saveUser(this.userAddForm).then(res => {
             if (res.success) {
               this.$message({
                 type: 'success',
@@ -381,7 +387,7 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$formDataPost(this.config.baseUrl + 'bsfUser/remove/' + row.id, {}, false).then(res => {
+        delUser(row.id).then(res => {
           if (res.success) {
             this.$message({
               type: 'success',
@@ -509,7 +515,6 @@ export default {
         oldUserId: this.selectRow.id,
         newUserId: this.copyUserRow.id
       }
-      alert(JSON.stringify(paramData))
       this.$formDataPost(this.config.baseUrl + 'bsfUserRole/listByUserId/copyUserRole', paramData, false).then(res => {
         if (res.success) {
           this.$message({
@@ -557,7 +562,6 @@ export default {
         id: this.selectRow.id,
         empId: this.selectEmpRow.id
       }
-      alert(JSON.stringify(paramData))
       this.$formDataPost(this.config.baseUrl + 'bsfUser/bindEmp', paramData, false).then(res => {
         if (res.success) {
           this.$message({
@@ -579,11 +583,11 @@ export default {
 </script>
 <style lang="less">
 .user{
-    &-form{
-        .el-form-item{
-            margin-bottom: 0px;
-        }
+  &-form{
+    .el-form-item{
+      margin: 0px 0px 5px 0px
     }
+  }
 }
 </style>
 <style scoped>

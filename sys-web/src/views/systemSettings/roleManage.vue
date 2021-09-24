@@ -3,22 +3,37 @@
     <el-form
       :inline="true"
       size="mini"
-      :style="{margin:'0px 0px 5px 0px'}"
+      :model="searchForm"
       class="role-form"
     >
-      <el-form-item label="角色名称:">
-        <el-input v-model="nameLike" placeholder="请输入" size="mini" />
+      <el-form-item label="所属机构:">
+        <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
+          <el-option
+            v-for="item in orgList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
       </el-form-item>
-      <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-search" @click="handleRefresh">刷 新</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-check" @click="handleAdd">新 增</el-button>
+      <el-form-item label="角色名称:">
+        <el-input v-model="searchForm.name" clearable placeholder="请输入" size="mini" />
+      </el-form-item>
+      <el-form-item label="角色编码:">
+        <el-input v-model="searchForm.code" clearable placeholder="请输入" size="mini" />
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
+        <el-button type="primary" size="mini" icon="el-icon-add" @click="handleAdd">新 增</el-button>
+      </el-form-item>
     </el-form>
     <el-table
+      ref="roleTable"
+      v-loading="listLoading"
       border
       :data="tableData"
-      height="390px"
+      :height="tableHeight"
       size="mini"
-      highlight-current-row
     >
       <el-table-column
         type="index"
@@ -27,13 +42,13 @@
         width="50"
       />
       <el-table-column
-        prop="roleName"
+        prop="name"
         label="角色名称"
         align="center"
       />
       <el-table-column
-        prop="roleDesc"
-        label="角色说明"
+        prop="code"
+        label="角色编码"
         align="center"
       />
       <el-table-column
@@ -48,15 +63,8 @@
         </template>
       </el-table-column>
     </el-table>
-    <p />
-    <el-pagination
-      :current-page="currentPage"
-      :page-size="pagesize"
-      layout="total, prev, pager, next"
-      :total="total"
-      @current-change="handleCurrentChange"
-    />
-
+    <!-- 分页栏 -->
+    <Pagination :total="total" :page.sync="searchForm.current" :limit.sync="searchForm.size" @pagination="init" />
     <el-dialog :visible.sync="relationUserStatus" title="查看关联用户" width="60%" top="10px">
       <el-table
         border
@@ -99,13 +107,16 @@
         <el-button @click="relationUserStatus = false">关 闭</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="roleStatus" :title="roleTitle" width="30%">
-      <el-form ref="roleAddForm" :model="roleAddForm" :rules="rules" class="dialog-form" label-width="80px">
-        <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="roleAddForm.roleName" placeholder="请输入" />
+    <el-dialog :visible.sync="roleStatus" :close-on-click-modal="false" :title="roleTitle" width="400px">
+      <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="80px">
+        <el-form-item label="角色名称" prop="name">
+          <el-input v-model="roleForm.name" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="角色说明">
-          <el-input v-model="roleAddForm.roleDesc" placeholder="请输入" />
+        <el-form-item label="角色编码" prop="code">
+          <el-input v-model="roleForm.code" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="所属机构">
+          <el-input v-model="searchForm.orgName" placeholder="请输入" disabled />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -139,25 +150,60 @@
 </template>
 
 <script>
+import {
+  pageRole,
+  saveRole,
+  delRole
+} from '@/api/system/role'
+import {
+  listOrg
+} from '@/api/system/org'
+import Pagination from '../../components/Pagination'
 export default {
-  name: 'Dashboard',
+  components: { Pagination },
   data() {
     return {
-      nameLike: '',
-      roleTitle: '新增角色',
+      // 数据列表加载动画
+      listLoading: true,
+      // 搜索对象
+      searchForm: {
+        current: 1,
+        size: 10,
+        orgId: '',
+        orgName: '',
+        name: '',
+        code: ''
+      },
+      tableHeight: '200px',
       tableData: [],
-      currentPage: 1,
-      pagesize: 10,
       total: 0,
+      orgList: [],
+      roleTitle: '新增角色',
       roleStatus: false,
-      roleAddForm: {},
+      // 新增、编辑角色信息对象
+      roleForm: {
+        // 主键
+        id: '',
+        // 机构ID
+        orgId: '',
+        // 机构名称
+        orgName: '',
+        // 角色名称
+        name: '',
+        // 角色编码
+        code: ''
+      },
       rules: {
-        roleName: [
+        name: [
           { required: true, message: '请输入角色名称', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入角色编码', trigger: 'blur' }
         ]
       },
       selectRow: {},
       menuStatus: false,
+      // 菜单搜索关键字
       filterText: '',
       menuData: [],
       relationMenus: [],
@@ -174,64 +220,79 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
-  created: function() {
+  async created() {
+    // 机构列表初始化
+    await this.orgListInit()
     this.init()
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.tableHeight = window.innerHeight - this.$refs['roleTable'].$el.offsetTop - 180
+    })
+  },
   methods: {
+    // 角色列表初始化
     init() {
-      var paramData = {
-        pageNum: this.currentPage,
-        pageSize: this.pagesize,
-        roleName: this.nameLike
-      }
-      this.$get(this.config.baseUrl + 'bsfRole/page', paramData).then(res => {
-        if (res.success) {
-          this.total = parseInt(res.data.total)
-          this.tableData = res.data.rows
-        }
+      this.listLoading = true
+      pageRole(this.searchForm).then(res => {
+        this.total = parseInt(res.total)
+        this.tableData = res.records
+        this.listLoading = false
       })
     },
-    handleCurrentChange(currentPage) {
-      this.currentPage = currentPage
-      this.init()
+    async orgListInit() {
+      await listOrg().then(res => {
+        this.orgList = res
+        this.searchForm.orgId = this.orgList[0].id
+        this.searchForm.orgName = this.orgList[0].name
+      })
     },
     handleSearch() {
       this.init()
     },
-    handleRefresh() {
-      this.nameLike = ''
-      this.currentPage = 1
-      this.init()
-    },
     handleAdd() {
       this.roleTitle = '新增角色'
-      this.roleAddForm = {}
+      Object.keys(this.roleForm).map(key => {
+        this.roleForm[key] = ''
+      })
+      this.roleStatus = true
+    },
+    handleEdit(row) {
+      this.roleTitle = '编辑角色'
+      Object.keys(this.roleForm).map(key => {
+        this.roleForm[key] = row[key]
+      })
       this.roleStatus = true
     },
     submitClick() {
-      this.$refs['roleAddForm'].validate((valid) => {
+      this.$refs['roleForm'].validate((valid) => {
         if (valid) {
-          this.$formDataPost(this.config.baseUrl + 'bsfRole/save', this.roleAddForm, false).then(res => {
-            if (res.success) {
-              this.$message({
-                type: 'success',
-                message: '操作成功'
-              })
-              this.roleStatus = false
-              this.roleAddForm = {}
-              this.init()
-            } else {
-              this.$message({
-                type: 'warning',
-                message: '操作失败'
-              })
-              return false
-            }
+          this.roleForm.orgId = this.searchForm.orgId
+          this.roleForm.orgName = this.searchForm.orgName
+          saveRole(this.roleForm).then(res => {
+            this.$message({
+              type: 'success',
+              message: '操作成功'
+            })
+            this.roleStatus = false
+            this.init()
           })
-        } else {
-          console.log('error submit!!')
-          return false
         }
+      })
+    },
+    handleRemove(row) {
+      this.$confirm('此操作将删除选中记录, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        delRole(row.id).then(res => {
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.init()
+        })
       })
     },
     handleRelationUser(row) {
@@ -261,40 +322,6 @@ export default {
             this.relationMenus.push(element.menuId)
           })
         }
-      })
-    },
-    handleEdit(row) {
-      this.roleTitle = '编辑角色'
-      delete row.createTime
-      delete row.updateTime
-      const addForm = {}
-      Object.keys(row).map(key => {
-        addForm[key] = row[key]
-      })
-      this.roleAddForm = addForm
-      this.roleStatus = true
-    },
-    handleRemove(row) {
-      this.$confirm('此操作将删除选中记录以及子记录, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$formDataPost(this.config.baseUrl + 'bsfRole/remove/' + row.id, {}, false).then(res => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.init()
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '操作失败'
-            })
-            return false
-          }
-        })
       })
     },
     filterNode(value, data) {
@@ -337,11 +364,11 @@ export default {
 </script>
 <style lang="less">
 .role{
-    &-form{
-        .el-form-item{
-            margin-bottom: 0px;
-        }
+  &-form{
+    .el-form-item{
+      margin: 0px 0px 5px 0px
     }
+  }
 }
 </style>
 <style scoped>

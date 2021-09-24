@@ -6,7 +6,7 @@
       class="dept-form"
     >
       <el-form-item label="所属机构:">
-        <el-select v-model="orgId" clearable filterable placeholder="请选择">
+        <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
           <el-option
             v-for="item in orgList"
             :key="item.id"
@@ -19,7 +19,7 @@
       <el-button type="primary" size="mini" icon="el-icon-add" @click="handleAdd">新 增</el-button>
     </el-form>
     <el-table
-      ref="deptData"
+      ref="deptTable"
       v-loading="listLoading"
       border
       :data="tableData"
@@ -97,7 +97,7 @@
           <el-select v-model="deptForm.parentId" clearable filterable placeholder="请选择" style="width:100%;">
             <el-option
               v-for="item in deptList"
-              v-show="deptForm.parentId != item.id"
+              v-show="deptForm.id != item.id"
               :key="item.id"
               :label="item.deptName"
               :value="item.id"
@@ -106,6 +106,9 @@
         </el-form-item>
         <el-form-item label="联系电话">
           <el-input v-model="deptForm.phone" placeholder="请输入" />
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="deptForm.email" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="显示排序">
           <el-input v-model="deptForm.orderNum" placeholder="请输入" type="number" />
@@ -133,7 +136,10 @@ export default {
     return {
       // 数据列表加载动画
       listLoading: false,
-      orgId: '1438844617070034946',
+      searchForm: {
+        orgId: '',
+        orgName: ''
+      },
       tableData: [],
       tableHeight: '200px',
       orgList: [],
@@ -153,6 +159,8 @@ export default {
         parentId: '',
         // 联系电话
         phone: '',
+        // 邮箱
+        email: '',
         // 显示排序
         orderNum: ''
       },
@@ -171,34 +179,39 @@ export default {
       businessTypeSelect: []
     }
   },
-  created: function() {
+  async created() {
+    // 机构列表初始化
+    await this.orgListInit()
     this.init()
   },
   mounted() {
     this.$nextTick(() => {
-      this.tableHeight = window.innerHeight - this.$refs['deptData'].$el.offsetTop - 180
+      this.tableHeight = window.innerHeight - this.$refs['deptTable'].$el.offsetTop - 180
     })
   },
   methods: {
     init() {
       this.listLoading = true
-      listDept(this.orgId).then(res => {
+      listDept(this.searchForm.orgId).then(res => {
+        res.forEach(item => {
+          item.orgName = this.searchForm.orgName
+        })
         this.tableData = res
         this.listLoading = false
       })
       // 科室列表初始化
       this.deptListInit()
-      // 机构列表初始化
-      this.orgListInit()
     },
     deptListInit() {
-      listDept(this.orgId).then(res => {
+      listDept(this.searchForm.orgId).then(res => {
         this.deptList = res
       })
     },
-    orgListInit() {
-      listOrg().then(res => {
+    async orgListInit() {
+      await listOrg().then(res => {
         this.orgList = res
+        this.searchForm.orgId = this.orgList[0].id
+        this.searchForm.orgName = this.orgList[0].name
       })
     },
     handleSearch() {
@@ -220,6 +233,15 @@ export default {
       this.deptStatus = true
     },
     submitClick() {
+      if (this.deptForm.id) {
+        if (this.deptForm.id === this.deptForm.parentId) {
+          this.$message({
+            type: 'warning',
+            message: '请重新选择，不能以自己作为上级科室'
+          })
+          return false
+        }
+      }
       this.$refs['deptForm'].validate((valid) => {
         if (valid) {
           saveDept(this.deptForm).then(res => {
@@ -261,11 +283,11 @@ export default {
 </script>
 <style lang="less">
 .dept{
-    &-form{
-        .el-form-item{
-            margin: 0px 0px 5px 0px
-        }
+  &-form{
+    .el-form-item{
+      margin: 0px 0px 5px 0px
     }
+  }
 }
 </style>
 <style scoped>

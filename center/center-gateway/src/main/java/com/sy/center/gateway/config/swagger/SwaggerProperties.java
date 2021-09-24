@@ -15,7 +15,7 @@ import java.util.Set;
  * @Company: XWY有限公司
  * @Version: V1.0
  */
-@ConfigurationProperties("xwy.swagger")
+@ConfigurationProperties("sy.swagger")
 @RefreshScope
 public class SwaggerProperties {
 
