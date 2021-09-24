@@ -15,11 +15,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.sy.center.common.utils.MD5Util;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysUser;
 import com.sy.sys.service.SysUserService;
+import com.sy.sys.vo.SysUserVo;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,9 +68,9 @@ public class SysUserController {
 
     @ApiOperation(value = "用户表-根据ID获取", notes = "用户表-根据ID获取")
     @GetMapping("/{id}")
-    public DataformResult<SysUser> getById(@PathVariable("id") Long id) {
-        SysUser sysUser = sysUserService.getById(id);
-        return DataformResult.success(sysUser);
+    public DataformResult<SysUserVo> getById(@PathVariable("id") Long id) {
+        SysUserVo sysUserVo = sysUserService.getVoById(id);
+        return DataformResult.success(sysUserVo);
     }
     
     @ApiOperation(value = "用户表-系统登陆", notes = "用户表-系统登陆")
@@ -96,5 +99,15 @@ public class SysUserController {
 		}else {
 			return DataformResult.failure("输入的密码不正确");
 		}
+    }
+    
+    @ApiOperation(value = "用户表-分页查询", notes = "用户表-分页查询")
+    @GetMapping("/pageListVo")
+    public DataformResult<IPage<SysUserVo>> pageListVo(Page page, Long orgId, Long deptId, String name, String userName, String noNum) {
+    	if(orgId==null) {
+    		return DataformResult.failure("机构编码不允许为空");
+    	}    	
+    	IPage<SysUserVo> result = sysUserService.pageListVo(page, orgId, deptId, name, userName, noNum);
+    	return DataformResult.success(result);
     }
 }

@@ -17,7 +17,7 @@ import com.sy.center.framework.utils.DataformResult;
  *  
  */
 
-@RestControllerAdvice(annotations = RestController.class)
+// @RestControllerAdvice(annotations = RestController.class)
 public class MyGlobalExceptionHandler {
 	private final Logger logger = LoggerFactory.getLogger(MyGlobalExceptionHandler.class);
 	

@@ -28,10 +28,41 @@
         <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
         <result column="ORG_ID" property="orgId" />
         <result column="DEPT_ID" property="deptId" />
+        <result column="POST_CODE" property="post_code" />
     </resultMap>
 
     <!-- BaseResultMap和表字段一致，不允许改动 -->
     <sql id="base_column">
-        ID, NAME, USERNAME, PASSWORD, NO_NUM, JOB_TITLE_CODE, IDCARD, GENDER_CODE, NATION_CODE, GOOD_AT_FIELD, PERSONAL_PROFILE, AVATAR, OFFICE_PHONE, IS_ENABLED, ENABLE_DATE, DISABLED_DATE, IS_DELETED, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_ID, DEPT_ID
+        ID, NAME, USERNAME, PASSWORD, NO_NUM, JOB_TITLE_CODE, IDCARD, GENDER_CODE, NATION_CODE, GOOD_AT_FIELD, PERSONAL_PROFILE, AVATAR, OFFICE_PHONE, IS_ENABLED, ENABLE_DATE, DISABLED_DATE, IS_DELETED, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_ID, DEPT_ID, POST_CODE
     </sql>
+    
+    <select id="getSysUserVoById" resultType="com.sy.sys.vo.SysUserVo">
+    	SELECT t.*,
+			(SELECT NAME FROM SYS_ORG WHERE SYS_ORG.ID = t.ORG_ID) ORG_NAME,
+			(SELECT DEPT_NAME FROM SYS_DEPT WHERE SYS_DEPT.ID  = t.DEPT_ID) DEPT_NAME,
+			(SELECT DICT_LABEL FROM SYS_DICT_DATA WHERE SYS_DICT_DATA.DICT_TYPE = 'JOB' AND SYS_DICT_DATA.DICT_VALUE = t.JOB_TITLE_CODE) JOB_NAME,
+			(SELECT DICT_LABEL FROM SYS_DICT_DATA WHERE SYS_DICT_DATA.DICT_TYPE = 'POST' AND SYS_DICT_DATA.DICT_VALUE = t.POST_CODE) POST_NAME,
+			(SELECT DICT_LABEL FROM SYS_DICT_DATA WHERE SYS_DICT_DATA.DICT_TYPE = 'SEX' AND SYS_DICT_DATA.DICT_VALUE = t.GENDER_CODE) GENDER_NAME
+		FROM SYS_USER t
+		WHERE t.ID = #{id}
+    </select>
+    
+    <select id="pageListVo" resultType="com.sy.sys.vo.SysUserVo">
+    	SELECT t.*,
+			(SELECT NAME FROM SYS_ORG WHERE SYS_ORG.ID = t.ORG_ID) ORG_NAME,
+			(SELECT DEPT_NAME FROM SYS_DEPT WHERE SYS_DEPT.ID  = t.DEPT_ID) DEPT_NAME,
+			(SELECT DICT_LABEL FROM SYS_DICT_DATA WHERE SYS_DICT_DATA.DICT_TYPE = 'JOB' AND SYS_DICT_DATA.DICT_VALUE = t.JOB_TITLE_CODE) JOB_NAME,
+			(SELECT DICT_LABEL FROM SYS_DICT_DATA WHERE SYS_DICT_DATA.DICT_TYPE = 'POST' AND SYS_DICT_DATA.DICT_VALUE = t.POST_CODE) POST_NAME,
+			(SELECT DICT_LABEL FROM SYS_DICT_DATA WHERE SYS_DICT_DATA.DICT_TYPE = 'SEX' AND SYS_DICT_DATA.DICT_VALUE = t.GENDER_CODE) GENDER_NAME
+		FROM SYS_USER t
+		<where>
+			<if test="orgId != null">and t.ORG_ID = #{orgId}</if>
+			<if test="deptId != null">and t.DEPT_ID = #{deptId}</if>
+			<if test="name != null and name != ''">
+				and t.NAME like '%${name}%'
+			</if>
+			<if test="userName != null and userName != ''">and t.USERNAME = #{userName}</if>
+			<if test="noNum != null and noNum != ''">and t.no_num = #{noNum}</if>
+		</where>
+    </select>
 </mapper>

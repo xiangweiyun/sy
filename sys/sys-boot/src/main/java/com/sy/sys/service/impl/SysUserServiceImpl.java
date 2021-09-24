@@ -1,19 +1,24 @@
 package com.sy.sys.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sy.sys.entity.SysUser;
 import com.sy.sys.entity.SysUserOrgDept;
 import com.sy.sys.mapper.SysUserMapper;
 import com.sy.sys.service.SysUserOrgDeptService;
 import com.sy.sys.service.SysUserService;
+import com.sy.sys.vo.SysUserVo;
 
 /**
  * <p>
@@ -28,6 +33,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	
 	@Autowired
 	private SysUserOrgDeptService sysUserOrgDeptService;
+	
+	@Autowired
+	private SysUserMapper sysUserMapper;
 	
 	/* 
 	 * 保存用户数据
@@ -97,6 +105,28 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		sysUserOrgDept.setDeptId(sysUser.getDeptId());
 		sysUserOrgDept.setHasMain(true);
 		listNewUserOrgDept.add(sysUserOrgDept);
+	}
+
+	/* 
+	 * 根据ID 获取用户信息
+	 */
+	@Override
+	public SysUserVo getVoById(Long id) {
+		// TODO Auto-generated method stub
+		return sysUserMapper.getSysUserVoById(id);
+	}
+
+	/* 
+	 * 分页查询用户信息
+	 */
+	@Override
+	public IPage<SysUserVo> pageListVo(Page page, Long orgId, Long deptId, String name, String userName, String noNum) {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		Page<SysUser> pageParam = page;
+		IPage<SysUserVo> pageResult = sysUserMapper.pageListVo(pageParam, orgId, deptId, name, userName, noNum);
+        return pageResult;
 	}
 	
 }

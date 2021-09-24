@@ -116,9 +116,9 @@ public class SysOrg extends BaseEntity {
     private String orgType;
     
     /**
-     * 机构类型
+     * 机构地址
      */
-    @ApiModelProperty(value = "机构类型")
+    @ApiModelProperty(value = "机构地址")
     @TableField("org_address")
     private String orgAddress;
 }

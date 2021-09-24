@@ -20,11 +20,12 @@
         <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
         <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
         <result column="ORG_TYPE" property="orgType" />
+        <result column="ORG_ADDRESS" property="orgAddress" />
     </resultMap>
 
     <!-- BaseResultMap和表字段一致，不允许改动 -->
     <sql id="base_column">
-        ID, PARENT_ID, CODE, NAME, LEVEL_CODE, LONGITUDE, LATITUDE, PHONE, ORG_PROFILE, PICTURE, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_TYPE
+        ID, PARENT_ID, CODE, NAME, LEVEL_CODE, LONGITUDE, LATITUDE, PHONE, ORG_PROFILE, PICTURE, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_TYPE, ORG_ADDRESS
     </sql>	
     
     <select id="listChildById" resultType="com.sy.sys.vo.SysOrgVo">

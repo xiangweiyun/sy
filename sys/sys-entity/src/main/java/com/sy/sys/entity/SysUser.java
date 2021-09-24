@@ -60,6 +60,9 @@ public class SysUser extends BaseEntity {
     public static final String ORG_ID = "ORG_ID";
     /** 直属部门. */
     public static final String DEPT_ID = "DEPT_ID";
+    /** 职务编码. */
+    public static final String POST_CODE = "POST_CODE";
+    
 
     /**
      * 用户姓名
@@ -186,4 +189,11 @@ public class SysUser extends BaseEntity {
     @ApiModelProperty(value = "直属部门")
     @TableField("DEPT_ID")
     private Long deptId;
+    
+    /**
+     * 职务编码
+     */
+    @ApiModelProperty(value = "职务编码")
+    @TableField("POST_CODE")
+    private Long postCode;
 }
