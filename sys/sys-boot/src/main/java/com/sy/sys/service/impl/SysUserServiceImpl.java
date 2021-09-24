@@ -122,10 +122,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	@Override
 	public IPage<SysUserVo> pageListVo(Page page, Long orgId, Long deptId, String name, String userName, String noNum) {
 		// TODO Auto-generated method stub
-		Map<String, Object> map = new HashMap<String, Object>();
-		
 		Page<SysUser> pageParam = page;
 		IPage<SysUserVo> pageResult = sysUserMapper.pageListVo(pageParam, orgId, deptId, name, userName, noNum);
+        return pageResult;
+	}
+
+	/* 
+	 * 根据角色ID分页查询用户信息
+	 */
+	@Override
+	public IPage<SysUserVo> pageListVoByRoleId(Page page, Long roleId) {
+		// TODO Auto-generated method stub
+		Page<SysUser> pageParam = page;
+		IPage<SysUserVo> pageResult = sysUserMapper.pageListVoByRoleId(pageParam, roleId);
         return pageResult;
 	}
 	

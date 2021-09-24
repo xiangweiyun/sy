@@ -119,4 +119,14 @@ public class SysUserController {
     	IPage<SysUserVo> result = sysUserService.pageListVo(page, orgId, deptId, name, userName, noNum);
     	return DataformResult.success(result);
     }
+    
+    @ApiOperation(value = "用户表-根据角色ID分页查询", notes = "用户表-根据角色ID分页查询")
+    @GetMapping("/pageListVoByRoleId")
+    public DataformResult<IPage<SysUserVo>> pageListVoByRoleId(Page page, Long roleId) {
+    	if(roleId==null) {
+    		return DataformResult.failure("角色编码不允许为空");
+    	}    	
+    	IPage<SysUserVo> result = sysUserService.pageListVoByRoleId(page, roleId);
+    	return DataformResult.success(result);
+    }
 }

@@ -1,7 +1,5 @@
 package com.sy.sys.mapper;
 
-import java.util.Map;
-
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -21,4 +19,5 @@ import com.sy.sys.vo.SysUserVo;
 public interface SysUserMapper extends BaseMapper<SysUser> {
 	IPage<SysUserVo> pageListVo(Page<SysUser> page, @Param("orgId") Long orgId, @Param("deptId") Long deptId, @Param("name") String name, @Param("userName") String userName, @Param("noNum") String noNum);
 	SysUserVo getSysUserVoById(Long id);
+	IPage<SysUserVo> pageListVoByRoleId(Page<SysUser> page, @Param("roleId") Long roleId);
 }

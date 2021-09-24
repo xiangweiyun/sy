@@ -18,4 +18,5 @@ public interface SysUserService extends IService<SysUser> {
 	boolean saveUser(SysUser sysUser);
 	SysUserVo getVoById(Long id);
 	IPage<SysUserVo> pageListVo(Page page, Long orgId, Long deptId, String name, String userName, String noNum);
+	IPage<SysUserVo> pageListVoByRoleId(Page page, Long roleId);
 }
