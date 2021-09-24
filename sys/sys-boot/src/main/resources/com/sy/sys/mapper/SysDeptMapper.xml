@@ -36,4 +36,15 @@
 		FROM SYS_DEPT t
 		WHERE t.id = #{id}
     </select>
+    
+    <select id="listParentByOrgIdAndDeptId" resultType="com.sy.sys.entity.SysDept" parameterType="hashMap">
+    	SELECT ID,CODE,DEPT_NAME
+		FROM SYS_DEPT
+		WHERE ORG_ID = #{orgId} AND ID NOT IN(
+			SELECT DISTINCT ID
+			FROM SYS_DEPT T
+			WHERE ORG_ID = #{orgId}
+			START WITH  ID = #{deptId}
+			CONNECT BY PRIOR ID = PARENT_ID)
+    </select>
 </mapper>

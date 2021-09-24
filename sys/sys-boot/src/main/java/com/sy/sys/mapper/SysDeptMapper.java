@@ -1,5 +1,8 @@
 package com.sy.sys.mapper;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.repository.query.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
@@ -16,4 +19,5 @@ import com.sy.sys.vo.SysDeptVo;
  */
 public interface SysDeptMapper extends BaseMapper<SysDept> {
 	SysDeptVo getVoById(@Param("id") Long id);
+	List<SysDept> listParentByOrgIdAndDeptId(Map<String, Object> map);
 }

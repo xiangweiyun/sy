@@ -63,10 +63,9 @@ public class SysDeptController {
          return DataformResult.success(voList);
      }
      
-     @ApiOperation(value = "系统部门-部门列表", notes = "用于部门新增及修改时  新增时 deptId不传值")
-     @GetMapping("/listSelectById")
-     public DataformResult<SysDept> listSelectById(Long orgId, Long deptId) {
-         
-         return DataformResult.success();
+     @ApiOperation(value = "系统部门-选择上级科室", notes = "用于部门新增及修改时选择上线科室   新增时 deptId不传值")
+     @GetMapping("/listParentByOrgIdAndDeptId")
+     public DataformResult<List<SysDept>> listParentByOrgIdAndDeptId(Long orgId, Long deptId) {
+         return DataformResult.success(sysDeptService.listParentByOrgIdAndDeptId(orgId, deptId));
      }
 }

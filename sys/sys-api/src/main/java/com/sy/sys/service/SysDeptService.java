@@ -38,4 +38,13 @@ public interface SysDeptService extends IService<SysDept> {
      * @return
      */
     SysDeptVo getVoById(Long id);
+    
+    
+    /**
+     * 用于部门新增及修改时  新增时 deptId不传值
+     * @param orgId
+     * @param deptId
+     * @return
+     */
+    public List<SysDept> listParentByOrgIdAndDeptId(Long orgId, Long deptId);
 }
