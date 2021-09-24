@@ -2,8 +2,7 @@ package com.sy.sys.vo.user;
 
 import java.util.List;
 
-import com.sy.sys.entity.SysOrg;
-import com.sy.sys.vo.SysUserOrgDeptVo;
+import com.sy.sys.vo.SysMenuVo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -55,9 +54,12 @@ public class User {
 	private String postName;
 	
 	@ApiModelProperty(value = "所属机构")
-	private List<SysOrg> listOrg;
+	private List<Org> listOrg;
 	
 	@ApiModelProperty(value = "所属部门")
-	private List<SysUserOrgDeptVo> listDept;
+	private List<Dept> listDept;
+	
+	@ApiModelProperty(value = "菜单")
+	private List<SysMenuVo> listMenu;
 	
 }

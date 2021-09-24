@@ -97,7 +97,7 @@ public class SysUser extends BaseEntity {
      */
     @ApiModelProperty(value = "职称代码")
     @TableField("JOB_TITLE_CODE")
-    private Long jobTitleCode;
+    private String jobTitleCode;
 
     /**
      * 身份证号
@@ -195,5 +195,5 @@ public class SysUser extends BaseEntity {
      */
     @ApiModelProperty(value = "职务编码")
     @TableField("POST_CODE")
-    private Long postCode;
+    private String postCode;
 }
