@@ -12,11 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sy.center.framework.utils.DataformResult;
-import com.sy.sys.entity.SysOrg;
 import com.sy.sys.service.SysMenuService;
 import com.sy.sys.service.SysUserOrgDeptService;
 import com.sy.sys.service.SysUserService;
-import com.sy.sys.vo.SysDeptVo;
 import com.sy.sys.vo.SysMenuVo;
 import com.sy.sys.vo.SysUserOrgDeptVo;
 import com.sy.sys.vo.SysUserVo;

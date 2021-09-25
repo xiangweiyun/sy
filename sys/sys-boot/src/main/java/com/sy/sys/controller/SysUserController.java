@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,13 +46,19 @@ public class SysUserController {
 	private final Logger logger = LoggerFactory.getLogger(SysUserController.class);
 	@Autowired
     private SysUserService sysUserService;
+	
+	@Value("${initialPassword}")
+	private String initialPassword;
     
     @ApiOperation(value = "用户表-保存", notes = "用户表-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysUser sysUser) {
         if (null == sysUser.getId()) {
         	if(sysUser.getPassword()==null || sysUser.getPassword().isEmpty()) {
-        		return DataformResult.failure("初始密码不能为空");
+        		if(initialPassword==null) {
+        			return DataformResult.failure("初始密码不能为空");
+        		}
+        		sysUser.setPassword(initialPassword);
         	}
         	sysUser.setPassword(MD5Util.encrypt(sysUser.getPassword()));
         } else {
@@ -128,5 +135,56 @@ public class SysUserController {
     	}    	
     	IPage<SysUserVo> result = sysUserService.pageListVoByRoleId(page, roleId);
     	return DataformResult.success(result);
+    }
+    
+    @ApiOperation(value = "重置密码", notes = "重置密码")
+    @PostMapping("resetPassword")
+    public DataformResult<String> resetPassword(Long userId){
+    	if(initialPassword==null) {
+			return DataformResult.failure("初始密码为空， 无法重置密码");
+		}
+    	SysUser sysUser = sysUserService.getById(userId);
+    	if(sysUser == null) {
+    		return DataformResult.failure("系统未找到该用户信息");
+    	}
+    	SysUser sysUserUpdate = new SysUser();
+    	sysUserUpdate.setId(userId);
+    	sysUserUpdate.setPassword(MD5Util.encrypt(initialPassword));
+    	sysUserService.updateById(sysUserUpdate);
+    	
+    	return DataformResult.success();
+    }
+    
+    @ApiOperation(value = "修改密码", notes = "修改密码")
+    @ApiImplicitParams({
+    	@ApiImplicitParam(required = false, name = "userId", value = "用户ID", dataType = "Long"),
+        @ApiImplicitParam(required = false, name = "userName", value = "用户帐号", dataType = "String"),
+        @ApiImplicitParam(required = false, name = "oldPwd", value = "旧密码", dataType = "String"),
+        @ApiImplicitParam(required = false, name = "newPwd", value = "新密码", dataType = "String")})
+    @PostMapping("modifyPassword")
+    public DataformResult<String> modifyPassword(Long userId, String userName, String oldPwd, String newPwd){
+    	if(userId == null || userName == null || oldPwd == null || newPwd == null) {
+    		return DataformResult.failure("传值不完整");
+    	}
+    	
+    	SysUser sysUser = sysUserService.getById(userId);
+    	if(sysUser == null) {
+    		return DataformResult.failure("系统未找到该用户信息");
+    	}
+    	
+    	if(!sysUser.getUsername().equals(userName)) {
+    		return DataformResult.failure("用户帐号不正确");
+    	}
+    	
+    	if(!sysUser.getPassword().equals(MD5Util.encrypt(oldPwd))) {
+    		return DataformResult.failure("用户原始密码不正确");
+    	}
+    	
+    	SysUser sysUserUpdate = new SysUser();
+    	sysUserUpdate.setId(userId);
+    	sysUserUpdate.setPassword(MD5Util.encrypt(newPwd));
+    	sysUserService.updateById(sysUserUpdate);
+    	
+    	return DataformResult.success();
     }
 }
