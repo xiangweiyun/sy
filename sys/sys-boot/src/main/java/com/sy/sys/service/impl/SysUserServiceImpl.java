@@ -137,5 +137,40 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 		IPage<SysUserVo> pageResult = sysUserMapper.pageListVoByRoleId(pageParam, roleId);
         return pageResult;
 	}
+
+	/* 
+	 * 帐号重覆性检查
+	 */
+	@Override
+	public boolean accountRepeatCheck(SysUser sysUser, Boolean organAccountAllowRepeat) {
+		// TODO Auto-generated method stub
+		if(null == organAccountAllowRepeat) {
+			organAccountAllowRepeat = false;
+		}
+		
+		QueryWrapper<SysUser> wrapper = Wrappers.query();
+		if(organAccountAllowRepeat) {
+			wrapper.eq(SysUser.ORG_ID, sysUser.getOrgId()).eq(SysUser.USERNAME, sysUser.getUsername());
+		}else {
+			wrapper.eq(SysUser.USERNAME, sysUser.getUsername());
+		}
+		List<SysUser> list = super.list(wrapper);
+		if(null == sysUser.getId()) {
+			if(!(list== null || list.size() == 0)) {
+				return true;
+			}
+		}else {
+			if(list != null && list.size() > 0) {
+				if(list.size() == 1) {
+					if(!list.get(0).getId().equals(sysUser.getId())) {
+						return true;
+					}
+				}else {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 }
