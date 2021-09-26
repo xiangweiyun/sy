@@ -23,7 +23,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import SideMenuItem from './SideMenuItem'
-import dataJson from '@/json/menuJson.json'
 
 export default {
   name: 'SideMenu',
@@ -48,8 +47,8 @@ export default {
     }
   },
   mounted() {
-    // const menus = this.$store.state.user.menus
-    this.menuData = dataJson.data
+    const menus = this.$store.state.user.menus
+    this.menuData = menus
   }
 }
 </script>

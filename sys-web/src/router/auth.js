@@ -1,6 +1,7 @@
 import router from './index'
 import { getToken } from '../utils/cookie'
 import store from '@/store'
+import { Message } from 'element-ui'
 import NProgress from 'nprogress'
 
 // 白名单列表
@@ -17,12 +18,23 @@ router.beforeEach((to, from, next) => {
       if (router.options.isAddDynamicMenuRoutes) {
         next()
       } else {
-        store.dispatch('GetMenuInfo').then(accessRoutes => {
-        // 根据roles权限生成可访问的路由表
-          console.log(accessRoutes)
-          router.addRoutes(accessRoutes) // 动态添加可访问路由表
-          router.options.isAddDynamicMenuRoutes = true
-          next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+        const param = {
+          appId: window.CONFIG.SYSTEM_APP_ID
+        }
+        // 获取用户信息
+        store.dispatch('GetInfo', param).then(res => {
+          store.dispatch('GetMenuInfo', res.id).then(accessRoutes => {
+            // 根据roles权限生成可访问的路由表
+            console.log(accessRoutes)
+            router.addRoutes(accessRoutes) // 动态添加可访问路由表
+            router.options.isAddDynamicMenuRoutes = true
+            next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
+          })
+        }).catch((err) => {
+          store.dispatch('FedLogOut').then(() => {
+            Message.error(err)
+            next({ path: '/' })
+          })
         })
       }
     }

@@ -9,9 +9,9 @@
         <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
           <el-option
             v-for="item in orgList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
+            :key="item.orgId"
+            :label="item.orgName"
+            :value="item.orgId"
           />
         </el-select>
       </el-form-item>
@@ -51,14 +51,7 @@
           <el-input v-model="deptForm.code" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="所属机构" prop="orgId">
-          <el-select v-model="deptForm.orgId" filterable placeholder="请选择" style="width:100%;">
-            <el-option
-              v-for="item in orgList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            />
-          </el-select>
+          <el-input v-model="deptForm.orgName" placeholder="请输入" disabled />
         </el-form-item>
         <el-form-item label="上级科室">
           <el-select v-model="deptForm.parentId" clearable filterable placeholder="请选择" style="width:100%;">
@@ -96,9 +89,6 @@ import {
   delDept,
   listParentByOrgIdAndDeptId
 } from '@/api/system/dept'
-import {
-  listOrg
-} from '@/api/system/org'
 export default {
   data() {
     return {
@@ -148,10 +138,14 @@ export default {
       businessTypeSelect: []
     }
   },
-  async created() {
+  created() {
     this.size = window.CONFIG.SYSTEM_SIZE
     // 机构列表初始化
-    await this.orgListInit()
+    if (this.$store.state) {
+      this.orgList = this.$store.state.user.userInfo.listOrg
+      this.searchForm.orgId = this.orgList[0].orgId
+      this.searchForm.orgName = this.orgList[0].orgName
+    }
     this.init()
   },
   mounted() {
@@ -163,9 +157,6 @@ export default {
     init() {
       this.listLoading = true
       listDept(this.searchForm.orgId).then(res => {
-        res.forEach(item => {
-          item.orgName = this.searchForm.orgName
-        })
         this.tableData = res
         this.listLoading = false
       })
@@ -179,13 +170,6 @@ export default {
       }
       listParentByOrgIdAndDeptId(param).then(res => {
         this.parentDeptList = res
-      })
-    },
-    async orgListInit() {
-      await listOrg().then(res => {
-        this.orgList = res
-        this.searchForm.orgId = this.orgList[0].id
-        this.searchForm.orgName = this.orgList[0].name
       })
     },
     handleSearch() {

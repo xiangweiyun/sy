@@ -10,9 +10,9 @@
         <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
           <el-option
             v-for="item in orgList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
+            :key="item.orgId"
+            :label="item.orgName"
+            :value="item.orgId"
           />
         </el-select>
       </el-form-item>
@@ -128,7 +128,7 @@
           </el-form-item>
           <el-form-item label="名族">
             <el-select
-              v-model="orgForm.nationCode"
+              v-model="userForm.nationCode"
               clearable
               placeholder="请选择"
               style="width: 100%"
@@ -143,7 +143,7 @@
           </el-form-item>
           <el-form-item label="职务">
             <el-select
-              v-model="orgForm.postCode"
+              v-model="userForm.postCode"
               clearable
               placeholder="请选择"
               style="width: 100%"
@@ -161,25 +161,57 @@
           <el-form-item label="工号" prop="noNum">
             <el-input v-model="userForm.noNum" placeholder="请输入" />
           </el-form-item>
-          <el-form-item label="密码">
-            <el-input v-model="userForm.password" placeholder="初始密码为[1]" show-password />
+          <el-form-item label="是否启用">
+            <el-select v-model="userForm.isEnabled" filterable placeholder="请选择" style="width:100%;">
+              <el-option
+                v-for="item in enabledList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="所属科室" prop="deptId">
-            <el-select v-model="userForm.deptId" filterable placeholder="请选择" style="width: 100%;">
-              <el-option label="机构用户" value="1" />
+            <el-select v-model="userForm.deptId" filterable placeholder="请选择" style="width:100%;">
+              <el-option
+                v-for="item in parentDeptData"
+                :key="item.id"
+                :label="item.deptName"
+                :value="item.id"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="性别">
-            <el-select v-model="userForm.genderCode" placeholder="请选择" style="width: 100%;">
-              <el-option label="机构用户" value="1" />
+            <el-select
+              v-model="userForm.genderCode"
+              clearable
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in sexList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
             </el-select>
           </el-form-item>
           <el-form-item label="联系电话">
             <el-input v-model="userForm.officePhone" placeholder="请输入" />
           </el-form-item>
           <el-form-item label="职称">
-            <el-select v-model="userForm.jobTitleCode" placeholder="请选择" style="width: 100%;">
-              <el-option label="机构用户" value="1" />
+            <el-select
+              v-model="userForm.jobTitleCode"
+              clearable
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in jobList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
             </el-select>
           </el-form-item>
         </el-col>
@@ -311,16 +343,16 @@ import {
   saveUser,
   delUser,
   listUserRelationRole,
-  saveUserRelationRole
+  saveUserRelationRole,
+  resetPassword,
+  copyUserRole
 } from '@/api/system/user'
 import {
   listRole
 } from '@/api/system/role'
 import {
-  listOrg
-} from '@/api/system/org'
-import {
-  listDept
+  listDept,
+  listParentByOrgIdAndDeptId
 } from '@/api/system/dept'
 import {
   listDistItem
@@ -358,6 +390,7 @@ export default {
       },
       orgList: [],
       deptData: [],
+      parentDeptData: [],
       defaultProps: {
         children: 'children',
         label: 'deptName'
@@ -370,7 +403,24 @@ export default {
       total: 0,
       userTotal: 0,
       userStatus: false,
-      userForm: {},
+      userForm: {
+        id: '',
+        orgId: '',
+        orgName: '',
+        deptId: '',
+        name: '',
+        username: '',
+        noNum: '',
+        idcard: '',
+        genderCode: '',
+        nationCode: '',
+        postCode: '',
+        jobTitleCode: '',
+        goodAtField: '',
+        personalProfile: '',
+        officePhone: '',
+        avatar: ''
+      },
       rules: {
         name: [
           { required: true, message: '请输入姓名', trigger: 'blur' }
@@ -400,7 +450,18 @@ export default {
       // 职务选项
       postList: [],
       // 职称选项
-      jobList: []
+      jobList: [],
+      // 职称选项
+      enabledList: [
+        {
+          dictLabel: '是',
+          dictValue: 1
+        },
+        {
+          dictLabel: '否',
+          dictValue: 0
+        }
+      ]
     }
   },
   watch: {
@@ -408,12 +469,16 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
-  async created() {
+  created() {
+    if (this.$store.state) {
+      this.orgList = this.$store.state.user.userInfo.listOrg
+      this.searchForm.orgId = this.orgList[0].orgId
+      this.searchForm.orgName = this.orgList[0].orgName
+    }
     this.size = window.CONFIG.SYSTEM_SIZE
     this.dictInit()
-    // 机构列表初始化
-    await this.orgListInit()
     this.deptListInit()
+    this.parentDeptListInit()
     this.init()
   },
   mounted() {
@@ -449,17 +514,15 @@ export default {
         this.jobList = res
       })
     },
-    async orgListInit() {
-      await listOrg().then(res => {
-        this.orgList = res
-        this.searchForm.orgId = this.orgList[0].id
-        this.searchForm.orgName = this.orgList[0].name
-      })
-    },
     // 科室信息初始化
     deptListInit() {
       listDept(this.searchForm.orgId).then(res => {
         this.deptData = res
+      })
+    },
+    parentDeptListInit() {
+      listParentByOrgIdAndDeptId({ orgId: this.searchForm.orgId }).then(res => {
+        this.parentDeptData = res
       })
     },
     // 科室信息检索
@@ -476,7 +539,9 @@ export default {
     },
     // 科室信息刷新
     handleSearchDept() {
+      this.searchForm.deptId = ''
       this.deptListInit()
+      this.init()
     },
     // 用户信息搜索
     handleSearch() {
@@ -489,6 +554,9 @@ export default {
       Object.keys(this.userForm).map(key => {
         this.userForm[key] = ''
       })
+      this.userForm.orgId = this.searchForm.orgId
+      this.userForm.orgName = this.searchForm.orgName
+      this.userForm.isEnabled = 1
       this.userStatus = true
     },
     // 编辑用户信息
@@ -500,6 +568,8 @@ export default {
       this.$nextTick(() => {
         this.$refs['userForm'].clearValidate()
       })
+      this.userForm.orgId = this.searchForm.orgId
+      this.userForm.orgName = this.searchForm.orgName
       this.userStatus = true
     },
     handleAvatarSuccess(res, file) {
@@ -521,10 +591,18 @@ export default {
       this.$refs['userForm'].validate((valid) => {
         if (valid) {
           saveUser(this.userForm).then(res => {
-            this.$message({
-              type: 'success',
-              message: '操作成功'
-            })
+            if (this.userForm.id) {
+              this.$message({
+                type: 'success',
+                message: '操作成功'
+              })
+            } else {
+              this.$alert({
+                title: '新增用户',
+                type: 'success',
+                message: '操作成功,初始密码为[123456]'
+              })
+            }
             this.userStatus = false
             this.searchForm.current = 1
             this.init()
@@ -550,12 +628,12 @@ export default {
     },
     // 重置密码
     resetPwd(row) {
-      this.$confirm('确定重置账号[' + row.loginAccount + ']的密码吗？重置后密码为[1]?', '提示', {
+      this.$confirm('确定重置用户[' + row.name + ']的密码吗？重置后密码为[123456]?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$formDataPost(this.config.baseUrl + 'bsfUser/resetPassword', row, false).then(res => {
+        resetPassword(row.id).then(res => {
           this.$message({
             type: 'success',
             message: '操作成功!'
@@ -664,23 +742,15 @@ export default {
         return false
       }
       const paramData = {
-        oldUserId: this.selectRow.id,
-        newUserId: this.copyUserRow.id
+        userIdTo: this.selectRow.id,
+        userIdFr: this.copyUserRow.id
       }
-      this.$formDataPost(this.config.baseUrl + 'bsfUserRole/listByUserId/copyUserRole', paramData, false).then(res => {
-        if (res.success) {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
-          })
-          this.copyUserStatus = false
-        } else {
-          this.$message({
-            type: 'warning',
-            message: '操作失败'
-          })
-          return false
-        }
+      copyUserRole(paramData).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.copyUserStatus = false
       })
     }
   }

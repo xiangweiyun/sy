@@ -1,37 +1,92 @@
 <template>
   <el-dropdown class="user-avatar-wrapper" @command="handleCommand">
     <div class="avatar-box">
-      <span class="user-name">{{ name }}</span>
-      <el-avatar size="small" :src="avatarSrc" />
+      <span class="user-name">{{ userInfo.name }}</span>
+      <el-avatar size="small" :src="userInfo.avatar" />
       <i class="el-icon-caret-bottom" />
     </div>
     <el-dropdown-menu slot="dropdown">
       <el-dropdown-item command="userCenter">个人中心</el-dropdown-item>
+      <el-dropdown-item command="updatePwd">修改密码</el-dropdown-item>
       <el-dropdown-item command="loginOut">退出登录</el-dropdown-item>
     </el-dropdown-menu>
+    <el-dialog :visible.sync="userStatus" :close-on-click-modal="false" title="修改密码" width="400px">
+      <el-form ref="userForm" :model="userForm" :rules="rules" :size="size" label-width="80px">
+        <el-form-item label="旧密码" prop="oldPwd">
+          <el-input v-model="userForm.oldPwd" placeholder="请输入" show-password />
+        </el-form-item>
+        <el-form-item label="新密码" prop="newPwd">
+          <el-input v-model="userForm.newPwd" placeholder="请输入" show-password />
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="roleStatus = false">取 消</el-button>
+        <el-button type="primary" @click="submitClick">确 定</el-button>
+      </span>
+    </el-dialog>
   </el-dropdown>
 </template>
 
 <script>
 import Avatar from '../../assets/img/avatar.png'
 import { removeToken } from '../../utils/cookie'
-
+import {
+  updatePassword
+} from '@/api/system/user'
 export default {
   name: 'UserAvatar',
   data() {
     return {
-      name: '管理员',
-      avatarSrc: Avatar
+      size: '',
+      userInfo: {},
+      avatarSrc: Avatar,
+      userStatus: false,
+      userForm: {
+        // 用户ID
+        userId: '',
+        // 用户账号
+        userName: '',
+        // 旧密码
+        oldPwd: '',
+        // 新密码
+        newPwd: ''
+      },
+      rules: {
+        oldPwd: [
+          { required: true, message: '请输入旧密码', trigger: 'blur' }
+        ],
+        newPwd: [
+          { required: true, message: '请输入新密码', trigger: 'blur' }
+        ]
+      }
     }
+  },
+  created() {
+    this.size = window.CONFIG.SYSTEM_SIZE
+    this.userInfo = this.$store.state.user.userInfo
   },
   methods: {
     handleCommand(command) {
       if (command === 'userCenter') {
         this.$router.push({ path: '/user-center' })
       }
+      if (command === 'updatePwd') {
+        this.userStatus = true
+      }
       if (command === 'loginOut') {
         this.loginOut()
       }
+    },
+    submitClick() {
+      this.userForm.userId = this.userInfo.id
+      this.userForm.userName = this.userInfo.userName
+      updatePassword(this.userForm).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功'
+        })
+        this.userStatus = false
+      })
     },
     loginOut() {
       this.$confirm('确定注销并退出系统吗？', '提示', {
@@ -43,6 +98,8 @@ export default {
           removeToken()
           location.href = '/'
         })
+      }).catch(() => {
+        console.log('取消退出系统操作')
       })
     }
   }

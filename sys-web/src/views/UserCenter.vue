@@ -2,36 +2,36 @@
   <div class="user-center-wrapper clear-fix">
     <el-card shadow="always" :body-style="{padding: '50px'}">
       <div class="user-avatar">
-        <img src="../assets/img/avatar.png" alt="avatar">
+        <img :src="userInfo" alt="avatar">
       </div>
       <ul class="user-info">
         <li>
-          <label>用户名：</label>
-          <span>{{ userInfo.username }}</span>
+          <label>用户姓名：</label>
+          <span>{{ userInfo.name }}</span>
         </li>
         <li>
-          <label>角色：</label>
-          <span>{{ userInfo.roles }}</span>
+          <label>用户账号：</label>
+          <span>{{ userInfo.userName }}</span>
         </li>
         <li>
-          <label>昵称：</label>
-          <span>{{ userInfo.nickname }}</span>
+          <label>所属机构：</label>
+          <span>{{ userInfo.orgName }}</span>
+        </li>
+        <li>
+          <label>所属科室：</label>
+          <span>{{ userInfo.deptName }}</span>
+        </li>
+        <li>
+          <label>职务：</label>
+          <span>{{ userInfo.postName }}</span>
+        </li>
+        <li>
+          <label>职称：</label>
+          <span>{{ userInfo.jobName }}</span>
         </li>
         <li>
           <label>电话号码：</label>
-          <span>{{ userInfo.phone }}</span>
-        </li>
-        <li>
-          <label>邮箱：</label>
-          <span>{{ userInfo.email }}</span>
-        </li>
-        <li>
-          <label>创建时间：</label>
-          <span>{{ userInfo.createtime }}</span>
-        </li>
-        <li>
-          <label>更新时间：</label>
-          <span>{{ userInfo.updatetime }}</span>
+          <span>{{ userInfo.officePhone }}</span>
         </li>
       </ul>
     </el-card>
@@ -39,8 +39,6 @@
 </template>
 
 <script>
-import { getUserInfo } from '../api/login'
-
 export default {
   name: 'UserCenter',
   data() {
@@ -49,9 +47,7 @@ export default {
     }
   },
   created() {
-    getUserInfo().then(res => {
-      this.userInfo = res
-    })
+    this.userInfo = this.$store.state.user.userInfo
   }
 }
 </script>

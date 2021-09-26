@@ -1,15 +1,13 @@
 import { login, logout, getUserInfo, getMenuInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/cookie'
 import { constantRoutes } from '@/router'
-import dataJson from '@/json/menuJson.json'
 import Layout from '@/layout/index'
+import { MessageBox } from 'element-ui'
 
 const user = {
   state: {
     token: getToken(),
-    userId: '',
     userInfo: {},
-    avatar: '',
     roles: [],
     menus: [],
     routes: [],
@@ -20,15 +18,8 @@ const user = {
     SET_TOKEN: (state, token) => {
       state.token = token
     },
-    SET_USER_ID: (state, userId) => {
-      localStorage.setItem('userId', userId)
-      state.userId = userId
-    },
     SET_USER_INFO: (state, userInfo) => {
       state.userInfo = userInfo
-    },
-    SET_AVATAR: (state, avatar) => {
-      state.avatar = avatar
     },
     SET_ROLES: (state, roles) => {
       state.roles = roles
@@ -55,7 +46,6 @@ const user = {
         login(data).then(res => {
           setToken(res.authData.token)
           commit('SET_TOKEN', res.authData.token)
-          commit('SET_USER_ID', res.id)
           resolve(res)
         }).catch(error => {
           reject(error)
@@ -75,14 +65,24 @@ const user = {
       })
     },
     // 获取菜单信息(生成路由)
-    GetMenuInfo({ commit }) {
+    GetMenuInfo({ commit }, userId) {
       return new Promise((resolve, reject) => {
-        const userId = localStorage.getItem('userId')
-        console.log(userId)
         getMenuInfo(userId).then(res => {
-          const menuData = fnAddDynamicMenus([])
+          if (!res.length) {
+            MessageBox.alert('该用户尚未授权，请先授权', '未授权提醒', {
+              confirmButtonText: '确定',
+              callback: action => {
+                commit('SET_TOKEN', '')
+                removeToken()
+                sessionStorage.clear()
+                location.href = '/'
+              }
+            })
+            return false
+          }
+          const menuData = fnAddDynamicMenus(res)
           commit('SET_MENUS', menuData)
-          const accessedRoutes = filterAsyncRouter(dataJson.data)
+          const accessedRoutes = filterAsyncRouter(menuData)
           console.log(accessedRoutes)
           accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
           commit('SET_ROUTES', accessedRoutes)
@@ -97,9 +97,9 @@ const user = {
       return new Promise((resolve, reject) => {
         logout().then(() => {
           commit('SET_TOKEN', '')
-          commit('SET_ROLES', [])
+          commit('SET_USER_INFO', [])
           removeToken()
-          localStorage.clear()
+          sessionStorage.clear()
           resolve()
         }).catch(error => {
           reject(error)
@@ -111,7 +111,7 @@ const user = {
       return new Promise(resolve => {
         commit('SET_TOKEN', '')
         removeToken()
-        localStorage.clear()
+        sessionStorage.clear()
         resolve()
       })
     }
@@ -124,22 +124,40 @@ export default user
  * 添加动态(菜单)路由
  * @param {*} menuList 菜单列表
  */
-function fnAddDynamicMenus(menuList = []) {
+function fnAddDynamicMenus(menuList = [], parentPath) {
   const menuData = []
   menuList.filter(element => {
-    const name = element.path.indexOf('/') !== -1 ? element.path.split('/') : []
+    const menuType = element.menuType
+    if (menuType !== 'C') {
+      return false
+    }
+    if (!element.url) {
+      return false
+    }
+    let path = ''
+    let component = ''
+    const name = element.url.indexOf('/') !== -1 ? element.url.split('/') : []
+    if (element.children != null && element.children && element.children.length) {
+      path = name.length ? element.url : '/' + element.url
+      component = 'Layout'
+    } else {
+      path = name.length ? name[1] : element.url
+      if (parentPath) {
+        const prentComponent = parentPath.indexOf('/') !== -1 ? parentPath.split('/') : []
+        component = (prentComponent ? prentComponent[1] : parentPath) + '/' + path
+      }
+    }
     const menu = {
-      name: name.length ? name[1] : element.path,
-      path: element.path,
-      component: element.component,
+      name: name.length ? name[1] : element.url,
+      path: path,
+      component: component,
       meta: {
-        title: element.menuName,
+        title: element.name,
         icon: element.icon
       }
     }
     if (element.children != null && element.children && element.children.length) {
-      menu.alwaysShow = true
-      menu.children = fnAddDynamicMenus(element.children)
+      menu.children = fnAddDynamicMenus(element.children, path)
     }
     menuData.push(menu)
   })

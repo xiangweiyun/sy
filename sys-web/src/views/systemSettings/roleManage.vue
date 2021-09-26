@@ -10,9 +10,9 @@
         <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
           <el-option
             v-for="item in orgList"
-            :key="item.id"
-            :label="item.name"
-            :value="item.id"
+            :key="item.orgId"
+            :label="item.orgName"
+            :value="item.orgId"
           />
         </el-select>
       </el-form-item>
@@ -127,9 +127,6 @@ import {
   pageRelationUser
 } from '@/api/system/role'
 import {
-  listOrg
-} from '@/api/system/org'
-import {
   listMenu
 } from '@/api/system/menu'
 import Pagination from '../../components/Pagination'
@@ -206,10 +203,14 @@ export default {
       this.$refs.tree.filter(val)
     }
   },
-  async created() {
+  created() {
     this.size = window.CONFIG.SYSTEM_SIZE
     // 机构列表初始化
-    await this.orgListInit()
+    if (this.$store.state) {
+      this.orgList = this.$store.state.user.userInfo.listOrg
+      this.searchForm.orgId = this.orgList[0].orgId
+      this.searchForm.orgName = this.orgList[0].orgName
+    }
     this.init()
   },
   mounted() {
@@ -225,13 +226,6 @@ export default {
         this.total = parseInt(res.total)
         this.tableData = res.records
         this.listLoading = false
-      })
-    },
-    async orgListInit() {
-      await listOrg().then(res => {
-        this.orgList = res
-        this.searchForm.orgId = this.orgList[0].id
-        this.searchForm.orgName = this.orgList[0].name
       })
     },
     handleSearch() {

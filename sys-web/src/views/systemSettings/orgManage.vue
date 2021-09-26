@@ -83,10 +83,10 @@
             >
               <el-option
                 v-for="item in parentOrgList"
-                v-show="item.id != orgForm.id"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
+                v-show="item.orgId != orgForm.id"
+                :key="item.orgId"
+                :label="item.orgName"
+                :value="item.orgId"
               />
             </el-select>
           </el-form-item>
@@ -238,6 +238,10 @@ export default {
   },
   created: function() {
     this.size = window.CONFIG.SYSTEM_SIZE
+    // 机构列表初始化
+    if (this.$store.state) {
+      this.parentOrgList = this.$store.state.user.userInfo.listOrg
+    }
     this.dictInit()
     this.init()
   },
@@ -259,7 +263,6 @@ export default {
           that.listLoading = false
         }
       )
-      this.parentOrgListInit()
     },
     dictInit() {
       // 机构类型选项
@@ -292,11 +295,6 @@ export default {
         })
       }
       return value
-    },
-    parentOrgListInit() {
-      listOrg().then(res => {
-        this.parentOrgList = res
-      })
     },
     handleRefresh() {
       this.init()

@@ -21,7 +21,7 @@ export function saveUser(data) {
 // 删除用户
 export function delUser(userId) {
   return request({
-    url: '/sysUser/delUser/' + userId,
+    url: '/sysUser/remove/' + userId,
     method: 'post'
   })
 }
@@ -36,18 +36,17 @@ export function exportUser(query) {
 }
 
 // 用户密码重置
-export function resetPassword(data) {
+export function resetPassword(userId) {
   return request({
-    url: '/system/user/profile/updatePwd',
-    method: 'post',
-    data: data
+    url: '/sysUser/resetPassword/' + userId,
+    method: 'post'
   })
 }
 
 // 修改密码
 export function updatePassword(data) {
   return request({
-    url: '/tob/user/updatePassword',
+    url: '/sysUser/modifyPassword',
     method: 'post',
     data: data
   })
@@ -83,6 +82,15 @@ export function listUserRelationRole(query) {
 export function saveUserRelationRole(data) {
   return request({
     url: '/sysUserRole/saveBatch',
+    method: 'post',
+    data: data
+  })
+}
+
+// 复制用户角色
+export function copyUserRole(data) {
+  return request({
+    url: '/sysUserRole/copyUserRole',
     method: 'post',
     data: data
   })
