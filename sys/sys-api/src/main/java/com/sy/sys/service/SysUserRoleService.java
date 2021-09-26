@@ -17,4 +17,5 @@ import com.sy.sys.vo.SysUserRoleVo;
 public interface SysUserRoleService extends IService<SysUserRole> {
 	boolean saveBatch(List<SysUserRole> listSysUserRole);
 	List<SysUserRoleVo> listByUserId(Long userId);
+	boolean copyUserRole(Long userIdFr , Long userIdTo, Long userId);
 }

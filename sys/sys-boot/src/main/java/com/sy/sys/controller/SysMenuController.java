@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sy.center.common.utils.jwt.TokenUtil;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysMenu;
 import com.sy.sys.service.SysMenuService;
@@ -71,15 +72,12 @@ public class SysMenuController {
     
     @ApiOperation(value = "系统菜单表-树型结构【用于应用权限菜单】", notes = "系统菜单表-根据应用ID及用户ID获取树型数据")
     @GetMapping("/listTreeDataByAppIdAndUserId")
-    public DataformResult<List<SysMenuVo>> listTreeDataByAppIdAndUserId(Long appId, Long userId) {
+    public DataformResult<List<SysMenuVo>> listTreeDataByAppIdAndUserId(Long appId) {
     	if(appId == null) {
     		return DataformResult.failure("应用ID不允许为空");
     	}
-    	if(userId == null) {
-    		return DataformResult.failure("用户ID不允许为空");
-    	}
     	
-        return DataformResult.success(sysMenuService.listTreeDataByAppIdAndUserId(appId, userId));
+        return DataformResult.success(sysMenuService.listTreeDataByAppIdAndUserId(appId, Long.valueOf(TokenUtil.getUserId())));
     }
     
     @ApiOperation(value = "系统菜单表-树型结构【用于角色菜单授权】", notes = "系统菜单表-根据角色ID获取所有应用树型数据及选中的节点")

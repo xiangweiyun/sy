@@ -1,8 +1,11 @@
 package com.sy.sys.controller;
 
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,17 +14,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.util.WebUtils;
 
+import com.alibaba.nacos.common.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sy.center.common.utils.FileUitl;
 import com.sy.center.common.utils.MD5Util;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysUser;
+import com.sy.sys.enums.FileNatureEnum;
 import com.sy.sys.service.SysUserService;
 import com.sy.sys.vo.SysUserVo;
 
@@ -49,10 +57,13 @@ public class SysUserController {
 	
 	@Value("${initialPassword}")
 	private String initialPassword;
+	
+	@Value("${filePath}")
+    private String filePath;
     
     @ApiOperation(value = "用户表-保存", notes = "用户表-保存")
     @PostMapping("/save")
-    public DataformResult<String> save(@RequestBody SysUser sysUser) {
+    public DataformResult<String> save(HttpServletRequest request, SysUser sysUser) {
         if (null == sysUser.getId()) {
         	if(sysUser.getPassword()==null || sysUser.getPassword().isEmpty()) {
         		if(initialPassword==null) {
@@ -64,6 +75,7 @@ public class SysUserController {
         } else {
         	sysUser.setPassword(null);
         }
+        userFileProcess(request, sysUser);
         sysUserService.saveUser(sysUser);
         return DataformResult.success();
     }
@@ -186,5 +198,42 @@ public class SysUserController {
     	sysUserService.updateById(sysUserUpdate);
     	
     	return DataformResult.success();
+    }
+    
+    private void userFileProcess(HttpServletRequest request, SysUser sysUser){
+    	String contentType = request.getContentType();
+		if(contentType != null && contentType.toLowerCase().startsWith("multipart/")) {
+			MultipartHttpServletRequest multipartReqest = WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class);
+			MultipartFile file = multipartReqest.getFile("file");
+			
+			if(null == file) {
+				return;
+			}
+			if(!StringUtils.isNotBlank(file.getOriginalFilename())) {
+				return;
+			}
+			
+			if (!filePath.endsWith("/")) {
+			    	filePath += "/";
+			}
+			    
+			String path = filePath + FileNatureEnum.USER.getCode() + "/";
+			System.out.println(StringUtils.isBlank(sysUser.getAvatar()));
+			if(!StringUtils.isBlank(sysUser.getAvatar())) {
+				logger.info("删除用户旧图像");
+				FileUitl.deleteFile(filePath + sysUser.getAvatar());
+			}
+		   
+		    String fileName;
+			try {
+				fileName = FileUitl.uploadFile(file, path);
+				sysUser.setAvatar(FileNatureEnum.USER.getCode() + "/" + fileName);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		    
+		}
+		return;
     }
 }
