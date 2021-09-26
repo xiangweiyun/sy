@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sy.center.common.utils.jwt.TokenUtil;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysUserRole;
 import com.sy.sys.service.SysUserRoleService;
 import com.sy.sys.vo.SysUserRoleVo;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 
  /**
@@ -79,4 +82,18 @@ public class SysUserRoleController {
 		// TODO Auto-generated method stub
     	return DataformResult.success(sysUserRoleService.listByUserId(userId));
 	}
+    
+    @ApiOperation(value = "用户和角色关联表-复制用户角色", notes = "用户和角色关联表-复制用户角色")
+    @ApiImplicitParams({
+        @ApiImplicitParam(required = false, name = "userIdFr", value = "用户ID(从)", dataType = "Long"),
+        @ApiImplicitParam(required = false, name = "userIdTo", value = "用户ID(到)", dataType = "Long")})
+    @PostMapping("copyUserRole")
+    public DataformResult<String> copyUserRole(Long userIdFr , Long userIdTo) {
+    	boolean success = sysUserRoleService.copyUserRole(userIdFr, userIdTo, Long.valueOf(TokenUtil.getUserId()));
+    	if(success) {
+    		return DataformResult.success();
+    	}else {
+    		return DataformResult.failure("要复制的用户没有角色信息");
+    	}        
+    }
 }

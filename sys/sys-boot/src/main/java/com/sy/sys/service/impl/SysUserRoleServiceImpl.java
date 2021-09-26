@@ -1,5 +1,6 @@
 package com.sy.sys.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,5 +51,49 @@ public class SysUserRoleServiceImpl extends ServiceImpl<SysUserRoleMapper, SysUs
 	public List<SysUserRoleVo> listByUserId(Long userId) {
 		// TODO Auto-generated method stub
 		return sysUserRoleMapper.listByUserId(userId);
+	}
+
+	/* 
+	 * 复制用户角色
+	 */
+	@Override
+	public boolean copyUserRole(Long userIdFr, Long userIdTo, Long userId) {
+		// TODO Auto-generated method stub
+		List<SysUserRoleVo> listUserRoleFr = sysUserRoleMapper.listByUserId(userIdFr);
+		if(listUserRoleFr == null || listUserRoleFr.size() == 0) {
+			return false;
+		}
+		List<SysUserRoleVo> listUserRoleTo = sysUserRoleMapper.listByUserId(userIdTo);
+		List<SysUserRole>    listSysUserRole = new ArrayList<SysUserRole>();
+		
+		boolean isExistsRole = false;
+		if(listUserRoleTo == null || listUserRoleTo.size() == 0) {
+			isExistsRole = true;
+		}
+		for(SysUserRoleVo SysUserRoleVo : listUserRoleFr) {
+			boolean isAddNew = true;
+			if(isExistsRole) {
+				for(int index=0; index<listUserRoleTo.size(); index++) {
+					if(SysUserRoleVo.getRoleId().equals(listUserRoleTo.get(index).getRoleId())) {
+						isAddNew = false;
+						break;
+					}
+				}
+			}
+			if(isAddNew) {
+				SysUserRole sysUserRole = new SysUserRole();
+				sysUserRole.setUserId(userIdTo);
+				sysUserRole.setRoleId(SysUserRoleVo.getRoleId());
+				sysUserRole.setCreatedBy(userId);
+				sysUserRole.setLastModifiedBy(userId);
+				listSysUserRole.add(sysUserRole);
+			}
+		}
+		
+		if(listSysUserRole.size() > 0) {
+			super.saveBatch(listSysUserRole);
+		}
+		
+		return true;
 	}
 }

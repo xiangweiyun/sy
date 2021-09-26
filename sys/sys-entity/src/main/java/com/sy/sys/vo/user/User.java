@@ -2,8 +2,6 @@ package com.sy.sys.vo.user;
 
 import java.util.List;
 
-import com.sy.sys.vo.SysMenuVo;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -59,7 +57,7 @@ public class User {
 	@ApiModelProperty(value = "所属部门")
 	private List<Dept> listDept;
 	
-	@ApiModelProperty(value = "菜单")
-	private List<SysMenuVo> listMenu;
+	// @ApiModelProperty(value = "菜单")
+	// private List<SysMenuVo> listMenu;
 	
 }

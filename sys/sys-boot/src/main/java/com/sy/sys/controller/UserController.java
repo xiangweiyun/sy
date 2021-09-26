@@ -11,13 +11,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sy.center.common.utils.jwt.TokenUtil;
 import com.sy.center.framework.utils.DataformResult;
-import com.sy.sys.entity.SysOrg;
-import com.sy.sys.service.SysMenuService;
 import com.sy.sys.service.SysUserOrgDeptService;
 import com.sy.sys.service.SysUserService;
-import com.sy.sys.vo.SysDeptVo;
-import com.sy.sys.vo.SysMenuVo;
 import com.sy.sys.vo.SysUserOrgDeptVo;
 import com.sy.sys.vo.SysUserVo;
 import com.sy.sys.vo.user.Dept;
@@ -49,15 +46,16 @@ public class UserController {
 	@Autowired
     private SysUserOrgDeptService sysUserOrgDeptService;
 	
-	@Autowired
-    private SysMenuService sysMenuService;
+	// @Autowired
+    // private SysMenuService sysMenuService;
    
-    @ApiOperation(value = "用户表-根据角色ID分页查询", notes = "用户表-根据角色ID分页查询")
+    @ApiOperation(value = "用户相关权限信息", notes = "用户相关权限信息")
     @ApiImplicitParams({
-        @ApiImplicitParam(required = false, name = "appId", value = "应用ID", dataType = "Long"),
-        @ApiImplicitParam(required = false, name = "userId", value = "用户ID", dataType = "Long")})
+        @ApiImplicitParam(required = false, name = "appId", value = "应用ID", dataType = "Long")})
     @GetMapping("/information")
-    public DataformResult<User> pageListVoByRoleId(Long appId, Long userId) {
+    public DataformResult<User> pageListVoByRoleId(Long appId) {
+    	Long userId = Long.valueOf(TokenUtil.getUserId());
+    	
     	SysUserVo sysUserVo =  sysUserService.getVoById(userId);
     	if(sysUserVo==null) {
     		DataformResult.failure("未找到该用户相关信息");
@@ -79,8 +77,8 @@ public class UserController {
     	List<SysUserOrgDeptVo> list = sysUserOrgDeptService.listByUserId(userId);
     	setOrgDeptInfo(user, list);
     	
-    	List<SysMenuVo> menu = sysMenuService.listTreeDataByAppIdAndUserId(appId, userId);
-    	user.setListMenu(menu);
+    	// List<SysMenuVo> menu = sysMenuService.listTreeDataByAppIdAndUserId(appId, userId);
+    	// user.setListMenu(menu);
     	
     	return DataformResult.success(user);
     }
@@ -92,7 +90,6 @@ public class UserController {
     	}
     	List<Org> listOrg = new ArrayList<Org>();
     	List<Dept> listDept = new ArrayList<Dept>();
-    	
     	for(SysUserOrgDeptVo sysUserOrgDeptVo : list) {
     		Dept  dept = new Dept();
     		dept.setDeptId(sysUserOrgDeptVo.getDeptId());
@@ -113,6 +110,7 @@ public class UserController {
     			Org org = new Org();
     			org.setOrgId(sysUserOrgDeptVo.getOrgId());
     			org.setOrgName(sysUserOrgDeptVo.getOrgName());
+    			listOrg.add(org);
     		}
     	}
     	
