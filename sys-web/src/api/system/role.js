@@ -18,6 +18,15 @@ export function listRole(query) {
   })
 }
 
+// 分页查询关联用户列表
+export function pageRelationUser(query) {
+  return request({
+    url: '/sysUser/pageListVoByRoleId',
+    method: 'get',
+    params: query
+  })
+}
+
 // 保存角色
 export function saveRole(data) {
   return request({
@@ -35,19 +44,19 @@ export function delRole(roleId) {
   })
 }
 
-// 查询角色权限tree
-export function listRolePower(query) {
+// 查询角色关联菜单列表
+export function listRoleMenu(roleId) {
   return request({
-    url: '/tob/role/getRolePower',
+    url: '/sysRoleMenu/listByRoleId',
     method: 'get',
-    params: query
+    params: { roleId: roleId }
   })
 }
 
-// 角色授权
-export function saveRolePower(data) {
+// 角色授权菜单
+export function saveBatchRoleMenu(data) {
   return request({
-    url: '/tob/role/saveRolePower',
+    url: '/sysRoleMenu/saveBatch',
     method: 'post',
     data: data
   })

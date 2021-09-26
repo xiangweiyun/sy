@@ -1,11 +1,12 @@
 import axois from 'axios'
 import { Message } from 'element-ui'
 import { getToken } from './utils/cookie'
+import store from '@/store'
 
 // 创建axios实例
 const service = axois.create({
   baseURL: window.CONFIG.BASE_URL, // config.js 的 base_url
-  timeout: 120000 // 请求超时时间
+  timeout: 10000 // 请求超时时间
 })
 
 // request拦截器设置
@@ -18,7 +19,6 @@ service.interceptors.request.use(
     return config
   },
   error => {
-    console.log(error)
     Promise.reject(error)
   }
 )
@@ -28,10 +28,22 @@ service.interceptors.response.use(
   response => {
     const data = response.data
     const success = data.success
+    const code = data.code
     const message = data.message
     if (success) {
       return data.data
     } else {
+      console.log(code)
+      if (code === 700 || code === 701) {
+        Message({
+          type: 'error',
+          message: '登录状态已过期或验证失败'
+        })
+        store.dispatch('FedLogOut').then(() => {
+          location.href = '/'
+        })
+        return false
+      }
       Message({
         type: 'error',
         message
@@ -40,7 +52,17 @@ service.interceptors.response.use(
     }
   },
   error => {
-    const code = error.response.data.status
+    const code = error.response.status
+    if (code === 401) {
+      Message({
+        type: 'error',
+        message: '登录状态已过期或验证失败'
+      })
+      store.dispatch('FedLogOut').then(() => {
+        location.href = '/'
+      })
+      return false
+    }
     if (!code) {
       Message({
         type: 'error',

@@ -2,22 +2,12 @@
   <div class="menu">
     <el-form
       :inline="true"
-      size="mini"
+      :size="size"
       class="menu-form"
     >
       <el-form-item>
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-search"
-          @click="handleRefresh"
-        >刷 新</el-button>
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-edit"
-          @click="handleAdd()"
-        >新 增</el-button>
+        <el-button type="primary" :size="size" icon="el-icon-search" @click="handleRefresh">刷 新</el-button>
+        <el-button type="primary" :size="size" icon="el-icon-edit" @click="handleAdd()">新 增</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -29,35 +19,41 @@
       lazy
       :height="tableHeight"
       :tree-props="{children: 'children'}"
-      size="mini"
+      :size="size"
     >
       <el-table-column prop="name" label="菜单名称" />
-      <el-table-column prop="parentName" label="上级菜单" />
-      <el-table-column prop="menuType" label="菜单类型" align="center" />
+      <el-table-column prop="menuType" label="菜单类型" align="center">
+        <template slot-scope="scope">
+          <span>{{ formatterMenuType(scope.row.menuType) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="url" label="菜单地址" />
       <el-table-column prop="icon" label="菜单图标" align="center" />
-      <el-table-column prop="target" label="打开方式" align="center" />
-      <el-table-column prop="orderNum" label="排序" align="center" width="50" />
-      <el-table-column
-        label="操作"
-        align="center"
-        width="160"
-      >
+      <el-table-column prop="target" label="打开方式" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="handleAdd(scope.row)">新增子记录</el-button>
-          <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
+          <span>{{ formatterTarget(scope.row.target) }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="orderNum" label="排序" align="center" width="50" />
+      <el-table-column label="操作" align="center" width="160">
+        <template slot-scope="scope">
+          <el-button type="text" :size="size" @click="handleAdd(scope.row)">新增子记录</el-button>
+          <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 新增、编辑菜单信息 -->
     <el-dialog :visible.sync="menuStatus" :close-on-click-modal="false" :title="menuTitle" width="400px">
-      <el-form ref="menuForm" :model="menuForm" :rules="rules" label-width="80px">
+      <el-form ref="menuForm" :model="menuForm" :rules="rules" :size="size" label-width="80px">
         <el-form-item label="菜单名称" prop="name">
           <el-input v-model="menuForm.name" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="上级菜单">
-          <el-input v-model="menuForm.parentName" placeholder="请选择" :readonly="true"><el-button slot="append" icon="el-icon-s-operation" @click="parentStatus=true" /></el-input>
+          <el-input v-model="menuForm.parentName" placeholder="请选择" :readonly="true">
+            <el-button slot="append" icon="el-icon-circle-close" @click="handelRemoveParent" />
+            <el-button slot="append" icon="el-icon-s-operation" @click="parentStatus=true" />
+          </el-input>
         </el-form-item>
         <el-form-item label="菜单类型" prop="menuType">
           <el-select
@@ -82,6 +78,7 @@
         <el-form-item label="打开方式">
           <el-select
             v-model="menuForm.target"
+            clearable
             placeholder="请选择"
             style="width: 100%"
           >
@@ -103,7 +100,7 @@
       </span>
     </el-dialog>
     <!-- 上级菜单 -->
-    <el-dialog :visible.sync="parentStatus" :close-on-click-modal="false" title="上级菜单" width="400px" top="10px">
+    <el-dialog :visible.sync="parentStatus" :close-on-click-modal="false" title="上级菜单" width="400px">
       <el-input
         v-model="filterText"
         placeholder="输入关键字进行过滤"
@@ -117,6 +114,7 @@
         :filter-node-method="filterNode"
         style="height:350px;overflow-y: auto;"
         accordion
+        :size="size"
         @node-click="nodeClick"
       />
       <span slot="footer" class="dialog-footer">
@@ -139,6 +137,7 @@ import {
 export default {
   data() {
     return {
+      size: 'mini',
       // 数据列表加载动画
       listLoading: true,
       tableHeight: '200px',
@@ -182,8 +181,7 @@ export default {
       parentMenuData: [],
       parentStatus: false,
       defaultProps: {
-        isLeaf: 'leaf',
-        label: 'districtName'
+        label: 'name'
       }
     }
   },
@@ -193,6 +191,7 @@ export default {
     }
   },
   created: function() {
+    this.size = window.CONFIG.SYSTEM_SIZE
     this.dictInit()
     this.init()
   },
@@ -208,6 +207,7 @@ export default {
         this.tableData = res
         this.listLoading = false
       })
+      this.parentMenuListInit()
     },
     dictInit() {
       // 菜单类型选项
@@ -218,6 +218,37 @@ export default {
       listDistItem({ dictType: 'TARGET' }).then((res) => {
         this.targetList = res
       })
+    },
+    parentMenuListInit() {
+      listMenu().then(res => {
+        this.parentMenuData = res
+      })
+    },
+    formatterMenuType(val) {
+      let value = ''
+      if (val) {
+        this.menuTypeList.forEach(item => {
+          if (item.dictValue === val) {
+            value = item.dictLabel
+          }
+        })
+      }
+      return value
+    },
+    handelRemoveParent() {
+      this.menuForm.parentId = ''
+      this.menuForm.parentName = ''
+    },
+    formatterTarget(val) {
+      let value = ''
+      if (val) {
+        this.targetList.forEach(item => {
+          if (item.dictValue === val) {
+            value = item.dictLabel
+          }
+        })
+      }
+      return value
     },
     handleRefresh() {
       this.init()
@@ -240,11 +271,17 @@ export default {
       Object.keys(this.menuForm).map(key => {
         this.menuForm[key] = row[key]
       })
+      this.$nextTick(() => {
+        this.$refs['menuForm'].clearValidate()
+      })
       this.menuStatus = true
     },
     submitClick() {
       this.$refs['menuForm'].validate((valid) => {
         if (valid) {
+          if (!this.menuForm.parentName) {
+            this.menuForm.parentId = ''
+          }
           saveMenu(this.menuForm).then((res) => {
             this.$message({
               type: 'success',
@@ -258,7 +295,7 @@ export default {
     },
     handleRemove(row) {
       const children = row.children
-      if (children) {
+      if (children && children.length > 0) {
         this.$message({
           type: 'warning',
           message: '该菜单存在子记录不能删除'
@@ -288,7 +325,7 @@ export default {
     nodeClick(row) {
       this.selectParentRow = row
     },
-    submitParentmenuClick() {
+    submitParentMenuClick() {
       if (JSON.stringify(this.selectParentRow) === '{}') {
         this.$message({
           type: 'warning',
@@ -305,6 +342,7 @@ export default {
       }
       this.menuForm.parentName = this.selectParentRow.name
       this.menuForm.parentId = this.selectParentRow.id
+      this.selectParentRow = {}
       this.parentStatus = false
     }
   }

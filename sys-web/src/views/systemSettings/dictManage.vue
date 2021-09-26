@@ -5,15 +5,15 @@
       <el-form
         :model="searchForm"
         :inline="true"
-        size="mini"
+        :size="size"
         class="dict-category-form"
       >
-        <el-form-item label="字典类型名称:">
-          <el-input v-model="searchForm.dictName" clearable placeholder="请输入" size="mini" />
+        <el-form-item label="字典名称:">
+          <el-input v-model="searchForm.dictName" clearable placeholder="请输入" :size="size" />
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleAdd()">新 增</el-button>
+          <el-button type="primary" :size="size" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
+          <el-button type="primary" :size="size" icon="el-icon-edit" @click="handleAdd()">新 增</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -22,35 +22,17 @@
         border
         :data="tableData"
         :height="tableHeight"
-        size="mini"
+        :size="size"
         highlight-current-row
       >
-        <el-table-column
-          type="index"
-          label="序号"
-          align="center"
-          width="50"
-        />
-        <el-table-column
-          prop="dictName"
-          label="字典名称"
-          align="center"
-          width="180"
-        />
-        <el-table-column
-          prop="dictType"
-          label="字典类型"
-          align="center"
-          width="100"
-        />
-        <el-table-column
-          label="操作"
-          align="center"
-        >
+        <el-table-column type="index" label="序号" align="center" width="50" />
+        <el-table-column prop="dictName" label="字典名称" align="center" width="180" />
+        <el-table-column prop="dictType" label="字典编码" align="center" width="100" />
+        <el-table-column label="操作" align="center">
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="dictItemClick(scope.row)">查看字典项</el-button>
-            <el-button type="text" size="mini" @click="editDictTypeClick(scope.row)">编辑</el-button>
-            <el-button type="text" size="mini" @click="removeDictTypeClick(scope.row)">删除</el-button>
+            <el-button type="text" :size="size" @click="dictItemClick(scope.row)">查看字典项</el-button>
+            <el-button type="text" :size="size" @click="editDictTypeClick(scope.row)">编辑</el-button>
+            <el-button type="text" :size="size" @click="removeDictTypeClick(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -62,15 +44,15 @@
       <el-form
         :model="dictItemForm"
         :inline="true"
-        size="mini"
+        :size="size"
         class="dict-category-form"
       >
         <!-- <el-form-item label="字典项名称:">
-          <el-input v-model="dictItemForm.itemName" placeholder="请输入" size="mini" />
+          <el-input v-model="dictItemForm.itemName" placeholder="请输入" :size="size" />
         </el-form-item> -->
         <el-form-item>
-          <el-button type="primary" size="mini" icon="el-icon-search" @click="handleDictItemSearch">搜 索</el-button>
-          <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleDictItemAdd">新 增</el-button>
+          <el-button type="primary" :size="size" icon="el-icon-search" @click="handleDictItemSearch">搜 索</el-button>
+          <el-button type="primary" :size="size" icon="el-icon-edit" @click="handleDictItemAdd">新 增</el-button>
         </el-form-item>
       </el-form>
       <el-table
@@ -78,57 +60,29 @@
         border
         :data="itemTableData"
         :height="tableHeight"
-        size="mini"
+        :size="size"
       >
-        <el-table-column
-          prop="dictName"
-          label="字典名称"
-          align="center"
-          width="120"
-        />
-        <el-table-column
-          prop="dictType"
-          label="字典类型"
-          align="center"
-          width="120"
-        />
-        <el-table-column
-          prop="dictLabel"
-          label="字典项名称"
-          align="center"
-        />
-        <el-table-column
-          prop="dictValue"
-          label="字典项编码"
-          align="center"
-          width="100"
-        />
-        <el-table-column
-          prop="dictSort"
-          label="排序"
-          align="center"
-          width="50"
-        />
-        <el-table-column
-          label="操作"
-          align="center"
-          width="100"
-        >
+        <el-table-column prop="dictName" label="字典名称" align="center" width="120" />
+        <el-table-column prop="dictType" label="字典编码" align="center" width="100" />
+        <el-table-column prop="dictLabel" label="字典项名称" align="center" />
+        <el-table-column prop="dictValue" label="字典项编码" align="center" width="90" />
+        <el-table-column prop="dictSort" label="排序" align="center" width="50" />
+        <el-table-column label="操作" align="center" width="100">
           <template slot-scope="scope">
-            <el-button type="text" size="mini" @click="editItemClick(scope.row)">编辑</el-button>
-            <el-button type="text" size="mini" @click="removeItemClick(scope.row)">删除</el-button>
+            <el-button type="text" :size="size" @click="editItemClick(scope.row)">编辑</el-button>
+            <el-button type="text" :size="size" @click="removeItemClick(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-col>
     <!-- 新增、编辑字典类型 -->
     <el-dialog :visible.sync="dictTypeStatus" :close-on-click-modal="false" :title="dictTypeTitle" width="30%">
-      <el-form ref="dictTypeForm" :model="dictTypeForm" :rules="dictTypeRules" label-width="80px">
+      <el-form ref="dictTypeForm" :model="dictTypeForm" :rules="dictTypeRules" :size="size" label-width="80px">
         <el-form-item label="字典名称" prop="dictName">
           <el-input v-model="dictTypeForm.dictName" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="字典类型" prop="dictType">
-          <el-input v-model="dictTypeForm.dictType" placeholder="请输入" />
+        <el-form-item label="字典编码" prop="dictType">
+          <el-input v-model="dictTypeForm.dictType" placeholder="请输入" :readonly="dictTypeForm.id != ''" />
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -138,7 +92,7 @@
     </el-dialog>
     <!-- 新增、编辑字典项 -->
     <el-dialog :visible.sync="dictItemStatus" :close-on-click-modal="false" :title="dictItemTitle" width="30%">
-      <el-form ref="dictItemForm" :model="dictItemForm" :rules="dictItemRules" label-width="100px">
+      <el-form ref="dictItemForm" :model="dictItemForm" :rules="dictItemRules" :size="size" label-width="100px">
         <el-form-item label="字典名称">
           <el-input v-model="selectDistType.dictName" placeholder="请输入" disabled />
         </el-form-item>
@@ -177,6 +131,7 @@ export default {
   components: { Pagination },
   data() {
     return {
+      size: 'mini',
       // 数据列表加载动画
       listLoading: true,
       // 数据列表加载动画
@@ -231,6 +186,7 @@ export default {
     }
   },
   created: function() {
+    this.size = window.CONFIG.SYSTEM_SIZE
     this.init()
   },
   mounted() {
@@ -277,6 +233,9 @@ export default {
       this.dictTypeTitle = '编辑字典分类'
       Object.keys(this.dictTypeForm).map(key => {
         this.dictTypeForm[key] = row[key]
+      })
+      this.$nextTick(() => {
+        this.$refs['dictTypeForm'].clearValidate()
       })
       this.dictTypeStatus = true
     },
@@ -358,7 +317,9 @@ export default {
       Object.keys(this.dictItemForm).map(key => {
         this.dictItemForm[key] = row[key]
       })
-      console.log(this.dictItemForm)
+      this.$nextTick(() => {
+        this.$refs['dictItemForm'].clearValidate()
+      })
       this.dictItemStatus = true
     },
     removeItemClick(row) {

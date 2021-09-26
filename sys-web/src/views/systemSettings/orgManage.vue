@@ -2,22 +2,12 @@
   <div class="org">
     <el-form
       :inline="true"
-      size="mini"
+      :size="size"
       class="org-form"
     >
       <el-form-item>
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-edit"
-          @click="handleAdd"
-        >新 增</el-button>
-        <el-button
-          type="primary"
-          size="mini"
-          icon="el-icon-refresh"
-          @click="handleRefresh"
-        >刷 新</el-button>
+        <el-button type="primary" :size="size" icon="el-icon-edit" @click="handleAdd">新 增</el-button>
+        <el-button type="primary" :size="size" icon="el-icon-refresh" @click="handleRefresh">刷 新</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -26,11 +16,11 @@
       border
       :data="tableData"
       :height="tableHeight"
-      size="mini"
+      :size="size"
       row-key="id"
       :tree-props="{children: 'children'}"
     >
-      <el-table-column prop="code" label="机构编码" align="center" />
+      <el-table-column prop="code" label="机构编码" />
       <el-table-column prop="name" label="机构名称" align="center" />
       <el-table-column prop="levelCode" label="机构级别" align="center">
         <template slot-scope="scope">
@@ -43,21 +33,13 @@
         </template>
       </el-table-column>
       <el-table-column prop="phone" label="联系电话" align="center" />
-      <el-table-column prop="orgAddress" label="地址" align="center" />
+      <el-table-column prop="orgAddress" label="地址" align="center" width="160" />
       <el-table-column prop="orgProfile" label="机构简介" align="center" />
       <el-table-column prop="picture" label="机构图片" align="center" />
       <el-table-column label="操作" align="center" width="110">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="mini"
-            @click="handleEdit(scope.row)"
-          >编辑</el-button>
-          <el-button
-            type="text"
-            size="mini"
-            @click="handleRemove(scope.row)"
-          >删除</el-button>
+          <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,11 +54,26 @@
         ref="orgForm"
         :model="orgForm"
         :rules="rules"
+        :size="size"
         label-width="80px"
       >
         <el-col :span="12">
           <el-form-item label="机构名称" prop="name">
             <el-input v-model="orgForm.name" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="机构类型" prop="orgType">
+            <el-select
+              v-model="orgForm.orgType"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in orgTypeList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
+            </el-select>
           </el-form-item>
           <el-form-item label="上级机构">
             <el-select
@@ -93,7 +90,12 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item label="机构级别">
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="机构编码" prop="code">
+            <el-input v-model="orgForm.code" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="机构级别" prop="levelCode">
             <el-select
               v-model="orgForm.levelCode"
               placeholder="请选择"
@@ -101,25 +103,6 @@
             >
               <el-option
                 v-for="item in levelCodeList"
-                :key="item.dictValue"
-                :label="item.dictLabel"
-                :value="item.dictValue"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item label="机构编码" prop="code">
-            <el-input v-model="orgForm.code" placeholder="请输入" />
-          </el-form-item>
-          <el-form-item label="机构类型">
-            <el-select
-              v-model="orgForm.orgType"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in orgTypeList"
                 :key="item.dictValue"
                 :label="item.dictLabel"
                 :value="item.dictValue"
@@ -157,7 +140,7 @@
               type="textarea"
             />
           </el-form-item>
-          <el-form-item label="图片">
+          <el-form-item label="机构图片">
             <el-upload
               class="avatar-uploader"
               action="#"
@@ -195,6 +178,7 @@ import {
 export default {
   data() {
     return {
+      size: 'mini',
       // 数据列表加载动画
       listLoading: false,
       // 查询参数
@@ -236,6 +220,12 @@ export default {
         ],
         code: [
           { required: true, message: '请输入机构编码', trigger: 'blur' }
+        ],
+        orgType: [
+          { required: true, message: '请选择机构类型', trigger: 'change' }
+        ],
+        levelCode: [
+          { required: true, message: '请选择机构级别', trigger: 'change' }
         ]
       },
       selectRow: {},
@@ -246,12 +236,8 @@ export default {
       parentOrgList: []
     }
   },
-  computed: {
-    deleteFlag() {
-      return this.selectRow.deleteFlag === 1
-    }
-  },
   created: function() {
+    this.size = window.CONFIG.SYSTEM_SIZE
     this.dictInit()
     this.init()
   },
@@ -326,6 +312,9 @@ export default {
       this.orgTitle = '编辑机构'
       Object.keys(this.orgForm).map((key) => {
         this.orgForm[key] = row[key]
+      })
+      this.$nextTick(() => {
+        this.$refs['orgForm'].clearValidate()
       })
       this.orgStatus = true
     },

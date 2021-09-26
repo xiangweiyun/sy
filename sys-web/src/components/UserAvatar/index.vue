@@ -1,6 +1,7 @@
 <template>
   <el-dropdown class="user-avatar-wrapper" @command="handleCommand">
     <div class="avatar-box">
+      <span class="user-name">{{ name }}</span>
       <el-avatar size="small" :src="avatarSrc" />
       <i class="el-icon-caret-bottom" />
     </div>
@@ -19,6 +20,7 @@ export default {
   name: 'UserAvatar',
   data() {
     return {
+      name: '管理员',
       avatarSrc: Avatar
     }
   },
@@ -37,8 +39,10 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        removeToken()
-        location.reload()
+        this.$store.dispatch('LogOut').then(() => {
+          removeToken()
+          location.href = '/'
+        })
       })
     }
   }
@@ -48,13 +52,17 @@ export default {
 <style lang="less">
 .user-avatar-wrapper {
   float: left;
-  width: 48px;
-  padding: 3px 0 3px 20px;
+  width: 118px;
+  padding: 3px 0 3px 0px;
   margin-left: 20px;
   border-left: solid 1px #ddd;
   cursor: pointer;
+  .user-name {
+    margin-right: 5px;
+  }
   .avatar-box {
     outline: none;
+    text-align: right;
   }
   .el-avatar--small {
     display: inline-block;

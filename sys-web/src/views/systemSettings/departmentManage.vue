@@ -2,7 +2,7 @@
   <div class="dept">
     <el-form
       :inline="true"
-      size="mini"
+      :size="size"
       class="dept-form"
     >
       <el-form-item label="所属机构:">
@@ -15,8 +15,8 @@
           />
         </el-select>
       </el-form-item>
-      <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-add" @click="handleAdd">新 增</el-button>
+      <el-button type="primary" :size="size" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
+      <el-button type="primary" :size="size" icon="el-icon-add" @click="handleAdd">新 增</el-button>
     </el-form>
     <el-table
       ref="deptTable"
@@ -24,67 +24,34 @@
       border
       :data="tableData"
       :height="tableHeight"
-      size="mini"
+      :size="size"
       row-key="id"
       :tree-props="{children: 'children'}"
     >
-      <el-table-column
-        prop="deptName"
-        label="科室名称"
-        align="center"
-      />
-      <el-table-column
-        prop="code"
-        label="科室编码"
-        align="center"
-      />
-      <el-table-column
-        prop="orgName"
-        label="所属机构"
-        align="center"
-      />
-      <el-table-column
-        prop="parentName"
-        label="上级科室"
-        align="center"
-      />
-      <el-table-column
-        prop="orderNum"
-        label="显示顺序"
-        align="center"
-      />
-      <el-table-column
-        prop="phone"
-        label="联系电话"
-        align="center"
-      />
-      <el-table-column
-        prop="email"
-        label="邮箱"
-        align="center"
-      />
-      <el-table-column
-        label="操作"
-        align="center"
-      >
+      <el-table-column prop="deptName" label="科室名称" />
+      <el-table-column prop="code" label="科室编码" align="center" />
+      <el-table-column prop="orderNum" label="显示顺序" align="center" />
+      <el-table-column prop="phone" label="联系电话" align="center" />
+      <el-table-column prop="email" label="邮箱" align="center" />
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
+          <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <p />
     <!-- 新增、编辑部门信息 -->
-    <el-dialog :visible.sync="deptStatus" :title="deptTitle" width="400px" top="50px">
-      <el-form ref="deptForm" :model="deptForm" :rules="rules" label-width="80px">
+    <el-dialog :visible.sync="deptStatus" :close-on-click-modal="false" :title="deptTitle" width="400px">
+      <el-form ref="deptForm" :model="deptForm" :rules="rules" :size="size" label-width="80px">
         <el-form-item label="科室名称" prop="deptName">
           <el-input v-model="deptForm.deptName" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="科室编码" prop="code">
           <el-input v-model="deptForm.code" placeholder="请输入" />
         </el-form-item>
-        <el-form-item label="所属机构">
-          <el-select v-model="deptForm.orgId" clearable filterable placeholder="请选择" style="width:100%;">
+        <el-form-item label="所属机构" prop="orgId">
+          <el-select v-model="deptForm.orgId" filterable placeholder="请选择" style="width:100%;">
             <el-option
               v-for="item in orgList"
               :key="item.id"
@@ -96,7 +63,7 @@
         <el-form-item label="上级科室">
           <el-select v-model="deptForm.parentId" clearable filterable placeholder="请选择" style="width:100%;">
             <el-option
-              v-for="item in deptList"
+              v-for="item in parentDeptList"
               v-show="deptForm.id != item.id"
               :key="item.id"
               :label="item.deptName"
@@ -126,7 +93,8 @@
 import {
   listDept,
   saveDept,
-  delDept
+  delDept,
+  listParentByOrgIdAndDeptId
 } from '@/api/system/dept'
 import {
   listOrg
@@ -134,6 +102,7 @@ import {
 export default {
   data() {
     return {
+      size: 'mini',
       // 数据列表加载动画
       listLoading: false,
       searchForm: {
@@ -142,8 +111,9 @@ export default {
       },
       tableData: [],
       tableHeight: '200px',
+      selectRow: {},
       orgList: [],
-      deptList: [],
+      parentDeptList: [],
       deptTitle: '新增科室',
       deptStatus: false,
       deptForm: {
@@ -175,11 +145,11 @@ export default {
           { required: true, message: '请选择所属机构', trigger: 'change' }
         ]
       },
-      selectRow: {},
       businessTypeSelect: []
     }
   },
   async created() {
+    this.size = window.CONFIG.SYSTEM_SIZE
     // 机构列表初始化
     await this.orgListInit()
     this.init()
@@ -199,12 +169,16 @@ export default {
         this.tableData = res
         this.listLoading = false
       })
-      // 科室列表初始化
+      // 上级科室列表初始化
       this.deptListInit()
     },
     deptListInit() {
-      listDept(this.searchForm.orgId).then(res => {
-        this.deptList = res
+      const param = {
+        orgId: this.searchForm.orgId,
+        deptId: this.selectRow.id
+      }
+      listParentByOrgIdAndDeptId(param).then(res => {
+        this.parentDeptList = res
       })
     },
     async orgListInit() {
@@ -222,14 +196,19 @@ export default {
       Object.keys(this.deptForm).map(key => {
         this.deptForm[key] = ''
       })
+      this.deptForm.orgId = this.searchForm.orgId
+      this.deptForm.orgId = this.searchForm.orgName
       this.deptStatus = true
     },
     handleEdit(row) {
+      this.selectRow = row
       this.deptTitle = '编辑科室'
       Object.keys(this.deptForm).map(key => {
         this.deptForm[key] = row[key]
       })
-      this.deptForm.orgId = '1438844617070034946'
+      this.$nextTick(() => {
+        this.$refs['deptForm'].clearValidate()
+      })
       this.deptStatus = true
     },
     submitClick() {
@@ -249,6 +228,7 @@ export default {
               type: 'success',
               message: '操作成功'
             })
+            this.selectRow = {}
             this.deptStatus = false
             this.init()
           })

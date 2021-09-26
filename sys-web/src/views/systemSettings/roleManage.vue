@@ -2,7 +2,7 @@
   <div class="role">
     <el-form
       :inline="true"
-      size="mini"
+      :size="size"
       :model="searchForm"
       class="role-form"
     >
@@ -17,14 +17,14 @@
         </el-select>
       </el-form-item>
       <el-form-item label="角色名称:">
-        <el-input v-model="searchForm.name" clearable placeholder="请输入" size="mini" />
+        <el-input v-model="searchForm.name" clearable placeholder="请输入" :size="size" />
       </el-form-item>
       <el-form-item label="角色编码:">
-        <el-input v-model="searchForm.code" clearable placeholder="请输入" size="mini" />
+        <el-input v-model="searchForm.code" clearable placeholder="请输入" :size="size" />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-        <el-button type="primary" size="mini" icon="el-icon-add" @click="handleAdd">新 增</el-button>
+        <el-button type="primary" :size="size" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
+        <el-button type="primary" :size="size" icon="el-icon-add" @click="handleAdd">新 增</el-button>
       </el-form-item>
     </el-form>
     <el-table
@@ -33,82 +33,47 @@
       border
       :data="tableData"
       :height="tableHeight"
-      size="mini"
+      :size="size"
     >
-      <el-table-column
-        type="index"
-        label="序号"
-        align="center"
-        width="50"
-      />
-      <el-table-column
-        prop="name"
-        label="角色名称"
-        align="center"
-      />
-      <el-table-column
-        prop="code"
-        label="角色编码"
-        align="center"
-      />
-      <el-table-column
-        label="操作"
-        align="center"
-      >
+      <el-table-column type="index" label="序号" align="center" width="50" />
+      <el-table-column prop="name" label="角色名称" align="center" />
+      <el-table-column prop="code" label="角色编码" align="center" />
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="handleRelationUser(scope.row)">查看关联用户</el-button>
-          <el-button type="text" size="mini" @click="handleMenuRelation(scope.row)">菜单授权</el-button>
-          <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
+          <el-button type="text" :size="size" @click="handleRelationUser(scope.row)">查看关联用户</el-button>
+          <el-button type="text" :size="size" @click="handleMenuRelation(scope.row)">菜单授权</el-button>
+          <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
     <!-- 分页栏 -->
     <Pagination :total="total" :page.sync="searchForm.current" :limit.sync="searchForm.size" @pagination="init" />
-    <el-dialog :visible.sync="relationUserStatus" title="查看关联用户" width="60%" top="10px">
+    <!-- 查询角色绑定用户 -->
+    <el-dialog :visible.sync="relationUserStatus" :title="relationUserTitle" width="800px">
       <el-table
+        v-loading="userLoading"
         border
         :data="relationUserTableData"
         height="350px"
-        size="mini"
+        :size="size"
       >
-        <el-table-column
-          type="index"
-          label="序号"
-          align="center"
-        />
-        <el-table-column
-          prop="userName"
-          label="用户名"
-          align="center"
-        />
-        <el-table-column
-          prop="userTypeName"
-          label="用户类型"
-          align="center"
-        />
-        <el-table-column
-          prop="loginAccount"
-          label="登录账号"
-          align="center"
-        />
-        <el-table-column
-          prop="orgName"
-          label="机构名称"
-          align="center"
-        />
-        <el-table-column
-          prop="isWxResult"
-          label="是否已关联微信"
-          align="center"
-        />
+        <el-table-column type="index" label="序号" align="center" width="50" />
+        <el-table-column prop="name" label="用户姓名" align="center" />
+        <el-table-column prop="genderName" label="性别" align="center" />
+        <el-table-column prop="postName" label="职务" align="center" />
+        <el-table-column prop="jobName" label="职称" align="center" />
+        <el-table-column prop="username" label="用户账号" align="center" />
+        <el-table-column prop="noNum" label="工号" align="center" />
+        <el-table-column prop="orgName" label="所属机构" align="center" />
+        <el-table-column prop="deptName" label="所属科室" align="center" />
       </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="relationUserStatus = false">关 闭</el-button>
-      </span>
+      <!-- 分页栏 -->
+      <Pagination :total="userTotal" :page.sync="searchUserForm.current" :limit.sync="searchUserForm.size" @pagination="pageRelationUserInit" />
+      <span slot="footer" class="dialog-footer" />
     </el-dialog>
     <el-dialog :visible.sync="roleStatus" :close-on-click-modal="false" :title="roleTitle" width="400px">
-      <el-form ref="roleForm" :model="roleForm" :rules="rules" label-width="80px">
+      <el-form ref="roleForm" :model="roleForm" :rules="rules" :size="size" label-width="80px">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="roleForm.name" placeholder="请输入" />
         </el-form-item>
@@ -124,13 +89,15 @@
         <el-button type="primary" @click="submitClick">确 定</el-button>
       </span>
     </el-dialog>
-    <el-dialog :visible.sync="menuStatus" title="菜单列表" width="35%" top="10px">
+    <!-- 菜单授权 -->
+    <el-dialog :visible.sync="menuStatus" title="菜单授权" width="400px" top="10px">
       <el-input
         v-model="filterText"
         placeholder="输入关键字进行过滤"
       />
       <el-tree
         ref="tree"
+        v-loading="parentMenuLoading"
         class="filter-tree"
         :data="menuData"
         :props="defaultProps"
@@ -140,6 +107,7 @@
         style="height:350px;overflow-y: auto;"
         :default-checked-keys="relationMenus"
         accordion
+        :size="size"
       />
       <span slot="footer" class="dialog-footer">
         <el-button @click="menuStatus = false">取 消</el-button>
@@ -153,18 +121,27 @@
 import {
   pageRole,
   saveRole,
-  delRole
+  delRole,
+  listRoleMenu,
+  saveBatchRoleMenu,
+  pageRelationUser
 } from '@/api/system/role'
 import {
   listOrg
 } from '@/api/system/org'
+import {
+  listMenu
+} from '@/api/system/menu'
 import Pagination from '../../components/Pagination'
 export default {
   components: { Pagination },
   data() {
     return {
+      size: 'mini',
       // 数据列表加载动画
       listLoading: true,
+      userLoading: true,
+      parentMenuLoading: true,
       // 搜索对象
       searchForm: {
         current: 1,
@@ -173,6 +150,13 @@ export default {
         orgName: '',
         name: '',
         code: ''
+      },
+      searchUserForm: {
+        current: 1,
+        size: 10,
+        userName: '',
+        name: '',
+        noNum: ''
       },
       tableHeight: '200px',
       tableData: [],
@@ -208,11 +192,13 @@ export default {
       menuData: [],
       relationMenus: [],
       defaultProps: {
-        children: 'childList',
-        label: 'menuName'
+        children: 'children',
+        label: 'name'
       },
+      relationUserTitle: '',
       relationUserStatus: false,
-      relationUserTableData: []
+      relationUserTableData: [],
+      userTotal: 0
     }
   },
   watch: {
@@ -221,6 +207,7 @@ export default {
     }
   },
   async created() {
+    this.size = window.CONFIG.SYSTEM_SIZE
     // 机构列表初始化
     await this.orgListInit()
     this.init()
@@ -262,6 +249,9 @@ export default {
       Object.keys(this.roleForm).map(key => {
         this.roleForm[key] = row[key]
       })
+      this.$nextTick(() => {
+        this.$refs['roleForm'].clearValidate()
+      })
       this.roleStatus = true
     },
     submitClick() {
@@ -296,33 +286,37 @@ export default {
       })
     },
     handleRelationUser(row) {
+      this.selectRow = row
+      this.relationUserTitle = '角色[' + row.name + ']对应用户列表'
+      this.pageRelationUserInit()
+    },
+    pageRelationUserInit() {
+      this.userLoading = true
       const paramData = {
-        roleName: row.roleName,
-        translateFlag: true
+        roleId: this.selectRow.id
       }
-      this.$get(this.config.baseUrl + 'bsfUser/listByRoleName', paramData).then(res => {
-        if (res.success) {
-          this.relationUserTableData = res.data
-        }
+      pageRelationUser(paramData).then(res => {
+        this.userTotal = parseInt(res.total)
+        this.relationUserTableData = res.records
+        this.userLoading = false
       })
       this.relationUserStatus = true
     },
     handleMenuRelation(row) {
+      this.parentMenuLoading = true
       this.selectRow = row
+      listMenu().then(res => {
+        this.menuData = res
+        this.parentMenuLoading = false
+      })
+      listRoleMenu(row.id).then(res => {
+        console.log(res)
+        this.relationMenus = []
+        res.forEach(item => {
+          this.relationMenus.push(item.menuId)
+        })
+      })
       this.menuStatus = true
-      this.$get(this.config.baseUrl + 'bsfMenu/queryTreeMenu', {}).then(res => {
-        if (res.success) {
-          this.menuData = res.data
-        }
-      })
-      this.$get(this.config.baseUrl + 'bsfRoleMenu/listByRoleId/' + row.id, {}).then(res => {
-        if (res.success) {
-          this.relationMenus = []
-          res.data.forEach(element => {
-            this.relationMenus.push(element.menuId)
-          })
-        }
-      })
     },
     filterNode(value, data) {
       if (!value) {
@@ -339,24 +333,20 @@ export default {
         })
         return false
       }
-      const paramData = {
-        roleId: this.selectRow.id,
-        menuList: selectMenuData
-      }
-      this.$formDataPost(this.config.baseUrl + 'bsfRoleMenu/save', paramData, false).then(res => {
-        if (res.success) {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
-          })
-          this.menuStatus = false
-        } else {
-          this.$message({
-            type: 'warning',
-            message: '操作失败'
-          })
-          return false
+      const paramList = []
+      selectMenuData.forEach(item => {
+        const paramData = {
+          roleId: this.selectRow.id,
+          menuId: item
         }
+        paramList.push(paramData)
+      })
+      saveBatchRoleMenu(paramList).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.menuStatus = false
       })
     }
   }

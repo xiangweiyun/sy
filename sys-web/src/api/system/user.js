@@ -3,7 +3,7 @@ import request from '@/request'
 // 分页查询用户列表
 export function pageUser(query) {
   return request({
-    url: '/sysUser/getUserList',
+    url: '/sysUser/pageListVo',
     method: 'get',
     params: query
   })
@@ -36,58 +36,20 @@ export function exportUser(query) {
 }
 
 // 用户密码重置
-export function resetUserPwd(userId, password) {
-  const data = {
-    userId,
-    password
-  }
-  return request({
-    url: '/system/user/resetPwd',
-    method: 'put',
-    data: data
-  })
-}
-
-// 用户状态修改
-export function changeUserStatus(userId, status) {
-  const data = {
-    userId,
-    status
-  }
-  return request({
-    url: '/system/user/changeStatus',
-    method: 'put',
-    data: data
-  })
-}
-
-// 查询用户个人信息
-export function getUserProfile() {
-  return request({
-    url: '/system/user/profile',
-    method: 'get'
-  })
-}
-
-// 修改用户个人信息
-export function updateUserProfile(data) {
-  return request({
-    url: '/system/user/profile',
-    method: 'put',
-    data: data
-  })
-}
-
-// 用户密码重置
-export function updateUserPwd(oldPassword, newPassword) {
-  const data = {
-    oldPassword,
-    newPassword
-  }
+export function resetPassword(data) {
   return request({
     url: '/system/user/profile/updatePwd',
-    method: 'put',
-    params: data
+    method: 'post',
+    data: data
+  })
+}
+
+// 修改密码
+export function updatePassword(data) {
+  return request({
+    url: '/tob/user/updatePassword',
+    method: 'post',
+    data: data
   })
 }
 
@@ -108,26 +70,20 @@ export function importTemplate() {
   })
 }
 
-export function getUserInfo() {
+// 查询用户关联角色
+export function listUserRelationRole(query) {
   return request({
-    url: '/tob/user/getUserInfo',
-    method: 'get'
+    url: '/sysUserRole/listByUserId',
+    method: 'get',
+    params: query
   })
 }
 
-export function updateUserInfo(data) {
+// 保存用户关联角色
+export function saveUserRelationRole(data) {
   return request({
-    url: '/tob/user/updateUserInfo',
+    url: '/sysUserRole/saveBatch',
     method: 'post',
     data: data
   })
 }
-
-export function updatePassword(data) {
-  return request({
-    url: '/tob/user/updatePassword',
-    method: 'get',
-    params: data
-  })
-}
-

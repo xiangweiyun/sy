@@ -8,6 +8,15 @@ export function listDept(orgId) {
   })
 }
 
+// 上级部门列表
+export function listParentByOrgIdAndDeptId(query) {
+  return request({
+    url: '/sysDept/listParentByOrgIdAndDeptId',
+    method: 'get',
+    params: query
+  })
+}
+
 // 保存部门
 export function saveDept(data) {
   return request({

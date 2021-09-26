@@ -21,6 +21,6 @@ export function saveMenu(data) {
 export function delMenu(MenuId) {
   return request({
     url: '/sysMenu/remove/' + MenuId,
-    method: 'get'
+    method: 'post'
   })
 }

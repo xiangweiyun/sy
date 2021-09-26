@@ -2,89 +2,225 @@
   <div class="user">
     <el-form
       :inline="true"
-      size="mini"
+      :size="size"
       class="user-form"
       :model="searchForm"
     >
-      <el-form-item label="账号:">
-        <el-input v-model="searchForm.name" placeholder="请输入" size="mini" />
+      <el-form-item label="所属机构:">
+        <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
+          <el-option
+            v-for="item in orgList"
+            :key="item.id"
+            :label="item.name"
+            :value="item.id"
+          />
+        </el-select>
       </el-form-item>
-      <el-button type="primary" size="mini" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
-      <el-button type="primary" size="mini" icon="el-icon-edit" @click="handleAdd">新 增</el-button>
+      <el-form-item label="用户姓名:">
+        <el-input v-model="searchForm.name" clearable placeholder="请输入" :size="size" />
+      </el-form-item>
+      <el-form-item label="账号:">
+        <el-input v-model="searchForm.userName" clearable placeholder="请输入" :size="size" />
+      </el-form-item>
+      <el-form-item label="工号:">
+        <el-input v-model="searchForm.noNum" clearable placeholder="请输入" :size="size" />
+      </el-form-item>
+      <el-button type="primary" :size="size" icon="el-icon-search" @click="handleSearch">搜 索</el-button>
+      <el-button type="primary" :size="size" icon="el-icon-edit" @click="handleAdd">新 增</el-button>
     </el-form>
-    <el-table
-      ref="userTable"
-      v-loading="listLoading"
-      border
-      :data="tableData"
-      :height="tableHeight"
-      size="mini"
-    >
-      <el-table-column
-        type="index"
-        label="序号"
-        align="center"
-        width="50"
-      />
-      <el-table-column
-        prop="loginAccount"
-        label="账号"
-        align="center"
-        width="180"
-      />
-      <el-table-column
-        prop="userName"
-        label="员工姓名"
-        align="center"
-        width="180"
-      />
-      <el-table-column
-        prop="userTypeName"
-        label="账号类型"
-        align="center"
-        width="180"
-      />
-      <el-table-column
-        label="操作"
-        align="center"
+    <!-- 科室信息展示 -->
+    <div class="user-left">
+      <el-card class="box-card">
+        <div slot="header" class="clearfix">
+          <span>科室信息</span>
+          <el-button style="float: right; padding: 3px 0" type="text" @click="handleSearchDept">刷新</el-button>
+        </div>
+        <el-input
+          v-model="filterDeptText"
+          placeholder="科室名称检索"
+        />
+        <el-tree
+          ref="tree"
+          class="filter-tree"
+          :data="deptData"
+          :props="defaultProps"
+          :expand-on-click-node="false"
+          :filter-node-method="filterNode"
+          style="height:350px;overflow-y: auto;"
+          accordion
+          :size="size"
+          @node-click="nodeDeptClick"
+        />
+      </el-card>
+    </div>
+    <!-- 用户列表展示 -->
+    <div class="user-right">
+      <el-table
+        ref="userTable"
+        v-loading="listLoading"
+        border
+        :data="tableData"
+        :height="tableHeight"
+        :size="size"
       >
-        <template slot-scope="scope">
-          <el-button v-show="scope.row.userType == 1" type="text" size="mini" @click="showRoles(scope.row)">查看关联角色</el-button>
-          <el-button v-show="scope.row.userType == 1" type="text" size="mini" @click="handleRelationRoles(scope.row)">关联角色</el-button>
-          <el-button v-show="scope.row.userType == 1" type="text" size="mini" @click="showCopyUser(scope.row)">复制用户角色</el-button>
-          <el-button v-show="scope.row.userType == 1" type="text" size="mini" @click="showEmp(scope.row)">关联员工</el-button>
-          <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" size="mini" @click="resetPwd(scope.row)">重置密码</el-button>
-          <el-button type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <!-- 分页栏 -->
-    <Pagination :total="total" :page.sync="searchForm.current" :limit.sync="searchForm.size" @pagination="init" />
-
-    <el-dialog :visible.sync="userStatus" :title="userTitle" width="30%">
-      <el-form ref="userAddForm" :model="userAddForm" :rules="rules" class="dialog-form" label-width="80px">
-        <el-form-item label="账号" prop="loginAccount">
-          <el-input v-model="userAddForm.loginAccount" placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="用户类别">
-          <el-select v-model="userAddForm.userType" placeholder="请选择" style="width: 100%;">
-            <el-option label="机构用户" value="1" />
-          </el-select>
-        </el-form-item>
+        <el-table-column type="expand">
+          <template slot-scope="scope">
+            <el-descriptions :column="5" direction="vertical" :size="size" border>
+              <el-descriptions-item label="身份证号">
+                {{ scope.row.idcard }}
+              </el-descriptions-item>
+              <el-descriptions-item label="名族">
+                {{ scope.row.nationCode }}
+              </el-descriptions-item>
+              <el-descriptions-item label="职务">
+                {{ scope.row.postName }}
+              </el-descriptions-item>
+              <el-descriptions-item label="职称">
+                {{ scope.row.jobName }}
+              </el-descriptions-item>
+              <el-descriptions-item label="联系电话">
+                {{ scope.row.officePhone }}
+              </el-descriptions-item>
+              <el-descriptions-item label="擅长领域" :span="3">
+                {{ scope.row.goodAtField }}
+              </el-descriptions-item>
+              <el-descriptions-item label="个人简介">
+                {{ scope.row.personalProfile }}
+              </el-descriptions-item>
+            </el-descriptions>
+          </template>
+        </el-table-column>
+        <el-table-column type="index" label="序号" align="center" width="50" />
+        <el-table-column prop="name" label="用户姓名" align="center" width="120" />
+        <el-table-column prop="genderName" label="性别" align="center" width="50" />
+        <el-table-column prop="username" label="用户账号" align="center" width="160" />
+        <el-table-column prop="noNum" label="工号" align="center" width="110" />
+        <el-table-column prop="deptName" label="所属科室" align="center" width="120" />
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" :size="size" @click="showRoles(scope.row)">查看关联角色</el-button>
+            <el-button type="text" :size="size" @click="handleRelationRoles(scope.row)">关联角色</el-button>
+            <el-button type="text" :size="size" @click="handleCopyUser(scope.row)">复制用户角色</el-button>
+            <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button type="text" :size="size" @click="resetPwd(scope.row)">重置密码</el-button>
+            <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+      <!-- 分页栏 -->
+      <Pagination :total="total" :page.sync="searchForm.current" :limit.sync="searchForm.size" @pagination="init" />
+    </div>
+    <!-- 新增、编辑用户信息 -->
+    <el-dialog :visible.sync="userStatus" :close-on-click-modal="false" :title="userTitle" width="800px" top="15px">
+      <el-form ref="userForm" :model="userForm" :rules="rules" :size="size" label-width="80px">
+        <el-col :span="12">
+          <el-form-item label="用户姓名" prop="name">
+            <el-input v-model="userForm.name" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="账号" prop="username">
+            <el-input v-model="userForm.username" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="所属机构">
+            <el-input v-model="userForm.orgName" placeholder="请输入" disabled />
+          </el-form-item>
+          <el-form-item label="身份证号">
+            <el-input v-model="userForm.idcard" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="名族">
+            <el-select
+              v-model="orgForm.nationCode"
+              clearable
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in nationList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="职务">
+            <el-select
+              v-model="orgForm.postCode"
+              clearable
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in postList"
+                :key="item.dictValue"
+                :label="item.dictLabel"
+                :value="item.dictValue"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="12">
+          <el-form-item label="工号" prop="noNum">
+            <el-input v-model="userForm.noNum" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="密码">
+            <el-input v-model="userForm.password" placeholder="初始密码为[1]" show-password />
+          </el-form-item>
+          <el-form-item label="所属科室" prop="deptId">
+            <el-select v-model="userForm.deptId" filterable placeholder="请选择" style="width: 100%;">
+              <el-option label="机构用户" value="1" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="性别">
+            <el-select v-model="userForm.genderCode" placeholder="请选择" style="width: 100%;">
+              <el-option label="机构用户" value="1" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="联系电话">
+            <el-input v-model="userForm.officePhone" placeholder="请输入" />
+          </el-form-item>
+          <el-form-item label="职称">
+            <el-select v-model="userForm.jobTitleCode" placeholder="请选择" style="width: 100%;">
+              <el-option label="机构用户" value="1" />
+            </el-select>
+          </el-form-item>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="擅长领域">
+            <el-input v-model="userForm.goodAtField" placeholder="请输入" type="textarea" />
+          </el-form-item>
+          <el-form-item label="个人简介">
+            <el-input v-model="userForm.personalProfile" placeholder="请输入" type="textarea" />
+          </el-form-item>
+          <el-form-item label="用户头像">
+            <el-upload
+              class="avatar-uploader"
+              action="#"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccess"
+              :before-upload="beforeAvatarUpload"
+            >
+              <img
+                v-if="userForm.avatar"
+                :src="userForm.avatar"
+                class="avatar"
+              >
+              <i v-else class="el-icon-plus avatar-uploader-icon" />
+            </el-upload>
+          </el-form-item>
+        </el-col>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="userStatus = false">取 消</el-button>
         <el-button type="primary" @click="submitClick">确 定</el-button>
       </span>
     </el-dialog>
-
+    <!-- 用户已关联的角色列表 -->
     <el-dialog :visible.sync="relationRoleStatus" title="关联角色列表" width="60%" top="10px">
       <el-table
+        v-loading="roleLoading"
         border
         :data="relationRoleData"
         height="390px"
-        size="mini"
+        :size="size"
       >
         <el-table-column
           type="index"
@@ -107,11 +243,12 @@
         <el-button @click="relationRoleStatus = false">关 闭</el-button>
       </span>
     </el-dialog>
-
-    <el-dialog :visible.sync="roleStatus" title="关联角色" width="40%" top="10px">
+    <!-- 用户关联角色操作 -->
+    <el-dialog :visible.sync="roleStatus" title="关联角色" width="800px">
       <div style="text-align: center">
         <el-transfer
           v-model="relationRole"
+          v-loading="relationRoleLoading"
           style="text-align: left; display: inline-block"
           :data="roleTableData"
           :titles="['未选', '已选']"
@@ -123,114 +260,46 @@
         <el-button type="primary" @click="submitRoleClick">确 定</el-button>
       </span>
     </el-dialog>
-
-    <el-dialog :visible.sync="copyUserStatus" title="用户列表" width="60%" top="10px">
+    <!-- 复制用户角色 -->
+    <el-dialog :visible.sync="copyUserStatus" title="用户列表" width="800px">
       <el-form
         :inline="true"
-        size="mini"
-        :style="{margin:'0px 0px 5px 0px'}"
+        :size="size"
         class="user-form"
       >
-        <el-form-item label="账号:">
-          <el-input v-model="copyNameLike" placeholder="请输入" size="mini" />
+        <el-form-item label="用户姓名:">
+          <el-input v-model="searchUserForm.name" clearable placeholder="请输入" :size="size" />
         </el-form-item>
-        <el-button type="primary" size="mini" icon="el-icon-search" @click="handleCopySearch">搜 索</el-button>
+        <el-form-item label="工号:">
+          <el-input v-model="searchUserForm.noNum" clearable placeholder="请输入" :size="size" />
+        </el-form-item>
+        <el-button type="primary" :size="size" icon="el-icon-search" @click="handleCopySearch">搜 索</el-button>
       </el-form>
       <el-table
+        v-loading="listUserLoading"
         border
-        :data="copyUserTableData"
+        :data="userTableData"
         height="350px"
-        size="mini"
+        :size="size"
         highlight-current-row
         @current-change="handleCopySelect"
       >
-        <el-table-column
-          type="index"
-          label="序号"
-          align="center"
-        />
-        <el-table-column
-          prop="loginAccount"
-          label="账号"
-          align="center"
-        />
-        <el-table-column
-          prop="userName"
-          label="员工姓名"
-          align="center"
-        />
-        <el-table-column
-          prop="userTypeName"
-          label="账号类型"
-          align="center"
-        />
+        <el-table-column type="index" label="序号" align="center" width="50" />
+        <el-table-column prop="name" label="用户姓名" align="center" />
+        <el-table-column prop="genderName" label="性别" align="center" />
+        <el-table-column prop="postName" label="职务" align="center" />
+        <el-table-column prop="jobName" label="职称" align="center" />
+        <el-table-column prop="username" label="用户账号" align="center" />
+        <el-table-column prop="noNum" label="工号" align="center" />
+        <el-table-column prop="orgName" label="所属机构" align="center" />
+        <el-table-column prop="deptName" label="所属科室" align="center" />
       </el-table>
       <p />
-      <el-pagination
-        :current-page="copyCurrentPage"
-        :page-size="copyPagesize"
-        layout="total, prev, pager, next"
-        :total="copyTotal"
-        @current-change="handleCopyCurrentChange"
-      />
+      <!-- 分页栏 -->
+      <Pagination :total="userTotal" :page.sync="searchUserForm.current" :limit.sync="searchUserForm.size" @pagination="userListInit" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="copyUserStatus = false">取 消</el-button>
         <el-button type="primary" @click="submitCopyUserClick">确 定</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog :visible.sync="empStatus" title="员工列表" width="60%" top="10px">
-      <el-form
-        :inline="true"
-        size="mini"
-        :style="{margin:'0px 0px 5px 0px'}"
-        class="user-form"
-      >
-        <el-form-item label="员工名称:">
-          <el-input v-model="empNameLike" placeholder="请输入" size="mini" />
-        </el-form-item>
-        <el-button type="primary" size="mini" icon="el-icon-search" @click="handleEmpSearch">搜 索</el-button>
-      </el-form>
-      <el-table
-        border
-        :data="empTableData"
-        height="350px"
-        size="mini"
-        highlight-current-row
-        @current-change="handleEmpSelect"
-      >
-        <el-table-column
-          type="index"
-          label="序号"
-          align="center"
-        />
-        <el-table-column
-          prop="loginAccount"
-          label="账号"
-          align="center"
-        />
-        <el-table-column
-          prop="userName"
-          label="员工姓名"
-          align="center"
-        />
-        <el-table-column
-          prop="userTypeName"
-          label="账号类型"
-          align="center"
-        />
-      </el-table>
-      <p />
-      <el-pagination
-        :current-page="empCurrentPage"
-        :page-size="empPagesize"
-        layout="total, prev, pager, next"
-        :total="empTotal"
-        @current-change="handleEmpCurrentChange"
-      />
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="empStatus = false">取 消</el-button>
-        <el-button type="primary" @click="submitEmpClick">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -240,35 +309,80 @@
 import {
   pageUser,
   saveUser,
-  delUser
+  delUser,
+  listUserRelationRole,
+  saveUserRelationRole
 } from '@/api/system/user'
+import {
+  listRole
+} from '@/api/system/role'
+import {
+  listOrg
+} from '@/api/system/org'
+import {
+  listDept
+} from '@/api/system/dept'
+import {
+  listDistItem
+} from '@/api/system/dist'
 import Pagination from '../../components/Pagination'
 export default {
   components: { Pagination },
   data() {
     return {
+      size: 'mini',
       // 数据列表加载动画
       listLoading: true,
+      roleLoading: true,
+      relationRoleLoading: true,
+      listUserLoading: true,
       // 搜索对象
       searchForm: {
         current: 1,
         size: 10,
         orgId: '',
         orgName: '',
+        userName: '',
         name: '',
-        code: ''
+        noNum: '',
+        deptId: ''
       },
-      nameLike: '',
+      searchUserForm: {
+        current: 1,
+        size: 10,
+        orgId: '',
+        orgName: '',
+        name: '',
+        noNum: '',
+        deptId: ''
+      },
+      orgList: [],
+      deptData: [],
+      defaultProps: {
+        children: 'children',
+        label: 'deptName'
+      },
+      filterDeptText: '',
       userTitle: '新增用户',
       tableData: [],
-      currentPage: 1,
-      pagesize: 10,
+      userTableData: [],
+      tableHeight: '200px',
       total: 0,
+      userTotal: 0,
       userStatus: false,
-      userAddForm: {},
+      userForm: {},
       rules: {
-        loginAccount: [
-          { required: true, message: '请输入账号', trigger: 'blur' }
+        name: [
+          { required: true, message: '请输入姓名', trigger: 'blur' }
+        ],
+        noNum: [
+          { required: true, message: '请输入工号', trigger: 'blur' }
+        ],
+        username: [
+          { required: true, message: '请输入登录账号', trigger: 'blur' }
+        ],
+        deptId: [
+          { required: true, message: '请选择所属科室', trigger: 'change' }
         ]
       },
       selectRow: {},
@@ -278,109 +392,147 @@ export default {
       relationRoleData: [],
       relationRole: [],
       copyUserStatus: false,
-      copyUserTableData: [],
-      copyCurrentPage: 1,
-      copyPagesize: 10,
-      copyTotal: 0,
-      copyNameLike: '',
       copyUserRow: {},
-      empNameLike: '',
-      selectEmpRow: {},
-      empStatus: false,
-      empTableData: [],
-      empCurrentPage: 1,
-      empPagesize: 10,
-      empTotal: 0
+      // 名族选项
+      nationList: [],
+      // 性别选项
+      sexList: [],
+      // 职务选项
+      postList: [],
+      // 职称选项
+      jobList: []
     }
   },
-  created: function() {
+  watch: {
+    filterDeptText(val) {
+      this.$refs.tree.filter(val)
+    }
+  },
+  async created() {
+    this.size = window.CONFIG.SYSTEM_SIZE
+    this.dictInit()
+    // 机构列表初始化
+    await this.orgListInit()
+    this.deptListInit()
     this.init()
   },
+  mounted() {
+    this.$nextTick(() => {
+      this.tableHeight = window.innerHeight - this.$refs['userTable'].$el.offsetTop - 180
+    })
+  },
   methods: {
+    // 分页查询用户信息初始化
     init() {
+      this.listLoading = true
       pageUser(this.searchForm).then(res => {
-        if (res.success) {
-          this.total = parseInt(res.data.total)
-          this.tableData = res.data.rows
-        }
+        this.total = parseInt(res.total)
+        this.tableData = res.records
+        this.listLoading = false
       })
     },
-    copyUserInit() {
-      var paramData = {
-        loginAccount: this.copyNameLike,
-        pageNum: this.copyCurrentPage,
-        pageSize: this.copyPagesize
+    dictInit() {
+      // 名族选项
+      listDistItem({ dictType: 'NATION' }).then((res) => {
+        this.nationList = res
+      })
+      // 性别选项
+      listDistItem({ dictType: 'SEX' }).then((res) => {
+        this.sexList = res
+      })
+      // 职务选项
+      listDistItem({ dictType: 'POST' }).then((res) => {
+        this.postList = res
+      })
+      // 职称选项
+      listDistItem({ dictType: 'JOB' }).then((res) => {
+        this.jobList = res
+      })
+    },
+    async orgListInit() {
+      await listOrg().then(res => {
+        this.orgList = res
+        this.searchForm.orgId = this.orgList[0].id
+        this.searchForm.orgName = this.orgList[0].name
+      })
+    },
+    // 科室信息初始化
+    deptListInit() {
+      listDept(this.searchForm.orgId).then(res => {
+        this.deptData = res
+      })
+    },
+    // 科室信息检索
+    filterNode(value, data) {
+      if (!value) {
+        return true
       }
-      this.$get(this.config.baseUrl + 'bsfUser/getPage', paramData).then(res => {
-        if (res.success) {
-          this.copyTotal = parseInt(res.data.total)
-          this.copyUserTableData = res.data.rows
-        }
-      })
+      return data.deptName.indexOf(value) !== -1
     },
-    handleCurrentChange(currentPage) {
-      this.currentPage = currentPage
+    // 选择科室
+    nodeDeptClick(row) {
+      this.searchForm.deptId = row.id
       this.init()
     },
+    // 科室信息刷新
+    handleSearchDept() {
+      this.deptListInit()
+    },
+    // 用户信息搜索
     handleSearch() {
+      this.searchForm.current = 1
       this.init()
     },
-    handleRefresh() {
-      this.nameLike = ''
-      this.init()
-    },
+    // 新增用户信息
     handleAdd() {
       this.userTitle = '新增用户'
-      this.userAddForm = {}
+      Object.keys(this.userForm).map(key => {
+        this.userForm[key] = ''
+      })
       this.userStatus = true
     },
+    // 编辑用户信息
+    handleEdit(row) {
+      this.userTitle = '编辑用户'
+      Object.keys(this.userForm).map(key => {
+        this.userForm[key] = row[key]
+      })
+      this.$nextTick(() => {
+        this.$refs['userForm'].clearValidate()
+      })
+      this.userStatus = true
+    },
+    handleAvatarSuccess(res, file) {
+      this.imageUrl = URL.createObjectURL(file.raw)
+    },
+    beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isLt2M = file.size / 1024 / 1024 < 2
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是 JPG 格式!')
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 2MB!')
+      }
+      return isJPG && isLt2M
+    },
+    // 提交用户信息
     submitClick() {
-      this.$refs['userAddForm'].validate((valid) => {
+      this.$refs['userForm'].validate((valid) => {
         if (valid) {
-          saveUser(this.userAddForm).then(res => {
-            if (res.success) {
-              this.$message({
-                type: 'success',
-                message: '操作成功'
-              })
-              this.userStatus = false
-              this.userAddForm = {}
-              this.init()
-            } else {
-              this.$message({
-                type: 'warning',
-                message: '操作失败'
-              })
-              return false
-            }
+          saveUser(this.userForm).then(res => {
+            this.$message({
+              type: 'success',
+              message: '操作成功'
+            })
+            this.userStatus = false
+            this.searchForm.current = 1
+            this.init()
           })
-        } else {
-          console.log('error submit!!')
-          return false
         }
       })
     },
-    handleCopyCurrentChange(currentPage) {
-      this.copyCurrentPage = currentPage
-      this.copyUserInit()
-    },
-    handleRelationUser(row) {
-      this.relationUserStatus = true
-    },
-    handleMenuRelation(row) {
-      this.menuStatus = true
-    },
-    handleEdit(row) {
-      this.userTitle = '编辑用户'
-      delete row.createTime
-      delete row.updateTime
-      const addForm = {}
-      Object.keys(row).map(key => {
-        addForm[key] = row[key]
-      })
-      this.userAddForm = addForm
-      this.userStatus = true
-    },
+    // 查询用户信息
     handleRemove(row) {
       this.$confirm('此操作将删除选中记录, 是否继续?', '提示', {
         confirmButtonText: '确定',
@@ -388,78 +540,63 @@ export default {
         type: 'warning'
       }).then(() => {
         delUser(row.id).then(res => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.init()
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '操作失败'
-            })
-            return false
-          }
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.init()
         })
       })
     },
+    // 重置密码
     resetPwd(row) {
-      this.$confirm('确定重置账号[' + row.loginAccount + ']的密码吗？重置后密码为【000000】?', '提示', {
+      this.$confirm('确定重置账号[' + row.loginAccount + ']的密码吗？重置后密码为[1]?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        delete row.createTime
-        delete row.updateTime
         this.$formDataPost(this.config.baseUrl + 'bsfUser/resetPassword', row, false).then(res => {
-          if (res.success) {
-            this.$message({
-              type: 'success',
-              message: '操作成功!'
-            })
-            this.init()
-          } else {
-            this.$message({
-              type: 'warning',
-              message: '操作失败'
-            })
-            return false
-          }
+          this.$message({
+            type: 'success',
+            message: '操作成功!'
+          })
+          this.init()
         })
       })
     },
+    // 显示关联角色
     showRoles(row) {
+      this.roleLoading = true
       this.selectRow = row
       this.relationRoleStatus = true
-      this.$get(this.config.baseUrl + 'bsfUserRole/listByUserId/' + row.id, {}).then(res => {
-        if (res.success) {
-          this.relationRoleData = res.data
-        }
+      listUserRelationRole({ userId: row.id }).then(res => {
+        this.relationRoleData = res
+        this.roleLoading = false
       })
     },
+    // 用户关联角色操作
     handleRelationRoles(row) {
+      this.relationRoleLoading = true
+      this.selectRow = row
       this.roleTableData = []
       this.relationRole = []
-      this.$get(this.config.baseUrl + 'bsfRole/getRoleList', {}).then(res => {
-        if (res.success) {
-          res.data.forEach(element => {
-            this.roleTableData.push({
-              key: element.id,
-              label: element.roleName
-            })
+      listRole({ orgId: row.orgId }).then(res => {
+        res.forEach(item => {
+          this.roleTableData.push({
+            key: item.id,
+            label: item.name + '[' + item.code + ']'
           })
-          this.$get(this.config.baseUrl + 'bsfUserRole/listByUserId/' + row.id, {}).then(res => {
-            if (res.success) {
-              res.data.forEach(element => {
-                this.relationRole.push(element.roleId)
-              })
-            }
+        })
+        listUserRelationRole({ userId: row.id }).then(res => {
+          res.forEach(item => {
+            this.relationRole.push(item.roleId)
           })
-        }
+          this.relationRoleLoading = false
+        })
       })
       this.roleStatus = true
     },
+    // 提交角色关联
     submitRoleClick() {
       if (this.relationRole.length < 1) {
         this.$message({
@@ -468,46 +605,61 @@ export default {
         })
         return false
       }
-      const selectRoleIds = this.relationRole.split(',')
-      const paramData = {
-        userId: this.selectRow.id,
-        roleIdList: selectRoleIds
-      }
-      this.$formDataPost(this.config.baseUrl + 'bsfUserRole/modifyByUserId', paramData, false).then(res => {
-        if (res.success) {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
-          })
-          this.roleStatus = false
-        } else {
-          this.$message({
-            type: 'warning',
-            message: '操作失败'
-          })
-          return false
-        }
+      const paramData = []
+      this.relationRole.forEach(item => {
+        paramData.push({
+          userId: this.selectRow.id,
+          roleId: item
+        })
+      })
+      saveUserRelationRole(paramData).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.roleStatus = false
       })
     },
-    showCopyUser(row) {
+    // 获取复制用户列表
+    userListInit() {
+      this.listUserLoading = true
+      this.searchUserForm.orgId = this.searchForm.orgId
+      pageUser(this.searchUserForm).then(res => {
+        this.userTotal = parseInt(res.total)
+        this.userTableData = res.records
+        this.listUserLoading = false
+      })
+    },
+    // 查询复制的用户列表
+    handleCopyUser(row) {
       this.selectRow = row
       this.copyUserRow = {}
-      this.copyCurrentPage = 1
-      this.copyUserInit()
+      this.searchUserForm.current = 1
+      this.userListInit()
       this.copyUserStatus = true
     },
+    // 复制用户列表搜索
     handleCopySearch() {
-      this.copyCurrentPage = 1
+      this.searchUserForm.current = 1
       this.copyUserInit()
     },
+    // 选择复制用户
     handleCopySelect(row) {
       this.copyUserRow = row
     },
+    // 提交复制用户角色
     submitCopyUserClick() {
       if (JSON.stringify(this.copyUserRow) === '{}') {
         this.$message({
           type: 'warning',
           message: '请选择一条数据'
+        })
+        return false
+      }
+      if (this.copyUserRow.id === this.selectRow.id) {
+        this.$message({
+          type: 'warning',
+          message: '请重新选择，不能复制本人的角色'
         })
         return false
       }
@@ -530,53 +682,6 @@ export default {
           return false
         }
       })
-    },
-    empInit() {
-
-    },
-    showEmp(row) {
-      this.selectRow = row
-      this.selectEmpRow = {}
-      this.empStatus = true
-    },
-    handleEmpSearch() {
-      this.empCurrentPage = 1
-      this.empInit
-    },
-    handleEmpSelect(row) {
-      this.selectEmpRow = row
-    },
-    handleEmpCurrentChange(currentPage) {
-      this.empCurrentPage = currentPage
-      this.empInit()
-    },
-    submitEmpClick() {
-      if (JSON.stringify(this.selectEmpRow) === '{}') {
-        this.$message({
-          type: 'warning',
-          message: '请选择一条数据'
-        })
-        return false
-      }
-      const paramData = {
-        id: this.selectRow.id,
-        empId: this.selectEmpRow.id
-      }
-      this.$formDataPost(this.config.baseUrl + 'bsfUser/bindEmp', paramData, false).then(res => {
-        if (res.success) {
-          this.$message({
-            type: 'success',
-            message: '操作成功!'
-          })
-          this.empStatus = false
-        } else {
-          this.$message({
-            type: 'warning',
-            message: '操作失败'
-          })
-          return false
-        }
-      })
     }
   }
 }
@@ -587,6 +692,37 @@ export default {
     .el-form-item{
       margin: 0px 0px 5px 0px
     }
+  }
+  &-left{
+    float: left;
+    width: 200px;
+  }
+  &-right{
+    float: right;
+    width: calc(100% - 205px);
+  }
+  .avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+  }
+  .avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+  }
+  .avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
   }
 }
 </style>

@@ -73,9 +73,17 @@ export default {
             Cookies.remove('username')
             Cookies.remove('password')
           }
-          this.$store.dispatch('Login', this.loginForm).then(() => {
-            this.$router.push({ path: '/' })
-            this.loading = false
+          this.$store.dispatch('Login', this.loginForm).then((res) => {
+            const param = {
+              userId: res.id,
+              appId: window.CONFIG.SYSTEM_APP_ID
+            }
+            this.$store.dispatch('GetInfo', param).then(res => {
+              this.$router.push({ path: '/' })
+              this.loading = false
+            }).catch(() => {
+              this.loading = false
+            })
           }).catch(() => {
             this.loading = false
           })

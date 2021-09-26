@@ -2,24 +2,15 @@
   <div class="area">
     <el-form
       :inline="true"
-      size="mini"
+      :size="size"
       class="area-form"
     >
-      <el-button
-        type="primary"
-        size="mini"
-        icon="el-icon-search"
-        @click="handleRefresh"
-      >刷 新</el-button>
-      <el-button
-        type="primary"
-        size="mini"
-        icon="el-icon-edit"
-        @click="handleAdd"
-      >新 增</el-button>
+      <el-button type="primary" :size="size" icon="el-icon-search" @click="handleRefresh">刷 新</el-button>
+      <el-button type="primary" :size="size" icon="el-icon-edit" @click="handleAdd">新 增</el-button>
     </el-form>
     <el-table
       ref="areaTable"
+      v-loading="listLoading"
       :data="tableData"
       row-key="id"
       border
@@ -27,19 +18,15 @@
       :load="load"
       :height="tableHeight"
       :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
-      size="mini"
+      :size="size"
     >
       <el-table-column prop="districtName" label="行政区划名称" />
       <el-table-column prop="districtCode" label="行政区划代码" />
-      <el-table-column prop="parentName" label="上级行政区划" />
-      <el-table-column
-        label="操作"
-        align="center"
-      >
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="mini" @click="handleAdd(scope.row)">新增子记录</el-button>
-          <el-button type="text" size="mini" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" size="mini" @click="handleRemove(scope.row)">删除</el-button>
+          <el-button type="text" :size="size" @click="handleAdd(scope.row)">新增子记录</el-button>
+          <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
+          <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -50,6 +37,7 @@
         :model="areaForm"
         :rules="rules"
         label-width="110px"
+        :size="size"
       >
         <el-form-item label="行政区划名称" prop="districtName">
           <el-input v-model="areaForm.districtName" placeholder="请输入" />
@@ -60,13 +48,13 @@
         <el-form-item label="上级行政区划">
           <el-input
             v-model="areaForm.parentName"
-            placeholder="请选择"
+            placeholder="上级行政区划"
+            clearable
             :readonly="true"
-          ><el-button
-            slot="append"
-            icon="el-icon-s-operation"
-            @click="parentStatus = true"
-          /></el-input>
+          >
+            <el-button slot="append" icon="el-icon-circle-close" @click="handelRemoveParent" />
+            <el-button slot="append" icon="el-icon-s-operation" @click="parentStatus = true" />
+          </el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -77,8 +65,7 @@
     <el-dialog
       :visible.sync="parentStatus"
       title="上级行政区划"
-      width="35%"
-      top="10px"
+      width="400px"
     >
       <el-tree
         class="filter-tree"
@@ -88,6 +75,7 @@
         style="height: 380px; overflow-y: auto"
         :expand-on-click-node="false"
         accordion
+        :size="size"
         @node-click="nodeClick"
       />
       <span slot="footer" class="dialog-footer">
@@ -111,6 +99,8 @@ import {
 export default {
   data() {
     return {
+      size: 'mini',
+      listLoading: true,
       tableHeight: '200px',
       areaTitle: '新增行政区划',
       tableData: [],
@@ -144,6 +134,7 @@ export default {
     }
   },
   created: function() {
+    this.size = window.CONFIG.SYSTEM_SIZE
     this.init()
   },
   mounted() {
@@ -153,9 +144,11 @@ export default {
   },
   methods: {
     init() {
+      this.listLoading = true
       this.tableData = []
       listArea().then(res => {
         this.tableData = res
+        this.listLoading = false
       })
     },
     handleRefresh() {
@@ -178,11 +171,17 @@ export default {
       Object.keys(this.areaForm).map(key => {
         this.areaForm[key] = row[key]
       })
+      this.$nextTick(() => {
+        this.$refs['areaForm'].clearValidate()
+      })
       this.areaStatus = true
     },
     submitClick() {
       this.$refs['areaForm'].validate((valid) => {
         if (valid) {
+          if (!this.areaForm.parentName) {
+            this.areaForm.parentId = ''
+          }
           saveArea(this.areaForm).then((res) => {
             this.$message({
               type: 'success',
@@ -196,7 +195,7 @@ export default {
     },
     handleRemove(row) {
       const children = row.hasChildren
-      if (children) {
+      if (children && children.length > 0) {
         this.$message({
           type: 'warning',
           message: '该行政区划存在子记录不能删除'
@@ -234,6 +233,7 @@ export default {
       }
       this.areaForm.parentName = this.selectParentRow.districtName
       this.areaForm.parentId = this.selectParentRow.id
+      this.selectParentRow = {}
       this.parentStatus = false
     },
     load(row, treeNode, resolve) {
@@ -267,11 +267,11 @@ export default {
       })
     },
     nodeClick(row) {
-      this.selectParentRow = {
-        id: row.id,
-        districtCode: row.districtCode,
-        districtName: row.districtName
-      }
+      this.selectParentRow = row
+    },
+    handelRemoveParent() {
+      this.areaForm.parentId = ''
+      this.areaForm.parentName = ''
     }
   }
 }
