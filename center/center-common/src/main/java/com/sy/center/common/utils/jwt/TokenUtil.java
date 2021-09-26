@@ -1,9 +1,9 @@
 package com.sy.center.common.utils.jwt;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.sy.center.common.utils.BlankUtils;
 import com.sy.center.common.utils.ServletUtils;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Token处理
@@ -30,7 +30,7 @@ public class TokenUtil {
 	public static String getToken() {
 		String token = "";
 		String authorization = getAuthorization();
-		if (BlankUtils.isNotBlank(authorization) && authorization.startsWith("Bearer")) {
+		if (BlankUtils.isNotBlank(authorization) && authorization.startsWith("Bearer ")) {
 			token = authorization.substring(7);
 		}
 		return token;
