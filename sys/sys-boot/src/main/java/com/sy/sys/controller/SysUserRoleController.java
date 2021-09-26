@@ -18,6 +18,7 @@ import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.entity.SysUserRole;
 import com.sy.sys.service.SysUserRoleService;
 import com.sy.sys.vo.SysUserRoleVo;
+import com.sy.sys.vo.user.UserRoleCopy;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -84,12 +85,9 @@ public class SysUserRoleController {
 	}
     
     @ApiOperation(value = "用户和角色关联表-复制用户角色", notes = "用户和角色关联表-复制用户角色")
-    @ApiImplicitParams({
-        @ApiImplicitParam(required = false, name = "userIdFr", value = "用户ID(从)", dataType = "Long"),
-        @ApiImplicitParam(required = false, name = "userIdTo", value = "用户ID(到)", dataType = "Long")})
     @PostMapping("copyUserRole")
-    public DataformResult<String> copyUserRole(Long userIdFr , Long userIdTo) {
-    	boolean success = sysUserRoleService.copyUserRole(userIdFr, userIdTo, Long.valueOf(TokenUtil.getUserId()));
+    public DataformResult<String> copyUserRole(@RequestBody UserRoleCopy userRoleCopy) {
+    	boolean success = sysUserRoleService.copyUserRole(userRoleCopy.getUserIdFr(), userRoleCopy.getUserIdTo(), Long.valueOf(TokenUtil.getUserId()));
     	if(success) {
     		return DataformResult.success();
     	}else {

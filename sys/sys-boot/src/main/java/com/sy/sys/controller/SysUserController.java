@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.nacos.api.utils.StringUtils;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -53,10 +54,26 @@ public class SysUserController {
 	
 	@Value("${filePath}")
     private String filePath;
+	
+	@Value("${organAccountAllowRepeat}")
+    private Boolean organAccountAllowRepeat;
+	
     
     @ApiOperation(value = "用户表-保存", notes = "用户表-保存")
     @PostMapping("/save")
     public DataformResult<String> save(@RequestBody SysUser sysUser) {
+    	if(StringUtils.isBlank(sysUser.getUsername())) {
+    		return DataformResult.failure("用户帐号不能为空");
+    	}
+    	
+    	if(null == sysUser.getOrgId()) {
+    		return DataformResult.failure("机构不能为空");
+    	}
+    	
+    	if(sysUserService.accountRepeatCheck(sysUser, organAccountAllowRepeat)) {
+    		return DataformResult.failure("帐号重覆，请重新输入一个新的帐号");
+    	}
+    	
         if (null == sysUser.getId()) {
         	if(sysUser.getPassword()==null || sysUser.getPassword().isEmpty()) {
         		if(initialPassword==null) {

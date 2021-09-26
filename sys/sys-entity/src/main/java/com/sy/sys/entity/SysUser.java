@@ -111,14 +111,14 @@ public class SysUser extends BaseEntity {
      */
     @ApiModelProperty(value = "性别代码")
     @TableField("GENDER_CODE")
-    private Long genderCode;
+    private String genderCode;
 
     /**
      * 民族代码
      */
     @ApiModelProperty(value = "民族代码")
     @TableField("NATION_CODE")
-    private Long nationCode;
+    private String nationCode;
 
     /**
      * 擅长领域
