@@ -1,8 +1,6 @@
 package com.sy.sys.controller;
 
 
-<<<<<<< HEAD
-=======
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +21,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.util.WebUtils;
 
 import com.alibaba.nacos.common.utils.StringUtils;
->>>>>>> c4e1c6af5317206d72c04771b1347828918c62f4
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -35,17 +32,11 @@ import com.sy.sys.entity.SysUser;
 import com.sy.sys.enums.FileNatureEnum;
 import com.sy.sys.service.SysUserService;
 import com.sy.sys.vo.SysUserVo;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
  /**
  * 用户表控制器.
