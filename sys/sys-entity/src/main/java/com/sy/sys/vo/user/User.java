@@ -2,6 +2,8 @@ package com.sy.sys.vo.user;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -38,6 +40,12 @@ public class User {
 	
 	@ApiModelProperty(value = "用户帐号")
 	private String userName;
+	
+    @ApiModelProperty(value = "医生编号")
+    private String noNum;
+	
+	@ApiModelProperty(value = "头像路径")
+    private String avatar;
 	
 	@ApiModelProperty(value = "职称编码")
 	private String jobCode;

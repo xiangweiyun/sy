@@ -73,6 +73,8 @@ public class UserController {
     	user.setPostName(sysUserVo.getPostName());
     	user.setName(sysUserVo.getName());
     	user.setUserName(sysUserVo.getUsername());
+    	user.setAvatar(sysUserVo.getAvatar());
+    	user.setNoNum(sysUserVo.getNoNum());
     	
     	List<SysUserOrgDeptVo> list = sysUserOrgDeptService.listByUserId(userId);
     	setOrgDeptInfo(user, list);
