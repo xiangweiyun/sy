@@ -35,7 +35,7 @@ spring:
           refresh: true
   flyway:
     #是否开启FLYWARY
-    enabled: true
+    enabled: false
     #
     table: SYS_DB_VERSION
     locations: classpath:db/oracle/
