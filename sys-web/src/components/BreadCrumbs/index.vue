@@ -40,7 +40,7 @@ export default {
       }
     },
     goHome() {
-      this.$router.push('/')
+      this.$router.push('/home')
     },
     getBreadCrumb() {
       const matched = this.$route.matched.filter(item => item.meta && item.meta.title)

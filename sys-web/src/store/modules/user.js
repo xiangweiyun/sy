@@ -2,7 +2,6 @@ import { login, logout, getUserInfo, getMenuInfo } from '@/api/login'
 import { getToken, setToken, removeToken } from '@/utils/cookie'
 import { constantRoutes } from '@/router'
 import Layout from '@/layout/index'
-import { MessageBox } from 'element-ui'
 
 const user = {
   state: {
@@ -52,7 +51,6 @@ const user = {
         })
       })
     },
-
     // 获取用户信息
     GetInfo({ commit }, data) {
       return new Promise((resolve, reject) => {
@@ -68,22 +66,9 @@ const user = {
     GetMenuInfo({ commit }, userId) {
       return new Promise((resolve, reject) => {
         getMenuInfo(userId).then(res => {
-          if (!res.length) {
-            MessageBox.alert('该用户尚未授权，请先授权', '未授权提醒', {
-              confirmButtonText: '确定',
-              callback: action => {
-                commit('SET_TOKEN', '')
-                removeToken()
-                sessionStorage.clear()
-                location.href = '/'
-              }
-            })
-            return false
-          }
           const menuData = fnAddDynamicMenus(res)
           commit('SET_MENUS', menuData)
           const accessedRoutes = filterAsyncRouter(menuData)
-          console.log(accessedRoutes)
           accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
           commit('SET_ROUTES', accessedRoutes)
           resolve(accessedRoutes)
@@ -125,6 +110,9 @@ export default user
  * @param {*} menuList 菜单列表
  */
 function fnAddDynamicMenus(menuList = [], parentPath) {
+  if (!menuList || menuList.length === 0) {
+    return false
+  }
   const menuData = []
   menuList.filter(element => {
     const menuType = element.menuType

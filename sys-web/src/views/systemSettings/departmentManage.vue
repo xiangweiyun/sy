@@ -143,8 +143,8 @@ export default {
     // 机构列表初始化
     if (this.$store.state) {
       this.orgList = this.$store.state.user.userInfo.listOrg
-      this.searchForm.orgId = this.orgList[0].orgId
-      this.searchForm.orgName = this.orgList[0].orgName
+      this.searchForm.orgId = this.$store.state.user.userInfo.orgId
+      this.searchForm.orgName = this.$store.state.user.userInfo.orgName
     }
     this.init()
   },

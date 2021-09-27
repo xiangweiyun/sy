@@ -29,7 +29,6 @@
 
 <script>
 import Avatar from '../../assets/img/avatar.png'
-import { removeToken } from '../../utils/cookie'
 import {
   updatePassword
 } from '@/api/system/user'
@@ -100,8 +99,7 @@ export default {
         type: 'warning'
       }).then(() => {
         this.$store.dispatch('LogOut').then(() => {
-          removeToken()
-          location.href = '/'
+          this.$router.push('/login')
         })
       }).catch(() => {
         console.log('取消退出系统操作')

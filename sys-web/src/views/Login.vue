@@ -71,7 +71,7 @@ export default {
             Cookies.remove('password')
           }
           this.$store.dispatch('Login', this.loginForm).then((res) => {
-            this.$router.push({ path: '/' })
+            this.$router.push({ path: '/home' })
             this.loading = false
           }).catch(() => {
             this.loading = false

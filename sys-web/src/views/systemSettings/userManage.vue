@@ -41,13 +41,13 @@
         />
         <el-tree
           ref="tree"
+          v-loading="deptLoading"
           class="filter-tree"
           :data="deptData"
           :props="defaultProps"
           :expand-on-click-node="false"
           :filter-node-method="filterNode"
-          style="height:350px;overflow-y: auto;"
-          accordion
+          style="height:400px;overflow-y: auto;"
           :size="size"
           @node-click="nodeDeptClick"
         />
@@ -98,6 +98,7 @@
         <el-table-column prop="deptName" label="所属科室" align="center" width="120" />
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
+            <el-button type="text" :size="size" @click="handleRelationOrgs(scope.row)">机构授权</el-button>
             <el-button type="text" :size="size" @click="handleRelationDepts(scope.row)">关联科室</el-button>
             <el-button type="text" :size="size" @click="showRoles(scope.row)">查看关联角色</el-button>
             <el-button type="text" :size="size" @click="handleRelationRoles(scope.row)">关联角色</el-button>
@@ -247,6 +248,23 @@
         <el-button type="primary" @click="submitClick">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 用户关联机构操作 -->
+    <el-dialog :visible.sync="orgStatus" title="机构授权" width="800px">
+      <div style="text-align: center">
+        <el-transfer
+          v-model="relationOrg"
+          v-loading="relationOrgLoading"
+          style="text-align: left; display: inline-block"
+          :data="relationOrgData"
+          :titles="['未选', '已选']"
+          filterable
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="orgStatus = false">取 消</el-button>
+        <el-button type="primary" @click="submitOrgClick">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 用户关联科室操作 -->
     <el-dialog :visible.sync="deptStatus" title="关联科室" width="800px">
       <div style="text-align: center">
@@ -361,6 +379,8 @@ import {
   pageUser,
   saveUser,
   delUser,
+  listUserOrg,
+  saveUserRelationOrg,
   listUserRelationDept,
   saveUserRelationDept,
   listUserRelationRole,
@@ -393,6 +413,8 @@ export default {
       size: 'mini',
       // 数据列表加载动画
       listLoading: true,
+      orgLoading: true,
+      deptLoading: true,
       roleLoading: true,
       relationRoleLoading: true,
       relationDeptLoading: true,
@@ -465,6 +487,11 @@ export default {
         ]
       },
       selectRow: {},
+      // 关联机构
+      orgStatus: false,
+      relationOrgData: [],
+      relationOrg: [],
+      // 关联科室
       deptStatus: false,
       relationDeptData: [],
       relationDept: [],
@@ -506,8 +533,8 @@ export default {
   created() {
     if (this.$store.state) {
       this.orgList = this.$store.state.user.userInfo.listOrg
-      this.searchForm.orgId = this.orgList[0].orgId
-      this.searchForm.orgName = this.orgList[0].orgName
+      this.searchForm.orgId = this.$store.state.user.userInfo.orgId
+      this.searchForm.orgName = this.$store.state.user.userInfo.orgName
     }
     this.size = window.CONFIG.SYSTEM_SIZE
     this.dictInit()
@@ -550,8 +577,10 @@ export default {
     },
     // 科室信息初始化
     deptListInit() {
+      this.deptLoading = true
       listDept(this.searchForm.orgId).then(res => {
         this.deptData = res
+        this.deptLoading = false
       })
     },
     parentDeptListInit() {
@@ -684,6 +713,63 @@ export default {
           })
           this.init()
         })
+      })
+    },
+    // 用户关联机构操作
+    handleRelationOrgs(row) {
+      this.relationOrgLoading = true
+      this.selectRow = row
+      this.relationOrgData = []
+      this.relationOrg = []
+      listUserOrg({ orgId: row.orgId }).then(res => {
+        res.forEach(item => {
+          let disabled = false
+          let label = item.name + '[' + item.code + ']'
+          if (item.id === row.orgId) {
+            disabled = true
+            label = item.name + '[' + item.code + '](主机构)'
+          }
+          this.relationOrgData.push({
+            key: item.id,
+            label: label,
+            disabled: disabled
+          })
+        })
+        this.orgList.forEach(item => {
+          this.relationOrg.push(item.orgId)
+        })
+        this.relationOrgLoading = false
+      })
+      this.orgStatus = true
+    },
+    // 提交机构关联
+    submitOrgClick() {
+      if (this.relatioOrg.length < 1) {
+        this.$message({
+          type: 'warning',
+          message: '请选择至少一条数据'
+        })
+        return false
+      }
+      const paramData = []
+      this.relatioOrg.forEach(item => {
+        let hasMain = false
+        if (this.deptHasMainId === item) {
+          hasMain = true
+        }
+        paramData.push({
+          userId: this.selectRow.id,
+          deptId: item,
+          orgId: this.selectRow.orgId,
+          hasMain: hasMain
+        })
+      })
+      saveUserRelationOrg(paramData).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.deptStatus = false
       })
     },
     // 用户关联科室操作

@@ -69,6 +69,24 @@ export function importTemplate() {
   })
 }
 
+// 查询用户下机构
+export function listUserOrg(query) {
+  return request({
+    url: '/sysOrg/listChildById',
+    method: 'get',
+    params: query
+  })
+}
+
+// 保存用户关联机构
+export function saveUserRelationOrg(data) {
+  return request({
+    url: '/sysUserOrgDept/saveBatch',
+    method: 'post',
+    data: data
+  })
+}
+
 // 查询用户关联科室
 export function listUserRelationDept(query) {
   return request({

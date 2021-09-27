@@ -189,7 +189,9 @@ export default {
       // 数据列表加载动画
       listLoading: false,
       // 查询参数
-      orgId: '',
+      searchForm: {
+        orgId: ''
+      },
       orgTitle: '新增机构',
       tableData: [],
       tableHeight: '200px',
@@ -249,6 +251,8 @@ export default {
     // 机构列表初始化
     if (this.$store.state) {
       this.parentOrgList = this.$store.state.user.userInfo.listOrg
+      this.searchForm.orgId = this.$store.state.user.userInfo.orgId
+      this.searchForm.orgName = this.$store.state.user.userInfo.orgName
     }
     this.dictInit()
     this.init()
@@ -262,10 +266,7 @@ export default {
     init() {
       const that = this
       that.listLoading = true
-      var paramData = {
-        orgId: this.orgId
-      }
-      listOrg(paramData).then(
+      listOrg(this.searchForm).then(
         (res) => {
           that.tableData = res
           that.listLoading = false

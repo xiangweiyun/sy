@@ -2,6 +2,7 @@ import axois from 'axios'
 import { Message } from 'element-ui'
 import { getToken } from './utils/cookie'
 import store from '@/store'
+import router from '@/router'
 
 // 创建axios实例
 const service = axois.create({
@@ -40,7 +41,7 @@ service.interceptors.response.use(
           message: '登录状态已过期或验证失败'
         })
         store.dispatch('FedLogOut').then(() => {
-          location.href = '/'
+          router.push('/login')
         })
         return false
       }
@@ -59,7 +60,7 @@ service.interceptors.response.use(
         message: '登录状态已过期或验证失败'
       })
       store.dispatch('FedLogOut').then(() => {
-        location.href = '/'
+        router.push('/login')
       })
       return false
     }
