@@ -71,7 +71,8 @@ export const constantRoutes = [
 const routes = [...constantRoutes]
 
 export default new Router({
+  scrollBehavior: () => ({ y: 0 }),
   isAddDynamicMenuRoutes: false,
-  routes
+  routes: routes
 })
 

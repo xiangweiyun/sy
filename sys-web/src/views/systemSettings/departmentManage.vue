@@ -181,7 +181,7 @@ export default {
         this.deptForm[key] = ''
       })
       this.deptForm.orgId = this.searchForm.orgId
-      this.deptForm.orgId = this.searchForm.orgName
+      this.deptForm.orgName = this.searchForm.orgName
       this.deptStatus = true
     },
     handleEdit(row) {
@@ -190,6 +190,8 @@ export default {
       Object.keys(this.deptForm).map(key => {
         this.deptForm[key] = row[key]
       })
+      this.deptForm.orgId = this.searchForm.orgId
+      this.deptForm.orgName = this.searchForm.orgName
       this.$nextTick(() => {
         this.$refs['deptForm'].clearValidate()
       })

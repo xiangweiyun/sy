@@ -2,7 +2,7 @@
   <div class="user-center-wrapper clear-fix">
     <el-card shadow="always" :body-style="{padding: '50px'}">
       <div class="user-avatar">
-        <img :src="userInfo" alt="avatar">
+        <img :src="baseImgUrl + userInfo.avatar" alt="avatar">
       </div>
       <ul class="user-info">
         <li>
@@ -39,11 +39,16 @@
 </template>
 
 <script>
+import {
+  initBaseUrl
+} from '@/utils'
+
 export default {
   name: 'UserCenter',
   data() {
     return {
-      userInfo: {}
+      userInfo: {},
+      baseImgUrl: initBaseUrl() + '/image/'
     }
   },
   created() {

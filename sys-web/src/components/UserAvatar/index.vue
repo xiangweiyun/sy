@@ -2,7 +2,7 @@
   <el-dropdown class="user-avatar-wrapper" @command="handleCommand">
     <div class="avatar-box">
       <span class="user-name">{{ userInfo.name }}</span>
-      <el-avatar size="small" :src="userInfo.avatar" />
+      <el-avatar size="small" :src="baseImgUrl + userInfo.avatar" />
       <i class="el-icon-caret-bottom" />
     </div>
     <el-dropdown-menu slot="dropdown">
@@ -20,7 +20,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="roleStatus = false">取 消</el-button>
+        <el-button @click="userStatus = false">取 消</el-button>
         <el-button type="primary" @click="submitClick">确 定</el-button>
       </span>
     </el-dialog>
@@ -33,6 +33,10 @@ import { removeToken } from '../../utils/cookie'
 import {
   updatePassword
 } from '@/api/system/user'
+import {
+  initBaseUrl
+} from '@/utils'
+
 export default {
   name: 'UserAvatar',
   data() {
@@ -58,7 +62,8 @@ export default {
         newPwd: [
           { required: true, message: '请输入新密码', trigger: 'blur' }
         ]
-      }
+      },
+      baseImgUrl: initBaseUrl() + '/image/'
     }
   },
   created() {

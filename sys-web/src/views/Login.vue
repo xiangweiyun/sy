@@ -13,9 +13,6 @@
           <el-input v-model="loginForm.password" type="password" auto-complete="off" placeholder="请输入密码" prefix-icon="el-icon-lock" @keyup.enter.native="handleLogin" />
         </el-form-item>
         <el-form-item>
-          <el-checkbox v-model="loginForm.rememberMe">记住我</el-checkbox>
-        </el-form-item>
-        <el-form-item>
           <el-button :loading="loading" size="small" type="primary" style="width:100%;" @click.native.prevent="handleLogin">
             <span v-if="!loading">登 录</span>
             <span v-else>登 录 中...</span>
@@ -25,7 +22,7 @@
     </div>
     <!--  底部  -->
     <div class="login-footer">
-      <span>Copyright © 2020 xwy.vip All Rights Reserved.</span>
+      <span>Copyright © 2021 shengyue All Rights Reserved.</span>
     </div>
   </div>
 </template>
