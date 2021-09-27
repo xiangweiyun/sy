@@ -24,13 +24,13 @@
         :height="tableHeight"
         :size="size"
         highlight-current-row
+        @current-change="dictItemClick"
       >
         <el-table-column type="index" label="序号" align="center" width="50" />
-        <el-table-column prop="dictName" label="字典名称" align="center" width="180" />
-        <el-table-column prop="dictType" label="字典编码" align="center" width="100" />
-        <el-table-column label="操作" align="center">
+        <el-table-column prop="dictName" label="字典名称" align="center" />
+        <el-table-column prop="dictType" label="字典编码" align="center" />
+        <el-table-column label="操作" align="center" width="100">
           <template slot-scope="scope">
-            <el-button type="text" :size="size" @click="dictItemClick(scope.row)">查看字典项</el-button>
             <el-button type="text" :size="size" @click="editDictTypeClick(scope.row)">编辑</el-button>
             <el-button type="text" :size="size" @click="removeDictTypeClick(scope.row)">删除</el-button>
           </template>

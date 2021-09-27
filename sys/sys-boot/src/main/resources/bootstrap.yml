@@ -33,6 +33,14 @@ spring:
           data-id: application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
           group: DEFAULT_GROUP
           refresh: true
+  flyway:
+    #是否开启FLYWARY
+    enabled: true
+    #
+    table: SYS_DB_VERSION
+    locations: classpath:/db/oracle/
+    check-location: true
+    baseline-on-migrate: true
 
 #主键生成策略
 mybatis-plus:
@@ -70,3 +78,4 @@ mybatis-plus:
       logic-delete-value: 1
       # 逻辑未删除全局值（0表示未删除，这也是Mybatis Plus的默认配置）
       logic-not-delete-value: 0
+

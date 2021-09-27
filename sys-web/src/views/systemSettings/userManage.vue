@@ -98,6 +98,7 @@
         <el-table-column prop="deptName" label="所属科室" align="center" width="120" />
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
+            <el-button type="text" :size="size" @click="handleRelationDepts(scope.row)">关联科室</el-button>
             <el-button type="text" :size="size" @click="showRoles(scope.row)">查看关联角色</el-button>
             <el-button type="text" :size="size" @click="handleRelationRoles(scope.row)">关联角色</el-button>
             <el-button type="text" :size="size" @click="handleCopyUser(scope.row)">复制用户角色</el-button>
@@ -226,13 +227,14 @@
             <el-upload
               class="avatar-uploader"
               action="#"
+              :auto-upload="false"
+              name="file"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
+              :on-change="handleChange"
             >
               <img
                 v-if="userForm.avatar"
-                :src="userForm.avatar"
+                :src="baseImgUrl + userForm.avatar"
                 class="avatar"
               >
               <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -243,6 +245,23 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="userStatus = false">取 消</el-button>
         <el-button type="primary" @click="submitClick">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 用户关联科室操作 -->
+    <el-dialog :visible.sync="deptStatus" title="关联科室" width="800px">
+      <div style="text-align: center">
+        <el-transfer
+          v-model="relationDept"
+          v-loading="relationDeptLoading"
+          style="text-align: left; display: inline-block"
+          :data="relationDeptData"
+          :titles="['未选', '已选']"
+          filterable
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deptStatus = false">取 消</el-button>
+        <el-button type="primary" @click="submitDeptClick">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 用户已关联的角色列表 -->
@@ -342,6 +361,8 @@ import {
   pageUser,
   saveUser,
   delUser,
+  listUserRelationDept,
+  saveUserRelationDept,
   listUserRelationRole,
   saveUserRelationRole,
   resetPassword,
@@ -357,6 +378,13 @@ import {
 import {
   listDistItem
 } from '@/api/system/dist'
+import {
+  uploadFile
+} from '@/api/system/file'
+import {
+  initBaseUrl
+} from '@/utils'
+
 import Pagination from '../../components/Pagination'
 export default {
   components: { Pagination },
@@ -367,6 +395,7 @@ export default {
       listLoading: true,
       roleLoading: true,
       relationRoleLoading: true,
+      relationDeptLoading: true,
       listUserLoading: true,
       // 搜索对象
       searchForm: {
@@ -436,6 +465,10 @@ export default {
         ]
       },
       selectRow: {},
+      deptStatus: false,
+      relationDeptData: [],
+      relationDept: [],
+      deptHasMainId: '',
       roleStatus: false,
       roleTableData: [],
       relationRoleStatus: false,
@@ -461,7 +494,8 @@ export default {
           dictLabel: '否',
           dictValue: 0
         }
-      ]
+      ],
+      baseImgUrl: initBaseUrl() + '/image/'
     }
   },
   watch: {
@@ -572,19 +606,29 @@ export default {
       this.userForm.orgName = this.searchForm.orgName
       this.userStatus = true
     },
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
+    handleChange(file) {
+      const isLt10M = file.size / 1024 / 1024 < 10
+      var testmsg = /^image\/(jpeg|png|jpg)$/.test(file.raw.type)
+      if (!testmsg) {
+        this.$message.error('上传图片只能是 JPEG|PNG|JPG 格式!')
+        return
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
+      if (!isLt10M) {
+        this.$message.error('上传图片大小不能超过 10MB!')
+        return
       }
-      return isJPG && isLt2M
+      const form = new FormData()
+      form.append('file', file.raw)
+      form.append('source', 'USER')
+      uploadFile(form).then(
+        (res) => {
+          this.$message({
+            type: 'success',
+            message: '上传成功'
+          })
+          this.userForm.avatar = res
+        }
+      )
     },
     // 提交用户信息
     submitClick() {
@@ -640,6 +684,67 @@ export default {
           })
           this.init()
         })
+      })
+    },
+    // 用户关联科室操作
+    handleRelationDepts(row) {
+      this.relationDeptLoading = true
+      this.selectRow = row
+      this.relationDeptData = []
+      this.relationDept = []
+      this.parentDeptData.forEach(item => {
+        this.relationDeptData.push({
+          key: item.id,
+          label: item.deptName + '[' + item.code + ']'
+        })
+      })
+      listUserRelationDept({ userId: row.id }).then(res => {
+        res.forEach(item => {
+          this.relationDept.push(item.deptId)
+          this.relationDeptData.forEach(itemSource => {
+            if (itemSource.key === item.deptId) {
+              this.deptHasMainId = itemSource.key
+              itemSource.disabled = item.hasMain
+              if (itemSource.disabled) {
+                itemSource.label += '(主科室)'
+              }
+              return false
+            }
+          })
+        })
+        console.log(this.relationDeptData)
+        this.relationDeptLoading = false
+      })
+      this.deptStatus = true
+    },
+    // 提交科室关联
+    submitDeptClick() {
+      if (this.relationDept.length < 1) {
+        this.$message({
+          type: 'warning',
+          message: '请选择至少一条数据'
+        })
+        return false
+      }
+      const paramData = []
+      this.relationDept.forEach(item => {
+        let hasMain = false
+        if (this.deptHasMainId === item) {
+          hasMain = true
+        }
+        paramData.push({
+          userId: this.selectRow.id,
+          deptId: item,
+          orgId: this.selectRow.orgId,
+          hasMain: hasMain
+        })
+      })
+      saveUserRelationDept(paramData).then(res => {
+        this.$message({
+          type: 'success',
+          message: '操作成功!'
+        })
+        this.deptStatus = false
       })
     },
     // 显示关联角色

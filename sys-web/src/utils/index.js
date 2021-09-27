@@ -149,3 +149,20 @@ export function calcImageSize(imageTrueW, imageTrueH, showAreaW, showAreaH) {
     ratio
   }
 }
+
+/**
+ * 获取请求地址(内外网判断)
+ * @returns
+ */
+export function initBaseUrl() {
+  if (process.env.NODE_ENV === 'production') { // 如果是生产环境
+    // 判断是否外网访问
+    if (window.location.hostname === window.CONFIG.OUT_BASE_IP) { // 当前如果是外网 或者是
+      return window.CONFIG.VUE_APP_BASE_API
+    } else {
+      return window.CONFIG.BASE_URL
+    }
+  } else { // 如果是开发
+    return window.CONFIG.BASE_URL
+  }
+}

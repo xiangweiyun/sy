@@ -35,7 +35,6 @@
       <el-table-column prop="phone" label="联系电话" align="center" />
       <el-table-column prop="orgAddress" label="地址" align="center" width="160" />
       <el-table-column prop="orgProfile" label="机构简介" align="center" />
-      <el-table-column prop="picture" label="机构图片" align="center" />
       <el-table-column label="操作" align="center" width="110">
         <template slot-scope="scope">
           <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
@@ -144,13 +143,14 @@
             <el-upload
               class="avatar-uploader"
               action="#"
+              :auto-upload="false"
+              name="file"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
-              :before-upload="beforeAvatarUpload"
+              :on-change="handleChange"
             >
               <img
                 v-if="orgForm.picture"
-                :src="orgForm.picture"
+                :src="baseImgUrl + orgForm.picture"
                 class="avatar"
               >
               <i v-else class="el-icon-plus avatar-uploader-icon" />
@@ -175,6 +175,13 @@ import {
 import {
   listDistItem
 } from '@/api/system/dist'
+import {
+  uploadFile
+} from '@/api/system/file'
+import {
+  initBaseUrl
+} from '@/utils'
+
 export default {
   data() {
     return {
@@ -233,7 +240,8 @@ export default {
       orgTypeList: [],
       // 机构级别选项
       levelCodeList: [],
-      parentOrgList: []
+      parentOrgList: [],
+      baseImgUrl: initBaseUrl() + '/image/'
     }
   },
   created: function() {
@@ -362,19 +370,29 @@ export default {
         })
       })
     },
-    handleAvatarSuccess(res, file) {
-      this.imageUrl = URL.createObjectURL(file.raw)
-    },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
-      const isLt2M = file.size / 1024 / 1024 < 2
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!')
+    handleChange(file) {
+      const isLt10M = file.size / 1024 / 1024 < 10
+      var testmsg = /^image\/(jpeg|png|jpg)$/.test(file.raw.type)
+      if (!testmsg) {
+        this.$message.error('上传图片只能是 JPEG|PNG|JPG 格式!')
+        return
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!')
+      if (!isLt10M) {
+        this.$message.error('上传图片大小不能超过 10MB!')
+        return
       }
-      return isJPG && isLt2M
+      const form = new FormData()
+      form.append('file', file.raw)
+      form.append('source', 'USER')
+      uploadFile(form).then(
+        (res) => {
+          this.$message({
+            type: 'success',
+            message: '上传成功'
+          })
+          this.orgForm.picture = res
+        }
+      )
     }
   }
 }
