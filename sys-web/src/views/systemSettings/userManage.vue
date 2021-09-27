@@ -253,7 +253,7 @@
       <div style="text-align: center">
         <el-transfer
           v-model="relationOrg"
-          v-loading="relationOrgLoading"
+          v-loading="orgLoading"
           style="text-align: left; display: inline-block"
           :data="relationOrgData"
           :titles="['未选', '已选']"
@@ -717,7 +717,7 @@ export default {
     },
     // 用户关联机构操作
     handleRelationOrgs(row) {
-      this.relationOrgLoading = true
+      this.orgLoading = true
       this.selectRow = row
       this.relationOrgData = []
       this.relationOrg = []
@@ -738,13 +738,13 @@ export default {
         this.orgList.forEach(item => {
           this.relationOrg.push(item.orgId)
         })
-        this.relationOrgLoading = false
+        this.orgLoading = false
       })
       this.orgStatus = true
     },
     // 提交机构关联
     submitOrgClick() {
-      if (this.relatioOrg.length < 1) {
+      if (this.relationOrg.length < 1) {
         this.$message({
           type: 'warning',
           message: '请选择至少一条数据'
@@ -752,16 +752,10 @@ export default {
         return false
       }
       const paramData = []
-      this.relatioOrg.forEach(item => {
-        let hasMain = false
-        if (this.deptHasMainId === item) {
-          hasMain = true
-        }
+      this.relationOrg.forEach(item => {
         paramData.push({
           userId: this.selectRow.id,
-          deptId: item,
-          orgId: this.selectRow.orgId,
-          hasMain: hasMain
+          orgId: item
         })
       })
       saveUserRelationOrg(paramData).then(res => {
@@ -769,7 +763,7 @@ export default {
           type: 'success',
           message: '操作成功!'
         })
-        this.deptStatus = false
+        this.orgStatus = false
       })
     },
     // 用户关联科室操作

@@ -77,15 +77,16 @@
           <el-form-item label="上级机构">
             <el-select
               v-model="orgForm.orgLevel"
+              clearable
               placeholder="请选择"
               style="width: 100%"
             >
               <el-option
                 v-for="item in parentOrgList"
-                v-show="item.orgId != orgForm.id"
-                :key="item.orgId"
-                :label="item.orgName"
-                :value="item.orgId"
+                v-show="item.id != orgForm.id"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
               />
             </el-select>
           </el-form-item>
@@ -173,6 +174,9 @@ import {
   delOrg
 } from '@/api/system/org'
 import {
+  listUserOrg
+} from '@/api/system/user'
+import {
   listDistItem
 } from '@/api/system/dist'
 import {
@@ -248,12 +252,12 @@ export default {
   },
   created: function() {
     this.size = window.CONFIG.SYSTEM_SIZE
-    // 机构列表初始化
     if (this.$store.state) {
-      this.parentOrgList = this.$store.state.user.userInfo.listOrg
       this.searchForm.orgId = this.$store.state.user.userInfo.orgId
       this.searchForm.orgName = this.$store.state.user.userInfo.orgName
     }
+    // 机构列表初始化
+    this.parentOrgInit()
     this.dictInit()
     this.init()
   },
@@ -270,6 +274,13 @@ export default {
         (res) => {
           that.tableData = res
           that.listLoading = false
+        }
+      )
+    },
+    parentOrgInit() {
+      listUserOrg(this.searchForm).then(
+        (res) => {
+          this.parentOrgList = res
         }
       )
     },

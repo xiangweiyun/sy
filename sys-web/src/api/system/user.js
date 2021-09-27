@@ -81,7 +81,7 @@ export function listUserOrg(query) {
 // 保存用户关联机构
 export function saveUserRelationOrg(data) {
   return request({
-    url: '/sysUserOrgDept/saveBatch',
+    url: '/sysUserOrg/saveBatch',
     method: 'post',
     data: data
   })

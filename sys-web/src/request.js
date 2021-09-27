@@ -53,6 +53,9 @@ service.interceptors.response.use(
     }
   },
   error => {
+    if (!error.response) {
+      return false
+    }
     const code = error.response.status
     if (code === 401) {
       Message({
