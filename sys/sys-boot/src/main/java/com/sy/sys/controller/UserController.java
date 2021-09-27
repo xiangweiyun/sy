@@ -14,8 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sy.center.common.utils.jwt.TokenUtil;
 import com.sy.center.framework.utils.DataformResult;
 import com.sy.sys.service.SysUserOrgDeptService;
+import com.sy.sys.service.SysUserOrgService;
 import com.sy.sys.service.SysUserService;
 import com.sy.sys.vo.SysUserOrgDeptVo;
+import com.sy.sys.vo.SysUserOrgVo;
 import com.sy.sys.vo.SysUserVo;
 import com.sy.sys.vo.user.Dept;
 import com.sy.sys.vo.user.Org;
@@ -45,6 +47,9 @@ public class UserController {
 	
 	@Autowired
     private SysUserOrgDeptService sysUserOrgDeptService;
+	
+	@Autowired
+    private SysUserOrgService sysUserOrgService;
 	
 	// @Autowired
     // private SysMenuService sysMenuService;
@@ -79,18 +84,32 @@ public class UserController {
     	List<SysUserOrgDeptVo> list = sysUserOrgDeptService.listByUserId(userId);
     	setOrgDeptInfo(user, list);
     	
+    	List<SysUserOrgVo> listOrg = sysUserOrgService.listByUserId(userId);
+    	setOrgInfo(user, listOrg);
     	// List<SysMenuVo> menu = sysMenuService.listTreeDataByAppIdAndUserId(appId, userId);
     	// user.setListMenu(menu);
     	
     	return DataformResult.success(user);
     }
     
-    
-    private void setOrgDeptInfo(User user, List<SysUserOrgDeptVo> list) {
+    private void setOrgInfo(User user, List<SysUserOrgVo> list) {
     	if(list == null) {
     		return;
     	}
     	List<Org> listOrg = new ArrayList<Org>();
+    	for(SysUserOrgVo sysUserOrgVo : list) {
+    		Org org = new Org();
+    		org.setOrgId(sysUserOrgVo.getOrgId());
+    		org.setOrgName(sysUserOrgVo.getOrgName());
+    		listOrg.add(org);
+    	}
+    	user.setListOrg(listOrg);
+    }
+    private void setOrgDeptInfo(User user, List<SysUserOrgDeptVo> list) {
+    	if(list == null) {
+    		return;
+    	}
+    	
     	List<Dept> listDept = new ArrayList<Dept>();
     	for(SysUserOrgDeptVo sysUserOrgDeptVo : list) {
     		Dept  dept = new Dept();
@@ -99,24 +118,7 @@ public class UserController {
     		dept.setOrgId(sysUserOrgDeptVo.getOrgId());
     		dept.setOrgName(sysUserOrgDeptVo.getOrgName());
     		listDept.add(dept);
-    		
-    		boolean isExists = false;
-    		for(Org org : listOrg) {
-    			if(org.getOrgId().equals(sysUserOrgDeptVo.getOrgId())) {
-    				isExists = true;
-    				break;
-    			}
-    		}
-    		
-    		if(!isExists) {
-    			Org org = new Org();
-    			org.setOrgId(sysUserOrgDeptVo.getOrgId());
-    			org.setOrgName(sysUserOrgDeptVo.getOrgName());
-    			listOrg.add(org);
-    		}
     	}
-    	
     	user.setListDept(listDept);
-    	user.setListOrg(listOrg);
     }
 }
