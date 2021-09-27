@@ -1,12 +1,11 @@
 package com.sy.sys.service.impl;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -14,9 +13,11 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.sy.sys.entity.SysUser;
+import com.sy.sys.entity.SysUserOrg;
 import com.sy.sys.entity.SysUserOrgDept;
 import com.sy.sys.mapper.SysUserMapper;
 import com.sy.sys.service.SysUserOrgDeptService;
+import com.sy.sys.service.SysUserOrgService;
 import com.sy.sys.service.SysUserService;
 import com.sy.sys.vo.SysUserVo;
 
@@ -35,12 +36,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
 	private SysUserOrgDeptService sysUserOrgDeptService;
 	
 	@Autowired
+	private SysUserOrgService sysUserOrgService;
+	
+	@Autowired
 	private SysUserMapper sysUserMapper;
 	
 	/* 
 	 * 保存用户数据
 	 * 更新部门信息
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public boolean saveUser(SysUser sysUser) {
 		// TODO Auto-generated method stub
@@ -53,6 +58,19 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         } else {
             super.updateById(sysUser);
         }
+		
+		/**保存用户当前机构信息 */
+		if(sysUser.getOrgId() != null) {
+			QueryWrapper<SysUserOrg> wrapper = Wrappers.query();
+			wrapper.eq(SysUserOrg.USER_ID, sysUser.getId()).eq(SysUserOrg.ORG_ID, sysUser.getOrgId());
+			List<SysUserOrg> listSysUserOrgDept = sysUserOrgService.list(wrapper);
+			
+			if(listSysUserOrgDept==null || listSysUserOrgDept.size() == 0) {
+				SysUserOrg sysUserOrg = new SysUserOrg();
+				sysUserOrg.setUserId(sysUser.getId());
+				sysUserOrg.setOrgId(sysUser.getOrgId());
+			}
+		}
 		
 		/**当机构ID及部门ID不为空时，保存用户对应部门信息 */
 		if(!(sysUser.getOrgId()==null || sysUser.getDeptId()==null)) {
