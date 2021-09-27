@@ -95,7 +95,7 @@
         <el-table-column prop="genderName" label="性别" align="center" width="50" />
         <el-table-column prop="username" label="用户账号" align="center" width="160" />
         <el-table-column prop="noNum" label="工号" align="center" width="110" />
-        <el-table-column prop="deptName" label="所属科室" align="center" width="120" />
+        <el-table-column prop="deptName" label="主科室" align="center" width="120" />
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" :size="size" @click="handleRelationOrgs(scope.row)">机构授权</el-button>
@@ -126,7 +126,7 @@
             <el-input v-model="userForm.orgName" placeholder="请输入" disabled />
           </el-form-item>
           <el-form-item label="身份证号">
-            <el-input v-model="userForm.idcard" placeholder="请输入" />
+            <el-input v-model="userForm.idcard" placeholder="请输入" onkeyup="value=value.replace(/[^\d|X|x]/g,'')" @blur="handleIdcard" />
           </el-form-item>
           <el-form-item label="民族">
             <el-select
@@ -199,7 +199,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="联系电话">
-            <el-input v-model="userForm.officePhone" placeholder="请输入" />
+            <el-input v-model="userForm.officePhone" placeholder="请输入" @blur="handlePhone" />
           </el-form-item>
           <el-form-item label="职称">
             <el-select
@@ -361,7 +361,7 @@
         <el-table-column prop="username" label="用户账号" align="center" />
         <el-table-column prop="noNum" label="工号" align="center" />
         <el-table-column prop="orgName" label="所属机构" align="center" />
-        <el-table-column prop="deptName" label="所属科室" align="center" />
+        <el-table-column prop="deptName" label="主科室" align="center" />
       </el-table>
       <p />
       <!-- 分页栏 -->
@@ -402,7 +402,9 @@ import {
   uploadFile
 } from '@/api/system/file'
 import {
-  initBaseUrl
+  initBaseUrl,
+  idCardVerification,
+  getIdCardInformation
 } from '@/utils'
 
 import Pagination from '../../components/Pagination'
@@ -483,7 +485,7 @@ export default {
           { required: true, message: '请输入登录账号', trigger: 'blur' }
         ],
         deptId: [
-          { required: true, message: '请选择所属科室', trigger: 'change' }
+          { required: true, message: '请选择主科室', trigger: 'change' }
         ]
       },
       selectRow: {},
@@ -641,6 +643,34 @@ export default {
       this.userForm.orgId = this.searchForm.orgId
       this.userForm.orgName = this.searchForm.orgName
       this.userStatus = true
+    },
+    handlePhone() {
+      if (this.userForm.officePhone) {
+        if (!(/^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$|^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\d{8}$|^0\d{2,3}-?\d{7,8}$/.test(this.userForm.officePhone && this.userForm.officePhone))) {
+          this.$message({
+            type: 'error',
+            showClose: true,
+            message: '患者电话有误，请重填'
+          })
+          return
+        }
+      }
+    },
+    handleIdcard() {
+      const idcard = this.userForm.idcard
+      if (idcard !== '') {
+        this.isIdcard = idCardVerification(idcard)
+        if (this.isIdcard === true) {
+          const sex = getIdCardInformation(idcard, 2)
+          this.userForm.patientGender = '' + sex
+        } else {
+          this.$message({
+            type: 'error',
+            showClose: true,
+            message: this.isIdcard
+          })
+        }
+      }
     },
     handleChange(file) {
       const isLt10M = file.size / 1024 / 1024 < 10

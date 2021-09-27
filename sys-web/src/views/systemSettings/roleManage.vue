@@ -66,7 +66,7 @@
         <el-table-column prop="username" label="用户账号" align="center" />
         <el-table-column prop="noNum" label="工号" align="center" />
         <el-table-column prop="orgName" label="所属机构" align="center" />
-        <el-table-column prop="deptName" label="所属科室" align="center" />
+        <el-table-column prop="deptName" label="主科室" align="center" />
       </el-table>
       <!-- 分页栏 -->
       <Pagination :total="userTotal" :page.sync="searchUserForm.current" :limit.sync="searchUserForm.size" @pagination="pageRelationUserInit" />

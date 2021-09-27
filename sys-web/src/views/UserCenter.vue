@@ -2,7 +2,7 @@
   <div class="user-center-wrapper clear-fix">
     <el-card shadow="always" :body-style="{padding: '50px'}">
       <div class="user-avatar">
-        <img :src="baseImgUrl + userInfo.avatar" alt="avatar">
+        <img :src="baseImgUrl" alt="avatar">
       </div>
       <ul class="user-info">
         <li>
@@ -18,7 +18,7 @@
           <span>{{ userInfo.orgName }}</span>
         </li>
         <li>
-          <label>所属科室：</label>
+          <label>主科室：</label>
           <span>{{ userInfo.deptName }}</span>
         </li>
         <li>
@@ -29,10 +29,6 @@
           <label>职称：</label>
           <span>{{ userInfo.jobName }}</span>
         </li>
-        <li>
-          <label>电话号码：</label>
-          <span>{{ userInfo.officePhone }}</span>
-        </li>
       </ul>
     </el-card>
   </div>
@@ -42,17 +38,20 @@
 import {
   initBaseUrl
 } from '@/utils'
-
+import Avatar from '../assets/img/avatar.png'
 export default {
   name: 'UserCenter',
   data() {
     return {
       userInfo: {},
-      baseImgUrl: initBaseUrl() + '/image/'
+      baseImgUrl: Avatar
     }
   },
   created() {
     this.userInfo = this.$store.state.user.userInfo
+    if (this.userInfo.avatar) {
+      this.baseImgUrl = initBaseUrl() + '/image/' + this.userInfo.avatar
+    }
   }
 }
 </script>

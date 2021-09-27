@@ -166,3 +166,104 @@ export function initBaseUrl() {
     return window.CONFIG.BASE_URL
   }
 }
+
+/**
+ * 身份证验证
+ * @param idCard 身份证号码
+ */
+export function idCardVerification(idCard) {
+  const aCity = {
+    11: '北京',
+    12: '天津',
+    13: '河北',
+    14: '山西',
+    15: '内蒙古',
+    21: '辽宁',
+    22: '吉林',
+    23: '黑龙江',
+    31: '上海',
+    32: '江苏',
+    33: '浙江',
+    34: '安徽',
+    35: '福建',
+    36: '江西',
+    37: '山东',
+    41: '河南',
+    42: '湖北',
+    43: '湖南',
+    44: '广东',
+    45: '广西',
+    46: '海南',
+    50: '重庆',
+    51: '四川',
+    52: '贵州',
+    53: '云南',
+    54: '西藏',
+    61: '陕西',
+    62: '甘肃',
+    63: '青海',
+    64: '宁夏',
+    65: '新疆',
+    71: '台湾',
+    81: '香港',
+    82: '澳门',
+    91: '国外'
+  }
+  let iSum = 0
+  if (!/^\d{17}(\d|X|x)$/i.test(idCard)) {
+    return '身份证长度或格式错误'
+  }
+  idCard = idCard.replace(/x$/i, 'a')
+  if (aCity[parseInt(idCard.substr(0, 2))] == null) {
+    return '身份证号地区不合法'
+  }
+  const sBirthday = idCard.substr(6, 4) + '-' + Number(idCard.substr(10, 2)) + '-' + Number(idCard.substr(12, 2))
+  var d = new Date(sBirthday.replace(/-/g, '/'))
+  if (sBirthday !== (d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate())) {
+    return '身份证出生日期非法'
+  }
+  for (var i = 17; i >= 0; i--) {
+    iSum += (Math.pow(2, i) % 11) * parseInt(idCard.charAt(17 - i), 11)
+  }
+  if (iSum % 11 !== 1) {
+    return '身份证号不合法'
+  }
+  return true
+}
+
+/**
+ * 通过身份证号获取出生日期、年龄、性别信息
+ * @param UUserCard 身份证号码
+ * @param num 类型  1：出生日期  2：性别  3：年龄
+ */
+export function getIdCardInformation(UUserCard, num) {
+  if (!UUserCard) {
+    return ''
+  }
+  if (num === 1) {
+    // 获取出生日期
+    const birth = UUserCard.substring(6, 10) + '-' + UUserCard.substring(10, 12) + '-' + UUserCard.substring(12, 14)
+    return birth
+  }
+  if (num === 2) {
+    // 获取性别
+    if (parseInt(UUserCard.substr(16, 1)) % 2 === 1) {
+      // 男
+      return 1
+    } else {
+      // 女
+      return 2
+    }
+  }
+  if (num === 3) {
+    // 获取年龄
+    const myDate = new Date()
+    const month = myDate.getMonth() + 1
+    const day = myDate.getDate()
+    let age = myDate.getFullYear() - UUserCard.substring(6, 10) - 1
+    if (UUserCard.substring(10, 12) < month || UUserCard.substring(10, 12) === month && UUserCard.substring(12, 14) <= day) {
+      age++
+    }
+    return age
+  }
+}
