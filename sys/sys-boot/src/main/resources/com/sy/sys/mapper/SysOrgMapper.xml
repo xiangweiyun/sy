@@ -29,7 +29,6 @@
     </sql>	
     
     <select id="listChildById" resultType="com.sy.sys.vo.SysOrgVo">
-    	SELECT ID, CODE, NAME FROM SYS_ORG START WITH ID = #{orgId}
-		CONNECT BY PRIOR ID = PARENT_ID;
+    	SELECT ID, CODE, NAME FROM SYS_ORG START WITH ID = #{orgId} CONNECT BY PRIOR ID = PARENT_ID
     </select>
 </mapper>
