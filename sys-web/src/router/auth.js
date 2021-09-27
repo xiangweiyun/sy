@@ -29,7 +29,7 @@ router.beforeEach((to, from, next) => {
               MessageBox.alert('该用户尚未授权，请先授权', '未授权提醒', {
                 confirmButtonText: '确定',
                 callback: action => {
-                  this.$store.dispatch('FedLogOut').then(() => {
+                  store.dispatch('FedLogOut').then(() => {
                     next(`/login`)
                   })
                 }

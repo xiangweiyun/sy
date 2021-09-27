@@ -66,11 +66,14 @@ const user = {
     GetMenuInfo({ commit }, userId) {
       return new Promise((resolve, reject) => {
         getMenuInfo(userId).then(res => {
-          const menuData = fnAddDynamicMenus(res)
-          commit('SET_MENUS', menuData)
-          const accessedRoutes = filterAsyncRouter(menuData)
-          accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
-          commit('SET_ROUTES', accessedRoutes)
+          let accessedRoutes = ''
+          if (res.length) {
+            const menuData = fnAddDynamicMenus(res)
+            commit('SET_MENUS', menuData)
+            accessedRoutes = filterAsyncRouter(menuData)
+            accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
+            commit('SET_ROUTES', accessedRoutes)
+          }
           resolve(accessedRoutes)
         }).catch(error => {
           reject(error)

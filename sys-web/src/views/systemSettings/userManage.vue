@@ -7,12 +7,12 @@
       :model="searchForm"
     >
       <el-form-item label="所属机构:">
-        <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
+        <el-select v-model="searchForm.orgName" filterable placeholder="请选择" @change="changeOrg">
           <el-option
             v-for="item in orgList"
             :key="item.orgId"
             :label="item.orgName"
-            :value="item.orgId"
+            :value="item"
           />
         </el-select>
       </el-form-item>
@@ -69,7 +69,7 @@
               <el-descriptions-item label="身份证号">
                 {{ scope.row.idcard }}
               </el-descriptions-item>
-              <el-descriptions-item label="名族">
+              <el-descriptions-item label="民族">
                 {{ scope.row.nationCode }}
               </el-descriptions-item>
               <el-descriptions-item label="职务">
@@ -100,7 +100,7 @@
           <template slot-scope="scope">
             <el-button type="text" :size="size" @click="handleRelationOrgs(scope.row)">机构授权</el-button>
             <el-button type="text" :size="size" @click="handleRelationDepts(scope.row)">关联科室</el-button>
-            <el-button type="text" :size="size" @click="showRoles(scope.row)">查看关联角色</el-button>
+            <!-- <el-button type="text" :size="size" @click="showRoles(scope.row)">查看关联角色</el-button> -->
             <el-button type="text" :size="size" @click="handleRelationRoles(scope.row)">关联角色</el-button>
             <el-button type="text" :size="size" @click="handleCopyUser(scope.row)">复制用户角色</el-button>
             <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
@@ -128,7 +128,7 @@
           <el-form-item label="身份证号">
             <el-input v-model="userForm.idcard" placeholder="请输入" />
           </el-form-item>
-          <el-form-item label="名族">
+          <el-form-item label="民族">
             <el-select
               v-model="userForm.nationCode"
               clearable
@@ -503,7 +503,7 @@ export default {
       relationRole: [],
       copyUserStatus: false,
       copyUserRow: {},
-      // 名族选项
+      // 民族选项
       nationList: [],
       // 性别选项
       sexList: [],
@@ -557,8 +557,15 @@ export default {
         this.listLoading = false
       })
     },
+    changeOrg(row) {
+      this.searchForm.orgId = row.orgId
+      this.searchForm.orgName = row.orgName
+      this.deptListInit()
+      this.parentDeptListInit()
+      this.init()
+    },
     dictInit() {
-      // 名族选项
+      // 民族选项
       listDistItem({ dictType: 'NATION' }).then((res) => {
         this.nationList = res
       })
@@ -670,11 +677,7 @@ export default {
                 message: '操作成功'
               })
             } else {
-              this.$alert({
-                title: '新增用户',
-                type: 'success',
-                message: '操作成功,初始密码为[123456]'
-              })
+              this.$alert('操作成功,初始密码为[123456]', '新增用户')
             }
             this.userStatus = false
             this.searchForm.current = 1
@@ -724,10 +727,10 @@ export default {
       listUserOrg({ orgId: row.orgId }).then(res => {
         res.forEach(item => {
           let disabled = false
-          let label = item.name + '[' + item.code + ']'
+          let label = item.name
           if (item.id === row.orgId) {
             disabled = true
-            label = item.name + '[' + item.code + '](主机构)'
+            label = item.name + '(主机构)'
           }
           this.relationOrgData.push({
             key: item.id,
@@ -775,7 +778,7 @@ export default {
       this.parentDeptData.forEach(item => {
         this.relationDeptData.push({
           key: item.id,
-          label: item.deptName + '[' + item.code + ']'
+          label: item.deptName
         })
       })
       listUserRelationDept({ userId: row.id }).then(res => {

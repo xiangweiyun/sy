@@ -7,12 +7,12 @@
       class="role-form"
     >
       <el-form-item label="所属机构:">
-        <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
+        <el-select v-model="searchForm.orgName" filterable placeholder="请选择" @change="changeOrg">
           <el-option
             v-for="item in orgList"
             :key="item.orgId"
             :label="item.orgName"
-            :value="item.orgId"
+            :value="item"
           />
         </el-select>
       </el-form-item>
@@ -227,6 +227,11 @@ export default {
         this.tableData = res.records
         this.listLoading = false
       })
+    },
+    changeOrg(row) {
+      this.searchForm.orgId = row.orgId
+      this.searchForm.orgName = row.orgName
+      this.init()
     },
     handleSearch() {
       this.init()

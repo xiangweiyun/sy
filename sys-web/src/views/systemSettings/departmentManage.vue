@@ -6,12 +6,12 @@
       class="dept-form"
     >
       <el-form-item label="所属机构:">
-        <el-select v-model="searchForm.orgId" filterable placeholder="请选择">
+        <el-select v-model="searchForm.orgName" filterable placeholder="请选择" @change="changeOrg">
           <el-option
             v-for="item in orgList"
             :key="item.orgId"
             :label="item.orgName"
-            :value="item.orgId"
+            :value="item"
           />
         </el-select>
       </el-form-item>
@@ -146,6 +146,7 @@ export default {
       this.searchForm.orgId = this.$store.state.user.userInfo.orgId
       this.searchForm.orgName = this.$store.state.user.userInfo.orgName
     }
+    this.deptListInit()
     this.init()
   },
   mounted() {
@@ -160,8 +161,12 @@ export default {
         this.tableData = res
         this.listLoading = false
       })
-      // 上级科室列表初始化
+    },
+    changeOrg(row) {
+      this.searchForm.orgId = row.orgId
+      this.searchForm.orgName = row.orgName
       this.deptListInit()
+      this.init()
     },
     deptListInit() {
       const param = {
