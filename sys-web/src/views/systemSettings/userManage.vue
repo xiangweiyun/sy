@@ -47,7 +47,7 @@
           :props="defaultProps"
           :expand-on-click-node="false"
           :filter-node-method="filterNode"
-          style="height:400px;overflow-y: auto;"
+          :style="deptStyle"
           :size="size"
           @node-click="nodeDeptClick"
         />
@@ -105,7 +105,7 @@
             <el-button type="text" :size="size" @click="handleCopyUser(scope.row)">复制用户角色</el-button>
             <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button type="text" :size="size" @click="resetPwd(scope.row)">重置密码</el-button>
-            <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
+            <el-button v-if="scope.row.id !== userInfo.id" type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -163,7 +163,7 @@
           <el-form-item label="工号" prop="noNum">
             <el-input v-model="userForm.noNum" placeholder="请输入" />
           </el-form-item>
-          <el-form-item label="是否启用">
+          <el-form-item label="是否启用" prop="isEnabled">
             <el-select v-model="userForm.isEnabled" filterable placeholder="请选择" style="width:100%;">
               <el-option
                 v-for="item in enabledList"
@@ -413,6 +413,8 @@ export default {
   data() {
     return {
       size: 'mini',
+      userInfo: {},
+      deptStyle: 'height:400px;overflow-y: auto;',
       // 数据列表加载动画
       listLoading: true,
       orgLoading: true,
@@ -472,7 +474,8 @@ export default {
         goodAtField: '',
         personalProfile: '',
         officePhone: '',
-        avatar: ''
+        avatar: '',
+        isEnabled: ''
       },
       rules: {
         name: [
@@ -486,6 +489,9 @@ export default {
         ],
         deptId: [
           { required: true, message: '请选择主科室', trigger: 'change' }
+        ],
+        isEnabled: [
+          { required: true, message: '请选择启用标识', trigger: 'change' }
         ]
       },
       selectRow: {},
@@ -513,7 +519,7 @@ export default {
       postList: [],
       // 职称选项
       jobList: [],
-      // 职称选项
+      // 启用标识选项
       enabledList: [
         {
           dictLabel: '是',
@@ -534,9 +540,10 @@ export default {
   },
   created() {
     if (this.$store.state) {
-      this.orgList = this.$store.state.user.userInfo.listOrg
-      this.searchForm.orgId = this.$store.state.user.userInfo.orgId
-      this.searchForm.orgName = this.$store.state.user.userInfo.orgName
+      this.userInfo = this.$store.state.user.userInfo
+      this.orgList = this.userInfo.listOrg
+      this.searchForm.orgId = this.userInfo.orgId
+      this.searchForm.orgName = this.userInfo.orgName
     }
     this.size = window.CONFIG.SYSTEM_SIZE
     this.dictInit()
@@ -547,6 +554,8 @@ export default {
   mounted() {
     this.$nextTick(() => {
       this.tableHeight = window.innerHeight - this.$refs['userTable'].$el.offsetTop - 180
+      this.treeHeight = window.innerHeight - this.$refs['tree'].$el.offsetTop - 200
+      this.deptStyle = 'height:' + this.treeHeight + 'px;overflow-y: auto;'
     })
   },
   methods: {

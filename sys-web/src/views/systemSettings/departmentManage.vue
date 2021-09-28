@@ -93,6 +93,7 @@ export default {
   data() {
     return {
       size: 'mini',
+      userInfo: {},
       // 数据列表加载动画
       listLoading: false,
       searchForm: {
@@ -142,9 +143,10 @@ export default {
     this.size = window.CONFIG.SYSTEM_SIZE
     // 机构列表初始化
     if (this.$store.state) {
-      this.orgList = this.$store.state.user.userInfo.listOrg
-      this.searchForm.orgId = this.$store.state.user.userInfo.orgId
-      this.searchForm.orgName = this.$store.state.user.userInfo.orgName
+      this.userInfo = this.$store.state.user.userInfo
+      this.orgList = this.userInfo.listOrg
+      this.searchForm.orgId = this.userInfo.orgId
+      this.searchForm.orgName = this.userInfo.orgName
     }
     this.deptListInit()
     this.init()

@@ -38,7 +38,7 @@
       <el-table-column label="操作" align="center" width="110">
         <template slot-scope="scope">
           <el-button type="text" :size="size" @click="handleEdit(scope.row)">编辑</el-button>
-          <el-button type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
+          <el-button v-if="userInfo.orgId !== scope.row.id" type="text" :size="size" @click="handleRemove(scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -190,6 +190,7 @@ export default {
   data() {
     return {
       size: 'mini',
+      userInfo: {},
       // 数据列表加载动画
       listLoading: false,
       // 查询参数
@@ -253,8 +254,9 @@ export default {
   created: function() {
     this.size = window.CONFIG.SYSTEM_SIZE
     if (this.$store.state) {
-      this.searchForm.orgId = this.$store.state.user.userInfo.orgId
-      this.searchForm.orgName = this.$store.state.user.userInfo.orgName
+      this.userInfo = this.$store.state.user.userInfo
+      this.searchForm.orgId = this.userInfo.orgId
+      this.searchForm.orgName = this.userInfo.orgName
     }
     // 机构列表初始化
     this.parentOrgInit()

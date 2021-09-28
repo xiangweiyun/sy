@@ -1,7 +1,7 @@
 import router from './index'
 import { getToken } from '../utils/cookie'
 import store from '@/store'
-import { Message, MessageBox } from 'element-ui'
+import { MessageBox } from 'element-ui'
 import NProgress from 'nprogress'
 
 // 白名单列表
@@ -41,13 +41,8 @@ router.beforeEach((to, from, next) => {
             router.addRoutes(accessRoutes) // 动态添加可访问路由表
             router.options.isAddDynamicMenuRoutes = true
             next({ ...to, replace: true }) // hack方法 确保addRoutes已完成
-          })
-        }).catch((err) => {
-          store.dispatch('FedLogOut').then(() => {
-            Message.error(err)
-            next({ path: '/' })
-          })
-        })
+          }).catch((_) => {})
+        }).catch((_) => {})
       }
     }
   } else {

@@ -66,8 +66,8 @@ const user = {
     GetMenuInfo({ commit }, userId) {
       return new Promise((resolve, reject) => {
         getMenuInfo(userId).then(res => {
-          let accessedRoutes = ''
-          if (res.length) {
+          let accessedRoutes = []
+          if (res && res.length) {
             const menuData = fnAddDynamicMenus(res)
             commit('SET_MENUS', menuData)
             accessedRoutes = filterAsyncRouter(menuData)
@@ -136,6 +136,8 @@ function fnAddDynamicMenus(menuList = [], parentPath) {
       if (parentPath) {
         const prentComponent = parentPath.indexOf('/') !== -1 ? parentPath.split('/') : []
         component = (prentComponent ? prentComponent[1] : parentPath) + '/' + path
+      } else {
+        component = path = name.length ? element.url : '/' + element.url
       }
     }
     const menu = {

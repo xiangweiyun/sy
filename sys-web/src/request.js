@@ -23,28 +23,17 @@ service.interceptors.request.use(
     Promise.reject(error)
   }
 )
-
+let isRefreshPadding = true
 // response 拦截器设置
 service.interceptors.response.use(
   response => {
+    console.log(response)
     const data = response.data
     const success = data.success
-    const code = data.code
     const message = data.message
     if (success) {
       return data.data
     } else {
-      console.log(code)
-      if (code === 700 || code === 701) {
-        Message({
-          type: 'error',
-          message: '登录状态已过期或验证失败'
-        })
-        store.dispatch('FedLogOut').then(() => {
-          router.push('/login')
-        })
-        return false
-      }
       Message({
         type: 'error',
         message
@@ -54,18 +43,22 @@ service.interceptors.response.use(
   },
   error => {
     if (!error.response) {
-      return false
+      return Promise.reject(error)
     }
     const code = error.response.status
-    if (code === 401) {
-      Message({
-        type: 'error',
-        message: '登录状态已过期或验证失败'
-      })
-      store.dispatch('FedLogOut').then(() => {
-        router.push('/login')
-      })
-      return false
+    if (isRefreshPadding) {
+      isRefreshPadding = false
+      if (code === 401) {
+        Message({
+          type: 'error',
+          message: '登录状态已过期或验证失败'
+        })
+        store.dispatch('FedLogOut').then(() => {
+          isRefreshPadding = true
+          router.push('/login')
+        })
+        return false
+      }
     }
     if (!code) {
       Message({
