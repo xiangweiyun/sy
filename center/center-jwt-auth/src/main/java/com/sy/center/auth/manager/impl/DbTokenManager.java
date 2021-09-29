@@ -1,5 +1,6 @@
 package com.sy.center.auth.manager.impl;
 
+import com.sy.center.auth.properties.JwtProperties;
 import com.sy.center.common.exception.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,6 +22,9 @@ import java.sql.*;
 @Component
 @ConditionalOnProperty(name = "ly.token.store", havingValue = "mysql")
 public class DbTokenManager extends AbstractTokenManager {
+
+	@Autowired
+	private JwtProperties jwtProperties;
 
 	/**
 	 * 数据源
@@ -88,7 +92,7 @@ public class DbTokenManager extends AbstractTokenManager {
 	protected void createMultipleRelationship(String key, String token) {
 		String sql = String.format("insert into %s (%s, %s, %s) values(?, ?, ?)", tableName, keyColumnName,
 				tokenColumnName, expireColumnName);
-		update(sql, key, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000));
+		update(sql, key, token, new Timestamp(System.currentTimeMillis() + jwtProperties.getExpiration() * 1000));
 	}
 
 	@Override
@@ -99,11 +103,11 @@ public class DbTokenManager extends AbstractTokenManager {
 		if (count != null && count.intValue() > 0) {
 			String sql = String.format("update %s set %s = ?, %s = ? where %s = ?", tableName, tokenColumnName,
 					expireColumnName, keyColumnName);
-			update(sql, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), key);
+			update(sql, token, new Timestamp(System.currentTimeMillis() + jwtProperties.getExpiration() * 1000), key);
 		} else {
 			String sql = String.format("insert into %s (%s, %s, %s) values(?, ?, ?)", tableName, keyColumnName,
 					tokenColumnName, expireColumnName);
-			update(sql, key, token, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000));
+			update(sql, key, token, new Timestamp(System.currentTimeMillis() + jwtProperties.getExpiration() * 1000));
 		}
 	}
 
@@ -118,7 +122,7 @@ public class DbTokenManager extends AbstractTokenManager {
 	protected void flushExpireAfterOperation(String key, String token) {
 		String flushExpireAtSql = String.format("update %s set %s = ? where %s = ?", tableName, expireColumnName,
 				tokenColumnName);
-		update(flushExpireAtSql, new Timestamp(System.currentTimeMillis() + tokenExpireSeconds * 1000), token);
+		update(flushExpireAtSql, new Timestamp(System.currentTimeMillis() + jwtProperties.getExpiration() * 1000), token);
 	}
 
 	private void update(String sql, Object... args) {

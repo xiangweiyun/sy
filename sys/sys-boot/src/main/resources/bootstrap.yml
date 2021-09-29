@@ -36,11 +36,12 @@ spring:
   flyway:
     #是否开启FLYWARY
     enabled: false
-    #
+    type: oracle
     table: SYS_DB_VERSION
     locations: classpath:db/oracle/
     check-location: true
-    baseline-on-migrate: true
+    baseline-on-migrate: false
+    schema: schema_db
 
 #主键生成策略
 mybatis-plus:

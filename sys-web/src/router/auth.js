@@ -25,7 +25,7 @@ router.beforeEach((to, from, next) => {
         // 获取用户信息
         store.dispatch('GetInfo', param).then(res => {
           store.dispatch('GetMenuInfo', res.id).then(accessRoutes => {
-            if (!accessRoutes.length) {
+            if (accessRoutes && !accessRoutes.length) {
               MessageBox.alert('该用户尚未授权，请先授权', '未授权提醒', {
                 confirmButtonText: '确定',
                 callback: action => {

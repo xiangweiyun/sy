@@ -73,6 +73,8 @@ const user = {
             accessedRoutes = filterAsyncRouter(menuData)
             accessedRoutes.push({ path: '*', redirect: '/404', hidden: true })
             commit('SET_ROUTES', accessedRoutes)
+          } else {
+            accessedRoutes = res
           }
           resolve(accessedRoutes)
         }).catch(error => {

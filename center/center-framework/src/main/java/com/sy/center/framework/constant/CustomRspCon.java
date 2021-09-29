@@ -96,10 +96,6 @@ public enum CustomRspCon {
 	 */
 	TOKEN_EXPIRED(700, "token过期"),
 	/**
-	 * token验证失败
-	 */
-	TOKEN_ERROR(701, "token验证失败"),
-	/**
 	 * 签名验证失败
 	 */
 	SIGN_ERROR(700, "签名验证失败");

@@ -1,10 +1,11 @@
 package com.sy.center.auth.manager.impl;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
-
+import com.sy.center.auth.properties.JwtProperties;
 import com.sy.center.common.redis.util.JedisClusterUtils;
 import com.sy.center.common.utils.BlankUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.stereotype.Component;
 
 /**
  * 使用Redis存储Token
@@ -18,6 +19,10 @@ import com.sy.center.common.utils.BlankUtils;
 @Component
 @ConditionalOnProperty(name = "ly.token.store", havingValue = "redis")
 public class RedisTokenManager extends AbstractTokenManager {
+
+	@Autowired
+	private JwtProperties jwtProperties;
+
 	/**
 	 * Redis中Key的前缀
 	 */
@@ -61,13 +66,13 @@ public class RedisTokenManager extends AbstractTokenManager {
 		if (oldToken != null) {
 			delete(formatToken(oldToken));
 		}
-		set(formatToken(token), key, tokenExpireSeconds);
-		set(formatKey(key), token, tokenExpireSeconds);
+		set(formatToken(token), key, jwtProperties.getExpiration());
+		set(formatKey(key), token, jwtProperties.getExpiration());
 	}
 
 	@Override
 	protected void createMultipleRelationship(String key, String token) {
-		set(formatToken(token), key, tokenExpireSeconds);
+		set(formatToken(token), key, jwtProperties.getExpiration());
 	}
 
 	@Override
@@ -78,9 +83,9 @@ public class RedisTokenManager extends AbstractTokenManager {
 	@Override
 	protected void flushExpireAfterOperation(String key, String token) {
 		if (singleTokenWithUser) {
-			expire(formatKey(key), tokenExpireSeconds);
+			expire(formatKey(key), jwtProperties.getExpiration());
 		}
-		expire(formatToken(token), tokenExpireSeconds);
+		expire(formatToken(token), jwtProperties.getExpiration());
 	}
 
 	private String get(String key) {
@@ -101,14 +106,14 @@ public class RedisTokenManager extends AbstractTokenManager {
 		return null;
 	}
 
-	private void set(String key, String value, int expireSeconds) {
+	private void set(String key, String value, long expireSeconds) {
 //        try (Jedis jedis = jedisPool.getResource()) {
 //            return jedis.setex(key, expireSeconds, value);
 //        }
 		JedisClusterUtils.set(key, value, expireSeconds);
 	}
 
-	private void expire(String key, int seconds) {
+	private void expire(String key, long seconds) {
 //        try (Jedis jedis = jedisPool.getResource()) {
 //            jedis.expire(key, seconds);
 //        }

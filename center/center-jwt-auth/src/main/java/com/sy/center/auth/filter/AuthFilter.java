@@ -81,15 +81,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			// 验证token是否过期
 			try {
 				String key = tokenManager.getKey(authToken);
-
 				if (key == null) {
-					WriterUtil.renderString(response, DataformResult.failure(CustomRspCon.TOKEN_EXPIRED.getCode(),
-							CustomRspCon.TOKEN_EXPIRED.getMsg()));
-					return;
-				}
-
-				boolean flag = jwtTokenUtil.isTokenExpired(authToken);
-				if (flag) {
 					WriterUtil.renderString(response, DataformResult.failure(CustomRspCon.TOKEN_EXPIRED.getCode(),
 							CustomRspCon.TOKEN_EXPIRED.getMsg()));
 					return;

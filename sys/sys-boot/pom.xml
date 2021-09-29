@@ -77,9 +77,13 @@
 		</dependency>
 
 		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jdbc</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-core</artifactId>
-			<version>5.2.1</version>
+			<version>5.1.4</version>
 		</dependency>
 		<dependency>
 			<groupId>com.alibaba</groupId>
@@ -88,6 +92,7 @@
 		<dependency>
 			<groupId>com.oracle</groupId>
 			<artifactId>ojdbc6</artifactId>
+			<scope>runtime</scope>
 		</dependency>
 		<dependency>
             <groupId>cn.hutool</groupId>

@@ -27,7 +27,6 @@ let isRefreshPadding = true
 // response 拦截器设置
 service.interceptors.response.use(
   response => {
-    console.log(response)
     const data = response.data
     const success = data.success
     const message = data.message
@@ -46,12 +45,13 @@ service.interceptors.response.use(
       return Promise.reject(error)
     }
     const code = error.response.status
+    console.log(isRefreshPadding)
     if (isRefreshPadding) {
       isRefreshPadding = false
       if (code === 401) {
         Message({
           type: 'error',
-          message: '登录状态已过期或验证失败'
+          message: '登录状态已过期'
         })
         store.dispatch('FedLogOut').then(() => {
           isRefreshPadding = true

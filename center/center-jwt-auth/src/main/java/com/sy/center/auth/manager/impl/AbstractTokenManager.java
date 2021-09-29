@@ -16,15 +16,11 @@ public abstract class AbstractTokenManager implements TokenManager {
 
 	protected Logger logger = LoggerFactory.getLogger(getClass());
 
-	protected int tokenExpireSeconds = 7 * 24 * 3600;
+	/** 每个用户是否只能有一个token */
+	protected boolean singleTokenWithUser = false;
 
-	protected boolean singleTokenWithUser = true;
-
+	/** 每次请求是否刷新超时时长 */
 	protected boolean flushExpireAfterOperation = true;
-
-	public void setTokenExpireSeconds(int tokenExpireSeconds) {
-		this.tokenExpireSeconds = tokenExpireSeconds;
-	}
 
 	public void setSingleTokenWithUser(boolean singleTokenWithUser) {
 		this.singleTokenWithUser = singleTokenWithUser;

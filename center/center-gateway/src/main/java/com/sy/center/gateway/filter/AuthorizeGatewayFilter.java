@@ -80,9 +80,6 @@ public class AuthorizeGatewayFilter implements GlobalFilter, Ordered {
 				} else if (code == CustomRspCon.TOKEN_EXPIRED.getCode()) {
 					logger.info("token已过期！");
 					return unauthorizedResponse(exchange, DataformResult.failure(code, "token已过期！"));
-				} else if (code == CustomRspCon.TOKEN_ERROR.getCode()) {
-					logger.info("token验证失败！");
-					return unauthorizedResponse(exchange, DataformResult.failure(code, "token验证失败！"));
 				}
 			} else {
 				logger.info("认证信息不为空！");

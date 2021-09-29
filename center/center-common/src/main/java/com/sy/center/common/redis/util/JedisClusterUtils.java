@@ -300,9 +300,9 @@ public class JedisClusterUtils {
 		try {
 			if (time > 0) {
 				cacheUtils.redisTemplate.opsForValue().set(key, value, time, TimeUnit.SECONDS);
-			} else {
-				set(key, value);
-			}
+		} else {
+			set(key, value);
+		}
 			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
