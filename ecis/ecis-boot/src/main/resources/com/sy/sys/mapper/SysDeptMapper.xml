@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysDeptMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysDept">
+        <result column="ID" property="id" />
+        <result column="CODE" property="code" />
+        <result column="DEPT_NAME" property="deptName" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="LOCATION" property="location" />
+        <result column="INTRODUCTION" property="introduction" />
+        <result column="ANCESTORS" property="ancestors" />
+        <result column="ORG_ID" property="orgId" />
+        <result column="ORDER_NUM" property="orderNum" />
+        <result column="LEADER" property="leader" />
+        <result column="PHONE" property="phone" />
+        <result column="EMAIL" property="email" />
+        <result column="STATUS" property="status" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, CODE, DEPT_NAME, PARENT_ID, LOCATION, INTRODUCTION, ANCESTORS, ORG_ID, ORDER_NUM, LEADER, PHONE, EMAIL, STATUS, IS_DELETED, CREATED_DATE, LAST_MODIFIED_DATE, CREATED_BY, LAST_MODIFIED_BY
+    </sql>
+    
+    <select id="getVoById" resultType="com.sy.sys.vo.SysDeptVo">
+    	SELECT t.* ,(SELECT NAME FROM SYS_ORG WHERE SYS_ORG.ID = t.ORG_ID) ORG_NAME,
+			(SELECT DEPT_NAME FROM SYS_DEPT WHERE SYS_DEPT.ID = t.PARENT_ID) PARENT_NAME
+		FROM SYS_DEPT t
+		WHERE t.id = #{id}
+    </select>
+    
+    <select id="listParentByOrgIdAndDeptId" resultType="com.sy.sys.entity.SysDept" parameterType="hashMap">
+    	SELECT ID,CODE,DEPT_NAME
+		FROM SYS_DEPT
+		WHERE ORG_ID = #{orgId} AND ID NOT IN(
+			SELECT DISTINCT ID
+			FROM SYS_DEPT T
+			WHERE ORG_ID = #{orgId}
+			START WITH  ID = #{deptId}
+			CONNECT BY PRIOR ID = PARENT_ID)
+    </select>
+</mapper>

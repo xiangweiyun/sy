@@ -14,7 +14,7 @@ spring:
     nacos:
       discovery:
         #允许nacos发现服务的nacos服务器地址
-        server-addr: 192.168.2.3:8848
+        server-addr: 192.168.3.89:8848
         #注册命名空间
         namespace: d41aed27-2d4f-4948-b864-b492484d6be7
       config:
@@ -33,10 +33,15 @@ spring:
           data-id: application-${spring.profiles.active}.${spring.cloud.nacos.config.file-extension}
           group: DEFAULT_GROUP
           refresh: true
-  # Liquibase 配置内容，对应 LiquibaseProperties 配置项
-  liquibase:
-    enabled: true # 开启 Liquibase 功能。默认为 true 。
-    change-log: classpath:db/changelog/db.changelog-master.yml # Liquibase 配置文件地址
+  flyway:
+    #是否开启FLYWARY
+    enabled: false
+    type: oracle
+    table: SYS_DB_VERSION
+    locations: classpath:db/oracle/
+    check-location: true
+    baseline-on-migrate: false
+    schema: schema_db
 
 #主键生成策略
 mybatis-plus:

@@ -5,11 +5,11 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.sy.sys</groupId>
-        <artifactId>sys-parent</artifactId>
+		<groupId>com.sy.ecis</groupId>
+        <artifactId>ecis-parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-	<artifactId>sys-boot</artifactId>
+	<artifactId>ecis-boot</artifactId>
 	<description>后台接口模块</description>
 
 	<dependencies>
@@ -61,12 +61,12 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sys-entity</artifactId>
+			<artifactId>ecis-entity</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
-			<artifactId>sys-api</artifactId>
+			<artifactId>ecis-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 
@@ -93,11 +93,5 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
         </dependency>
-
-		<!-- Liquibase 依赖 -->
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-		</dependency>
 	</dependencies>
 </project>

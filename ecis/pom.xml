@@ -1,0 +1,44 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.sy.center</groupId>
+		<artifactId>center-parent</artifactId>
+		<version>1.0.0-RELEASE</version>
+	</parent>
+	<groupId>com.sy.ecis</groupId>
+	<artifactId>ecis-parent</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<description>急诊临床信息系统</description>
+	
+	<modules>
+		<module>ecis-entity</module>
+        <module>ecis-api</module>
+		<module>ecis-boot</module>
+    </modules>
+
+	<properties>
+		<center.version>1.0.0-RELEASE</center.version>
+		<maven.test.skip>true</maven.test.skip>
+	</properties>
+
+	<!-- 依赖管理 -->
+	<dependencyManagement>
+		<!-- 依赖关系 -->
+		<dependencies>
+			<dependency>
+				<groupId>com.sy.center</groupId>
+				<artifactId>center-common</artifactId>
+				<version>${center.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sy.center</groupId>
+				<artifactId>center-framework</artifactId>
+				<version>${center.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+	
+</project>

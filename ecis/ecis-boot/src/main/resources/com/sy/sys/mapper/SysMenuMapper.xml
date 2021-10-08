@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysMenuMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysMenu">
+        <result column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="SYS_ID" property="sysId" />
+        <result column="VUE" property="vue" />
+        <result column="ORDER_NUM" property="orderNum" />
+        <result column="URL" property="url" />
+        <result column="TARGET" property="target" />
+        <result column="MENU_TYPE" property="menuType" />
+        <result column="IS_VISIBLE" property="isVisible" />
+        <result column="IS_REFRESH" property="isRefresh" />
+        <result column="PERMS" property="perms" />
+        <result column="ICON" property="icon" />
+        <result column="REMARK" property="remark" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, NAME, PARENT_ID, SYS_ID, VUE, ORDER_NUM, URL, TARGET, MENU_TYPE, IS_VISIBLE, IS_REFRESH, PERMS, ICON, REMARK, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY
+    </sql>
+    
+    <select id="listSysMenuByRoleId" resultType="com.sy.sys.vo.SysMenuVo" parameterType="hashMap">
+    	SELECT ID, NAME, (CASE WHEN EXISTS(SELECT 1 FROM SYS_ROLE_MENU WHERE ROLE_ID = #{roleId} AND MENU_ID = SYS_MENU.ID) THEN 1 ELSE 0 END) CHECKED
+		FROM SYS_MENU
+		<where>
+			<choose>
+				<when test="parentId != null">
+					and PARENT_ID = #{parentId}
+				</when>
+				<otherwise>
+					and PARENT_ID IS NULL
+				</otherwise>
+			</choose>
+		</where>
+    </select>
+    
+    <select id="listSysMenuByAppIdAndUserId" resultType="com.sy.sys.vo.SysMenuVo" parameterType="hashMap">
+    	SELECT DISTINCT *
+		FROM SYS_MENU
+		START WITH ID IN(SELECT D.ID
+				FROM (SELECT ID
+					FROM SYS_MENU T
+					START WITH T.ID = #{appId}
+					CONNECT BY PRIOR ID = PARENT_ID) D 
+				WHERE D.ID IN(
+					SELECT SYS_ROLE_MENU.MENU_ID
+					FROM SYS_USER_ROLE INNER JOIN SYS_ROLE_MENU 
+						ON SYS_USER_ROLE.ROLE_ID = SYS_ROLE_MENU.ROLE_ID
+					WHERE SYS_USER_ROLE.USER_ID = #{userId}))
+		CONNECT BY PRIOR PARENT_ID = ID
+		ORDER BY ORDER_NUM, ID
+    </select>
+</mapper>

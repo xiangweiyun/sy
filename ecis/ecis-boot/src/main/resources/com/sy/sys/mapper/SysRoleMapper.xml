@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysRoleMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysRole">
+        <result column="ID" property="id" />
+        <result column="NAME" property="name" />
+        <result column="CODE" property="code" />
+        <result column="ORG_ID" property="orgId" />
+        <result column="ROLE_SORT" property="roleSort" />
+        <result column="IS_DELETED" property="isDeleted" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, NAME, CODE, ORG_ID, ROLE_SORT, IS_DELETED, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY
+    </sql>
+</mapper>

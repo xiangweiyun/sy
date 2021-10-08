@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sy.sys.mapper.SysOrgMapper">
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <resultMap id="BaseResultMap" type="com.sy.sys.entity.SysOrg">
+        <result column="ID" property="id" />
+        <result column="PARENT_ID" property="parentId" />
+        <result column="CODE" property="code" />
+        <result column="NAME" property="name" />
+        <result column="LEVEL_CODE" property="levelCode" />
+        <result column="LONGITUDE" property="longitude" />
+        <result column="LATITUDE" property="latitude" />
+        <result column="PHONE" property="phone" />
+        <result column="ORG_PROFILE" property="orgProfile" />
+        <result column="PICTURE" property="picture" />
+        <result column="CREATED_DATE" property="createdDate" />
+        <result column="CREATED_BY" property="createdBy" />
+        <result column="LAST_MODIFIED_DATE" property="lastModifiedDate" />
+        <result column="LAST_MODIFIED_BY" property="lastModifiedBy" />
+        <result column="ORG_TYPE" property="orgType" />
+        <result column="ORG_ADDRESS" property="orgAddress" />
+    </resultMap>
+
+    <!-- BaseResultMap和表字段一致，不允许改动 -->
+    <sql id="base_column">
+        ID, PARENT_ID, CODE, NAME, LEVEL_CODE, LONGITUDE, LATITUDE, PHONE, ORG_PROFILE, PICTURE, CREATED_DATE, CREATED_BY, LAST_MODIFIED_DATE, LAST_MODIFIED_BY, ORG_TYPE, ORG_ADDRESS
+    </sql>	
+    
+    <select id="listChildById" resultType="com.sy.sys.vo.SysOrgVo">
+    	SELECT ID, CODE, NAME FROM SYS_ORG START WITH ID = #{orgId} CONNECT BY PRIOR ID = PARENT_ID
+    </select>
+</mapper>

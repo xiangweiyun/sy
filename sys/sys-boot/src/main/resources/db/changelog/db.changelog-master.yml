@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet: # 对应一个 ChangeSet 对象
+      id: 0 # ChangeSet 编号
+      author: xiangwy # 作者
+      comments: 初始化 # 备注
+  - changeSet: # 对应一个 ChangeSet 对象
+      id: 1 # ChangeSet 编号
+      author: xiangwy # 作者
+      comments: 初始化users表 # 备注
+      changes: # 对应 Change 数组。Change 是一个接口，每种操作对应一种 Change 实现类
+        - sqlFile: # 使用 SQL 文件，对应 SQLFileChange 对象
+            encoding: utf8
+            path: classpath:db/changelog/sqlfile/CHAGE_SET_1_INIT_DB.sql
